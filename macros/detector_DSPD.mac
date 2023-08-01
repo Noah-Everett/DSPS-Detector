@@ -1,0 +1,10 @@
+/geometry/world/medium/material       G4Air
+/geometry/detector/wall/material      G4StainlessSteel
+/geometry/detector/medium/material    LXe
+/geometry/calorimeter/material        aluminum
+/geometry/lens/material               S-NPH_2
+/geometry/photoSensor/surface/material aluminum
+/geometry/world/size                  3 3 3 m
+/geometry/detector/wall/size          2.5 2.5 2.5 m
+/geometry/detector/wall/thickness     0.01 m
+/geometry/calorimeter/size            0.01 0.01 0.01 m
