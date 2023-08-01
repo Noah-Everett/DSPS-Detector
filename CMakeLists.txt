@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.16...3.21)
-project(USSD)
+project(DSPD)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -31,15 +31,15 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(USSD USSD.cc ${sources} ${headers})
-target_link_libraries(USSD ${Geant4_LIBRARIES} )
+add_executable(DSPD DSPD.cc ${sources} ${headers})
+target_link_libraries(DSPD ${Geant4_LIBRARIES} )
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
-# build USSD. This is so that we can run the executable directly because it
+# build DSPD. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(USSD_SCRIPTS
+set(DSPD_SCRIPTS
     macros/detector_DSPD.mac
     macros/event_1e_1200keV.mac
     macros/GUI_show.mac
@@ -47,7 +47,7 @@ set(USSD_SCRIPTS
     macros/vis.mac
    )
 
-foreach(_script ${USSD_SCRIPTS})
+foreach(_script ${DSPD_SCRIPTS})
   configure_file(
     ${PROJECT_SOURCE_DIR}/${_script}
     ${PROJECT_BINARY_DIR}/${_script}
@@ -58,5 +58,5 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS USSD DESTINATION bin)
+install(TARGETS DSPD DESTINATION bin)
 
