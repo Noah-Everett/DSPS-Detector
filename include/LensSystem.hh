@@ -23,60 +23,31 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef Lens_h
-#define Lens_h
+#ifndef LensSystem_h
+#define LensSystem_h
 
 #include "globals.hh"
 
 #include "GeometricObject.hh"
+#include "LensSurface.hh"
+#include "Lens.hh"
 
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
 
-class LensSurface
+class LensSystem
 {
     public:
-        Surface( G4double t_radius_x, G4double t_radius_y, G4double t_yLimit_min, G4double t_yLimit_max );
-       ~Surface();
+        LensSystem() {}
+       ~LensSystem() {}
 
-        friend ostream& operator<<(ostream& os, const Surface& surface)
-        {
-            os << "(" << surface.r_x << ", " << surface.r_y << ", " << surface.y_min << ", " << surface.y_max << ")";
-            return os;
-        }
+        void add_lens( Lens* lens ) { m_lenses->push_back( lens ); }
+
+        vector< Lens* >* get_lenses() const { return m_lenses; }
 
     protected:
-        G4double         m_radius_x     ;
-        G4double         m_radius_y     ;
-        G4double         m_yLimit_min   ;
-        G4double         m_yLimit_max   ;
-        G4String         m_material_name;
-        GeometricObject* m_geometricObject{ new GeometricObject() };
-
+        vector< Lens* >* m_lenses{ new vector< Lens* >() };
 };
 
-class Lens
-{
-    public:
-        Lens(const Surface& surface_1, G4double d, G4double n, const Surface& surface_2, G4double x_l)
-            : surface_1(surface_1), d(d), n(n), surface_2(surface_2), x_l(x_l) {}
-
-        Surface surface_1;
-        G4double d;
-        G4double n;
-        Surface surface_2;
-        G4double x_l;
-
-        friend ostream& operator<<(ostream& os, const Lens& lens)
-        {
-            os << "[" << lens.surface_1 << ", " << lens.d << ", " << lens.n << ", " << lens.surface_2 << ", " << lens.x_l << "]";
-            return os;
-        }
-};
+#endif

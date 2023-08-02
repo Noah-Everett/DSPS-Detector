@@ -43,7 +43,7 @@ DetectorConstruction::~DetectorConstruction() {
     if( m_detector_medium     ) delete m_detector_medium    ;
     if( m_detector            ) delete m_detector           ;
     if( m_calorimeter         ) delete m_calorimeter        ;
-    if( m_lens                ) delete m_lens               ;
+    if( m_lensSystem          ) delete m_lensSystem         ;
     if( m_photoSensor_surface ) delete m_photoSensor_surface;
     if( m_photoSensor_body    ) delete m_photoSensor_body   ;
     if( m_photoSensor         ) delete m_photoSensor        ;

@@ -46,11 +46,11 @@ class GeometricObject
 
         void make_logicalVolume();
 
-        G4Material         * get_material         () const;
-        G4String             get_material_name    () const;
-        G4SensitiveDetector* get_sensitiveDetector() const;
-        G4VSolid           * get_solid            () const;
-        G4LogicalVolume    * get_logicalVolume    () const;
+        G4Material          * get_material         () const;
+        G4String              get_material_name    () const;
+        G4VSensitiveDetector* get_sensitiveDetector() const;
+        G4VSolid            * get_solid            () const;
+        G4LogicalVolume     * get_logicalVolume    () const;
 
     private:
         G4String              m_name             { ""      };
@@ -59,3 +59,5 @@ class GeometricObject
         G4VSolid            * m_solid            { nullptr };
         G4LogicalVolume     * m_logicalVolume    { nullptr };
 };
+
+#endif

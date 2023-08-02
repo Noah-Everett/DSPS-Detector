@@ -23,20 +23,15 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef PhotoSensorSensitiveDetector_h
-#define PhotoSensorSensitiveDetector_h
+// #include "G4VSensitiveDetector.hh"
+// #include "G4HCofThisEvent.hh"
+// #include "G4Step.hh"
 
-#include "G4VSensitiveDetector.hh"
-#include "G4HCofThisEvent.hh"
-#include "G4Step.hh"
+// class PhotoSensorSD : public G4VSensitiveDetector {
+// public:
+//     PhotoSensorSD(const G4String& name);
+//     virtual ~PhotoSensorSD();
 
-class PhotoSensorSD : public G4VSensitiveDetector {
-public:
-    PhotoSensorSD(const G4String& name);
-    virtual ~PhotoSensorSD();
-
-    virtual void Initialize(G4HCofThisEvent* hce);
-    virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
-};
-
-#endif
+//     virtual void Initialize(G4HCofThisEvent* hce);
+//     virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
+// };

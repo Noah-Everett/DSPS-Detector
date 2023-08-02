@@ -23,18 +23,46 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "LensSurface.hh"
+#include "Lens.hh"
 
+Lens::Lens( Surface * t_surface_1                     , 
+            Surface * t_surface_2                     , 
+            G4double  t_distanceBetweenSurfaces       , 
+            G4double  t_distanceOfLensCenterFromOrigin ) :
+    m_lensSurface_1                 ( t_lensSurface_1                  ),
+    m_lensSurface_2                 ( t_lensSurface_2                  ),
+    m_distanceBetweenSurfaces       ( t_distanceBetweenSurfaces        ),
+    m_distanceOfLensCenterFromOrigin( t_distanceOfLensCenterFromOrigin ) {
 
-LensSurface::LensSurface( G4double t_radius_x  , G4double t_radius_y  , 
-                          G4double t_yLimit_min, G4double t_yLimit_max,
-                          G4String t_material_name                     ) :
-    m_radius_x     ( t_radius_x      ),
-    m_radius_y     ( t_radius_y      ),
-    m_yLimit_min   ( t_yLimit_min    ),
-    m_yLimit_max   ( t_yLimit_max    ),
-    m_material_name( t_material_name ) {
+    G4EllipticalTube* lensMiddle = new G4EllipticalTube( "lensMiddle"                       , 
+                                                         0.5 * m_lensSurface_1->get_yLimit(),
+                                                         0.5 * m_lensSurface_1->get_yLimit(),
+                                                         0.5 * m_distanceBetweenSurfaces     );
+    m_middleTube->set_solid   ( lensMiddle                      );
+    m_middleTube->set_material( m_lensSurface_1->get_material() );
+    m_middleTube->make_logicalVolume();
+}
+
+friend ostream& Lens::operator<<( ostream& t_os, Lens* t_lens )
+{
+    t_os << t_lens*;
+    return t_os;
+}
+
+friend ostream& Lens::operator<<( ostream& t_os, const Lens& t_lens )
+{
+    t_os << "[" << t_lens.m_surface_1                      << ", "
+                << t_lens.m_surface_2                      << ", "
+                << t_lens.m_distanceBetweenSurfaces        << ", "
+                << t_lens.m_distanceOfLensCenterFromOrigin 
+         << "]";
+    return t_os;
+}
+
+void Lens::place_lens( G4RotationMatrix * t_rotationMatrix     , 
+                       G4ThreeVector    * t_translation        ,
+                       G4LogicalVolume  * t_motherLogicalVolume,
+                       G4bool             t_isMany             ,
+                       G4int              t_copyNumber          ) {
     
-    m_geometricObject->set_material( t_material_name );
-    G4Ellipsoid* ellipsoid = new G4Ellipsoid( "surface_ellipsoid", m_radius_x, m_radius_y, m_radius_y );
 }

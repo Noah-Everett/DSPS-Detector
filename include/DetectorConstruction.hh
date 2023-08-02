@@ -44,7 +44,12 @@
 #include "Materials.hh"
 #include "LensParameterFileReader.hh"
 #include "PhotoSensorSensativeDetector.hh"
-#include "GeometicObject.hh"
+#include "GeometricObject.hh"
+#include "LensSurface.hh"
+#include "Lens.hh"
+#include "LensSystem.hh"
+#include "PhotoSensor.hh"
+#include "LensSensativeDetector.hh"
 
 #include <vector>
 using std::vector;
@@ -81,13 +86,10 @@ protected:
     GeometricObject* m_detector_medium    { new GeometricObject() };
     GeometricObject* m_detector           { new GeometricObject() };
     GeometricObject* m_calorimeter        { new GeometricObject() };
-    GeometricObject* m_lensSystem          { new GeometricObject() };
+    GeometricObject* m_lensSystem         { new GeometricObject() };
     GeometricObject* m_photoSensor_surface{ new GeometricObject() };
     GeometricObject* m_photoSensor_body   { new GeometricObject() };
     GeometricObject* m_photoSensor        { new GeometricObject() };
-    
-    vector< Lens             > m_lensParameters;
-    vector< GeometricObject* > m_lenses        ;
 };
 
 #endif

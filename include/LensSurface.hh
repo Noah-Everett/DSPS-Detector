@@ -23,60 +23,43 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef Lens_h
-#define Lens_h
+#ifndef LensSurface_h
+#define LensSurface_h
 
 #include "globals.hh"
 
 #include "GeometricObject.hh"
 
-#include <vector>
 #include <iostream>
-#include <fstream>
-#include <sstream>
 
-using std::vector;
 using std::ostream;
-using std::ifstream;
-using std::stringstream;
 
 class LensSurface
 {
     public:
-        Surface( G4double t_radius_x, G4double t_radius_y, G4double t_yLimit_min, G4double t_yLimit_max );
-       ~Surface();
+        LensSurface( G4double t_radius_x  , G4double t_radius_y  , 
+                     G4double t_yLimit_min, G4double t_yLimit_max,
+                     G4String t_material_name                     );
+       ~LensSurface();
 
-        friend ostream& operator<<(ostream& os, const Surface& surface)
-        {
-            os << "(" << surface.r_x << ", " << surface.r_y << ", " << surface.y_min << ", " << surface.y_max << ")";
-            return os;
-        }
+        friend ostream& operator<<( ostream& ,       LensSurface* );
+        friend ostream& operator<<( ostream& , const LensSurface& );
+
+        G4double         get_radius_x       ();
+        G4double         get_radius_y       ();
+        G4double         get_yLimit_min     ();
+        G4double         get_yLimit_max     ();
+        G4double         get_yLimit         ();
+        G4double         get_xLimit         ();
+        GeometricObject* get_geometricObject();
 
     protected:
         G4double         m_radius_x     ;
         G4double         m_radius_y     ;
         G4double         m_yLimit_min   ;
         G4double         m_yLimit_max   ;
-        G4String         m_material_name;
+        G4double         m_xLimit       ;
         GeometricObject* m_geometricObject{ new GeometricObject() };
-
 };
 
-class Lens
-{
-    public:
-        Lens(const Surface& surface_1, G4double d, G4double n, const Surface& surface_2, G4double x_l)
-            : surface_1(surface_1), d(d), n(n), surface_2(surface_2), x_l(x_l) {}
-
-        Surface surface_1;
-        G4double d;
-        G4double n;
-        Surface surface_2;
-        G4double x_l;
-
-        friend ostream& operator<<(ostream& os, const Lens& lens)
-        {
-            os << "[" << lens.surface_1 << ", " << lens.d << ", " << lens.n << ", " << lens.surface_2 << ", " << lens.x_l << "]";
-            return os;
-        }
-};
+#endif

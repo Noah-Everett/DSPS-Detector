@@ -27,7 +27,10 @@
 #define Lens_h
 
 #include "globals.hh"
+#include "G4ThreeVector.hh"
+#include "G4RotationMatrix.hh"
 
+#include "LensSurface.hh"
 #include "GeometricObject.hh"
 
 #include <vector>
@@ -40,43 +43,30 @@ using std::ostream;
 using std::ifstream;
 using std::stringstream;
 
-class LensSurface
-{
-    public:
-        Surface( G4double t_radius_x, G4double t_radius_y, G4double t_yLimit_min, G4double t_yLimit_max );
-       ~Surface();
-
-        friend ostream& operator<<(ostream& os, const Surface& surface)
-        {
-            os << "(" << surface.r_x << ", " << surface.r_y << ", " << surface.y_min << ", " << surface.y_max << ")";
-            return os;
-        }
-
-    protected:
-        G4double         m_radius_x     ;
-        G4double         m_radius_y     ;
-        G4double         m_yLimit_min   ;
-        G4double         m_yLimit_max   ;
-        G4String         m_material_name;
-        GeometricObject* m_geometricObject{ new GeometricObject() };
-
-};
-
 class Lens
 {
     public:
-        Lens(const Surface& surface_1, G4double d, G4double n, const Surface& surface_2, G4double x_l)
-            : surface_1(surface_1), d(d), n(n), surface_2(surface_2), x_l(x_l) {}
+        Lens( LensSurface*, G4double, G4double, LensSurface*, G4double );
+       ~Lens();
+        
+        friend ostream& operator<<( ostream&,       Lens* );
+        friend ostream& operator<<( ostream&, const Lens& );
 
-        Surface surface_1;
-        G4double d;
-        G4double n;
-        Surface surface_2;
-        G4double x_l;
+        LensSurface    * get_lensSurface_1                 () const { return m_lensSurface_1                 ; }
+        LensSurface    * get_lensSurface_2                 () const { return m_lensSurface_2                 ; }
+        GeometricObject* get_middleTube                    () const { return m_middleTube                    ; }
+        G4double         get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
+        G4double         get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
 
-        friend ostream& operator<<(ostream& os, const Lens& lens)
-        {
-            os << "[" << lens.surface_1 << ", " << lens.d << ", " << lens.n << ", " << lens.surface_2 << ", " << lens.x_l << "]";
-            return os;
-        }
+        void place_lens( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+
+    protected:
+        LensSurface    * m_lensSurface_1                    ;
+        LensSurface    * m_lensSurface_2                    ;
+        GeometricObject* m_middleTube{ new GeometricObject };
+        G4double         m_distanceBetweenSurfaces          ;
+        G4double         m_distanceOfLensCenterFromOrigin   ;
+
 };
+
+#endif

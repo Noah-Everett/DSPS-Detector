@@ -48,6 +48,7 @@ void GeometricObject::set_material( G4String t_materialName ) {
 
 void GeometricObject::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
     m_sensitiveDetector = t_sensitiveDetector; 
+    if( m_logicalVolume ) m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
 }
 
 void GeometricObject::set_solid( G4VSolid* t_solid ) { 

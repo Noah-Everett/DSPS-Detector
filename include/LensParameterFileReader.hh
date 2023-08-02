@@ -27,7 +27,9 @@
 #define LensParameterFileReader_h
 
 #include "GeometricObject.hh"
+#include "LensSurface.hh"
 #include "Lens.hh"
+#include "LensSystem.hh"
 
 #include <vector>
 #include <iostream>
@@ -45,7 +47,7 @@ class LensParameterFileReader
         LensParameterFileReader( G4String t_path );
        ~LensParameterFileReader();
 
-        vector< Lens >* get_lenses() const { return lensList; }
+        vector< Lens* >* get_lenses() const { return m_lenses; }
 
     private:
         G4String         m_path                            ;

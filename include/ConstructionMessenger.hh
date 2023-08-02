@@ -63,7 +63,7 @@ class  ConstructionMessenger : public G4UImessenger
         G4double      get_photoSensor_surface_size_depth         () { return m_variable_photoSensor_surface_size.z()      ; }
         G4double      get_photoSensor_surface_size_widthAndHeight() { return m_variable_photoSensor_surface_size.x() 
                                                                          == m_variable_photoSensor_surface_size.y() 
-                                                                          ? m_variable_photoSensor_surface_size.x() : 1/0; }
+                                                                          ? m_variable_photoSensor_surface_size.x() : 1/0 ; }
         G4String      get_photoSensor_surface_material           () { return m_variable_photoSensor_surface_material      ; }
         G4ThreeVector get_photoSensor_body_size                  () { return m_variable_photoSensor_body_size             ; }
         G4double      get_photoSensor_body_size_width            () { return m_variable_photoSensor_body_size.x()         ; }
