@@ -83,3 +83,21 @@ G4VSolid* GeometricObject::get_solid() const {
 G4LogicalVolume* GeometricObject::get_logicalVolume() const { 
     return m_logicalVolume; 
 }
+
+G4PVPlacement* GeometricObject::place( G4RotationMatrix* t_rotationMatrix   , 
+                                       G4ThreeVector   * t_translationVector, 
+                                       G4LogicalVolume * t_motherLogicalVolume, 
+                                       G4bool            t_isMany = false ) {
+    G4int copyNumber = 0;
+    if( t_isMany ) {
+        copyNumber = m_copyNumber;
+        m_copyNumber++;
+    }
+    return new G4PVPlacement( t_rotationMatrix     , 
+                              t_translationVector  , 
+                              m_logicalVolume      , 
+                              m_name               , 
+                              t_motherLogicalVolume, 
+                              t_isMany             , 
+                              copyNumber            );
+}

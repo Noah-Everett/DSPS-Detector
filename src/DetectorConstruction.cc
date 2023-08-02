@@ -51,39 +51,18 @@ DetectorConstruction::~DetectorConstruction() {
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-    m_materials->print_materials();
-    print_parameters();
-    get_lensParameters();
+    m_materials            ->print_materials ();
+    m_constructionMessenger->print_parameters();
+
     set_materials();
 
-    make_world();
-    make_detector();
+    make_world      ();
+    make_detector   ();
+    make_lens_system();
+    
+    m_world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), m_world_lv, "world", 0, false, 0, m_checkOverlaps );
 
     return m_world_pv;
-}
-
-void DetectorConstruction::print_parameters() {
-    G4cout << "Attempting to use the following parameters:" << G4endl
-            << "  world_x-------------------------: " << m_constructionMessenger->get_world_size_x                   () << G4endl
-            << "  world_y-------------------------: " << m_constructionMessenger->get_world_size_y                   () << G4endl
-            << "  world_z-------------------------: " << m_constructionMessenger->get_world_size_z                   () << G4endl
-            << "  world_material------------------: " << m_constructionMessenger->get_world_material                 () << G4endl
-            << "  detector_wall_thickness---------: " << m_constructionMessenger->get_detector_wall_thickness        () << G4endl
-            << "  detector_wall_material----------: " << m_constructionMessenger->get_detector_wall_material         () << G4endl
-            << "  detector_medium_material--------: " << m_constructionMessenger->get_detector_medium_material       () << G4endl
-            << "  calorimeter_size_width----------: " << m_constructionMessenger->get_calorimeter_size_width         () << G4endl
-            << "  calorimeter_size_height---------: " << m_constructionMessenger->get_calorimeter_size_height        () << G4endl
-            << "  calorimeter_size_depth----------: " << m_constructionMessenger->get_calorimeter_size_depth         () << G4endl
-            << "  calorimeter_material------------: " << m_constructionMessenger->get_calorimeter_material           () << G4endl
-            << "  photoSensor_surface_size_width--: " << m_constructionMessenger->get_photoSensor_surface_size_width () << G4endl
-            << "  photoSensor_surface_size_height-: " << m_constructionMessenger->get_photoSensor_surface_size_height() << G4endl
-            << "  photoSensor_surface_size_depth--: " << m_constructionMessenger->get_photoSensor_surface_size_depth () << G4endl
-            << "  photoSensor_surface_material----: " << m_constructionMessenger->get_photoSensor_surface_material   () << G4endl
-            << "  photoSensor_body_size_width-----: " << m_constructionMessenger->get_photoSensor_body_size_width    () << G4endl
-            << "  photoSensor_body_size_height----: " << m_constructionMessenger->get_photoSensor_body_size_height   () << G4endl
-            << "  photoSensor_body_size_depth-----: " << m_constructionMessenger->get_photoSensor_body_size_depth    () << G4endl
-            << "  photoSensor_body_material-------: " << m_constructionMessenger->get_photoSensor_body_material      () << G4endl
-            << "  lens_parameterFilePath----------: " << m_constructionMessenger->get_lens_parameterFilePath         () << G4endl;
 }
 
 void DetectorConstruction::set_materials() {
@@ -95,28 +74,6 @@ void DetectorConstruction::set_materials() {
     m_photoSensor_body->set_material( m_constructionMessenger->get_photoSensor_body_material   () );
 }
 
-void DetectorConstruction::get_lensParameters() {
-    G4String path = m_constructionMessenger->get_lens_parameterFilePath();
-    m_lensParameterFileReader = new LensParameterFileReader( path );
-    m_lensParameters = m_lensParameterFileReader->get_lenses();
-
-    G4cout << "Lens parameters:" << G4endl;
-    for( auto lens_parameters : m_lensParameters ) {
-        G4cout << lens_parameters << G4endl;
-
-        Surface  surface_1 = lens_parameters.surface_1;
-        Surface  surface_2 = lens_parameters.surface_2;
-        G4double d         = lens_parameters.d        ;
-        G4double n         = lens_parameters.n        ;
-        G4double x_l       = lens_parameters.x_l      ;
-
-        GeometricObject* lens_geometricObject = new GeometricObject();
-
-
-        m_lenses.push_back( lens );
-    }
-}
-
 void DetectorConstruction::make_world() {
     G4double world_size_x = m_constructionMessenger->get_world_size_x() / 2;
     G4double world_size_y = m_constructionMessenger->get_world_size_y() / 2;
@@ -124,8 +81,6 @@ void DetectorConstruction::make_world() {
 
     m_world.set_solid( new G4Box( "world", world_size_x, world_size_y, world_size_z ) );
     m_world.make_logicalVolume();
-    m_world.set_logicalVolume( new G4LogicalVolume( m_world.get_solid(), m_world_material, "world"    ) );
-    m_world_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), m_world_lv, "world", 0, false, 0, m_checkOverlaps );
 }
 
 void DetectorConstruction::make_detector() {
@@ -142,21 +97,21 @@ void DetectorConstruction::make_detector() {
         exit(1);
     }
 
-    // G4double detector_wall_size_x    = m_constructionMessenger->get_detector_wall_size_x   ();
-    // G4double detector_wall_size_y    = m_constructionMessenger->get_detector_wall_size_y   ();
-    // G4double detector_wall_size_z    = m_constructionMessenger->get_detector_wall_size_z   ();
-    G4double detector_wall_thickness = m_constructionMessenger->get_detector_wall_thickness();
+    G4double detector_wall_thickness                  = m_constructionMessenger->get_detector_wall_thickness                 ();
+    G4double calorimeter_size_width                   = m_constructionMessenger->get_calorimeter_size_width                  ();
+    G4double calorimeter_size_height                  = m_constructionMessenger->get_calorimeter_size_height                 ();
+    G4double calorimeter_size_depth                   = m_constructionMessenger->get_calorimeter_size_depth                  ();
+    G4double photoSensor_surface_size_width           = m_constructionMessenger->get_photoSensor_surface_size_width          ();
+    G4double photoSensor_surface_size_height          = m_constructionMessenger->get_photoSensor_surface_size_height         ();
+    G4double photoSensor_surface_size_depth           = m_constructionMessenger->get_photoSensor_surface_size_depth          ();
+    G4double photoSensor_body_size_width              = m_constructionMessenger->get_photoSensor_body_size_width             ();
+    G4double photoSensor_body_size_height             = m_constructionMessenger->get_photoSensor_body_size_height            ();
+    G4double photoSensor_body_size_depth              = m_constructionMessenger->get_photoSensor_body_size_depth             ();
+    G4int    directionSensativePhotoDetector_amount_x = m_constructionMessenger->get_directionSensativePhotoDetector_amount_x();
+    G4int    directionSensativePhotoDetector_amount_y = m_constructionMessenger->get_directionSensativePhotoDetector_amount_y();
+    G4int    directionSensativePhotoDetector_amount_z = m_constructionMessenger->get_directionSensativePhotoDetector_amount_z();
 
-    // G4double detector_medium_size_x  = detector_wall_size_x - detector_wall_thickness;
-    // G4double detector_medium_size_y  = detector_wall_size_y - detector_wall_thickness;
-    // G4double detector_medium_size_z  = detector_wall_size_z - detector_wall_thickness;
-
-    // m_detector_wall_s  = new G4Box( "detector_wall", detector_wall_size_x, detector_wall_size_y, detector_wall_size_z );
-    // m_detector_wall_lv = new G4LogicalVolume( m_detector_wall_s, m_detector_wall_material, "detector_wall" );
-    // m_detector_wall_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), m_detector_wall_lv, "detector_wall", m_world_lv, false, 0, m_checkOverlaps );
-    // m_detector_medium_s  = new G4Box( "detector_medium", detector_medium_size_x, detector_medium_size_y, detector_medium_size_z );
-    // m_detector_medium_lv = new G4LogicalVolume( m_detector_medium_s, m_detector_medium_material, "detector_medium" );
-    // m_detector_medium_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,0), m_detector_medium_lv, "detector_medium", m_detector_wall_lv, false, 0, m_checkOverlaps );
+    
 }
 
 void DetectorConstruction::make_calorimeter() {
@@ -218,5 +173,14 @@ void DetectorConstruction::make_photoSensor() {
     delete photoSensor_body_box;
 }
 
-void DetectorConstruction::make_DSPD() {
+void DetectorConstruction::make_lensSystem() {
+    G4String path = m_constructionMessenger->get_lens_parameterFilePath();
+    m_lensParameterFileReader = new LensParameterFileReader( path );
+    m_lensSystem = m_lensParameterFileReader->get_lensSystem();
+
+    G4cout << "Lens parameters:" << G4endl
+           << m_lensSystem       << G4endl;
+}
+
+void DetectorConstruction::make_directionSensativePhotoDetector() {
 }

@@ -58,7 +58,7 @@ class Lens
         G4double         get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
         G4double         get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
 
-        void place_lens( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        void place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
 
     protected:
         LensSurface    * m_lensSurface_1                    ;

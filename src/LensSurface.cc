@@ -100,3 +100,10 @@ G4double LensSurface::get_xLimit() {
 GeometricObject* LensSurface::get_geometricObject() { 
     return m_geometricObject;
 }
+
+G4PVPlacement* LensSurface::place( G4RotationMatrix* t_rotationMatrix   , 
+                                   G4ThreeVector   * t_translationVector, 
+                                   G4LogicalVolume * t_motherLogicalVolume, 
+                                   G4bool            t_isMany = false ) {
+    return m_geometricObject->place( t_rotationMatrix, t_translationVector, t_motherLogicalVolume, t_isMany );
+}

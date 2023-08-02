@@ -44,6 +44,8 @@ class LensSystem
 
         void add_lens( Lens* lens ) { m_lenses->push_back( lens ); }
 
+        void place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+
         vector< Lens* >* get_lenses() const { return m_lenses; }
 
     protected:

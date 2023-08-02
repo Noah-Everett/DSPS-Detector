@@ -30,6 +30,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4VSensitiveDetector.hh"
+#include "G4VPlacement.hh"
 
 class GeometricObject
 {
@@ -46,6 +47,8 @@ class GeometricObject
 
         void make_logicalVolume();
 
+        G4VPlacement* place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+
         G4Material          * get_material         () const;
         G4String              get_material_name    () const;
         G4VSensitiveDetector* get_sensitiveDetector() const;
@@ -58,6 +61,7 @@ class GeometricObject
         G4VSensitiveDetector* m_sensitiveDetector{ nullptr };
         G4VSolid            * m_solid            { nullptr };
         G4LogicalVolume     * m_logicalVolume    { nullptr };
+        G4int                 m_copyNumber       { 0       };
 };
 
 #endif

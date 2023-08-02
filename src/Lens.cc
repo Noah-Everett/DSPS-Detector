@@ -59,10 +59,10 @@ friend ostream& Lens::operator<<( ostream& t_os, const Lens& t_lens )
     return t_os;
 }
 
-void Lens::place_lens( G4RotationMatrix * t_rotationMatrix     , 
-                       G4ThreeVector    * t_translation        ,
-                       G4LogicalVolume  * t_motherLogicalVolume,
-                       G4bool             t_isMany             ,
-                       G4int              t_copyNumber          ) {
+void Lens::place( G4RotationMatrix * t_rotationMatrix     , 
+                  G4ThreeVector    * t_translation        ,
+                  G4LogicalVolume  * t_motherLogicalVolume,
+                  G4bool             t_isMany             ,
+                  G4int              t_copyNumber          ) {
     
 }

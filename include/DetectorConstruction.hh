@@ -65,14 +65,13 @@ public:
 
     G4VPhysicalVolume* Construct() override;
     
-    void get_lensParameters();
-
     void print_parameters();
 
-    void make_world();
-    void make_detector();
-    void make_calorimeter();
-    void make_DSPD();
+    void make_world                          ();
+    void make_detector                       ();
+    void make_calorimeter                    ();
+    void make_lens_system                    ();
+    void make_directionSensativePhotoDetector();
 
 protected:
     G4bool m_checkOverlaps{ true };
@@ -90,6 +89,8 @@ protected:
     GeometricObject* m_photoSensor_surface{ new GeometricObject() };
     GeometricObject* m_photoSensor_body   { new GeometricObject() };
     GeometricObject* m_photoSensor        { new GeometricObject() };
+
+    LensSystem* m_lensSystem{ nullptr };
 };
 
 #endif

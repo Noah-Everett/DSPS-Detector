@@ -27,6 +27,7 @@
 #define LensSurface_h
 
 #include "globals.hh"
+#include "G4VPlacement.hh"
 
 #include "GeometricObject.hh"
 
@@ -53,12 +54,14 @@ class LensSurface
         G4double         get_xLimit         ();
         GeometricObject* get_geometricObject();
 
+        G4PVPlacement* place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+
     protected:
-        G4double         m_radius_x     ;
-        G4double         m_radius_y     ;
-        G4double         m_yLimit_min   ;
-        G4double         m_yLimit_max   ;
-        G4double         m_xLimit       ;
+        G4double         m_radius_x       ;
+        G4double         m_radius_y       ;
+        G4double         m_yLimit_min     ;
+        G4double         m_yLimit_max     ;
+        G4double         m_xLimit         ;
         GeometricObject* m_geometricObject{ new GeometricObject() };
 };
 
