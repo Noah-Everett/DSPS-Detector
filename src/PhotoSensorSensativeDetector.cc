@@ -23,35 +23,21 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
+#include "PhotoSensorSD.hh"
 
-#include "GeometricObject.hh"
-#include "Lens.hh"
+PhotoSensorSD::PhotoSensorSD(const G4String& name) : G4VSensitiveDetector(name) {}
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+PhotoSensorSD::~PhotoSensorSD() {}
 
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
+void PhotoSensorSD::Initialize(G4HCofThisEvent* hce) {}
 
-class LensParameterFileReader
-{
-    public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
+G4bool PhotoSensorSD::ProcessHits(G4Step* step, G4TouchableHistory* hist) {
+    // Process hits when energy deposition occurs in the sensitive volume.
+    // You can access the energy deposition information from the step and store it for further analysis.
+    // For example:
+    G4double energyDeposition = step->GetTotalEnergyDeposit();
 
-        vector< Lens >* get_lenses() const { return lensList; }
+    // Your custom implementation to store the energyDeposition or perform other actions.
 
-    private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
-
-        void readParameters();
-};
-
-#endif
+    return true;
+}

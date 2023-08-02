@@ -42,6 +42,12 @@
 
 #include "ConstructionMessenger.hh"
 #include "Materials.hh"
+#include "LensParameterFileReader.hh"
+#include "PhotoSensorSensativeDetector.hh"
+#include "GeometicObject.hh"
+
+#include <vector>
+using std::vector;
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -54,10 +60,10 @@ public:
 
     G4VPhysicalVolume* Construct() override;
     
-    void set_material( G4Material*& t_material, G4String t_name );
+    void get_lensParameters();
 
-    void print_sizes();
-    
+    void print_parameters();
+
     void make_world();
     void make_detector();
     void make_calorimeter();
@@ -66,34 +72,22 @@ public:
 protected:
     G4bool m_checkOverlaps{ true };
 
-    ConstructionMessenger* m_constructionMessenger{ nullptr };
-    Materials            * m_materials            { nullptr };
+    ConstructionMessenger  * m_constructionMessenger  { nullptr };
+    Materials              * m_materials              { nullptr };
+    LensParameterFileReader* m_lensParameterFileReader{ nullptr };
     
-    G4Material* m_world_medium_material       { nullptr };
-    G4Material* m_detector_wall_material      { nullptr };
-    G4Material* m_calorimeter_material        { nullptr };
-    G4Material* m_detector_medium_material    { nullptr };
-    G4Material* m_lens_material               { nullptr };
-    G4Material* m_photoSensor_surface_material{ nullptr };
-
-    G4Box            * m_world_s               { nullptr };
-    G4LogicalVolume  * m_world_lv              { nullptr };
-    G4VPhysicalVolume* m_world_pv              { nullptr };
-    G4Box            * m_detector_wall_s       { nullptr };
-    G4LogicalVolume  * m_detector_wall_lv      { nullptr };
-    G4VPhysicalVolume* m_detector_wall_pv      { nullptr };
-    G4Box            * m_detector_medium_s     { nullptr };
-    G4LogicalVolume  * m_detector_medium_lv    { nullptr };
-    G4VPhysicalVolume* m_detector_medium_pv    { nullptr };
-    G4Box            * m_calorimeter_s         { nullptr };
-    G4LogicalVolume  * m_calorimeter_lv        { nullptr };
-    G4VPhysicalVolume* m_calorimeter_pv        { nullptr };
-    G4Box            * m_lens_s                { nullptr };
-    G4LogicalVolume  * m_lens_lv               { nullptr };
-    G4VPhysicalVolume* m_lens_pv               { nullptr };
-    G4Box            * m_photoSensor_surface_s { nullptr };
-    G4LogicalVolume  * m_photoSensor_surface_lv{ nullptr };
-    G4VPhysicalVolume* m_photoSensor_surface_pv{ nullptr };
+    GeometricObject* m_world              { new GeometricObject() };
+    GeometricObject* m_detector_wall      { new GeometricObject() };
+    GeometricObject* m_detector_medium    { new GeometricObject() };
+    GeometricObject* m_detector           { new GeometricObject() };
+    GeometricObject* m_calorimeter        { new GeometricObject() };
+    GeometricObject* m_lensSystem          { new GeometricObject() };
+    GeometricObject* m_photoSensor_surface{ new GeometricObject() };
+    GeometricObject* m_photoSensor_body   { new GeometricObject() };
+    GeometricObject* m_photoSensor        { new GeometricObject() };
+    
+    vector< Lens             > m_lensParameters;
+    vector< GeometricObject* > m_lenses        ;
 };
 
 #endif

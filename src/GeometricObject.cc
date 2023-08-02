@@ -23,35 +23,62 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
-
 #include "GeometricObject.hh"
-#include "Lens.hh"
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+GeometricObject::GeometricObject() {}
 
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
-
-class LensParameterFileReader
+GeometricObject::GeometricObject( G4VSolid* t_solid, G4Material* t_material, G4VSensitiveDetector* t_sensitiveDetector ) :
 {
-    public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
+    set_solid            ( t_solid             );
+    set_material         ( t_material          );
+    set_sensitiveDetector( t_sensitiveDetector );
 
-        vector< Lens >* get_lenses() const { return lensList; }
+    make_logicalVolume();
+}
 
-    private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
+GeometricObject::~GeometricObject() {}
 
-        void readParameters();
-};
+void GeometricObject::set_material( G4Material* t_material ) { 
+    m_material = t_material; 
+}
 
-#endif
+void GeometricObject::set_material( G4String t_materialName ) { 
+    m_material = G4Material::GetMaterial( t_materialName ); 
+}
+
+void GeometricObject::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
+    m_sensitiveDetector = t_sensitiveDetector; 
+}
+
+void GeometricObject::set_solid( G4VSolid* t_solid ) { 
+    m_solid = t_solid; 
+    m_name  = m_solid->GetName();
+}
+
+void GeometricObject::set_logicalVolume( G4LogicalVolume* t_logicalVolume ) { 
+    m_logicalVolume = t_logicalVolume; 
+}
+
+void GeometricObject::make_logicalVolume() {
+    m_logicalVolume = new G4LogicalVolume( m_solid, m_material, m_name, nullptr, m_sensitiveDetector, nullptr, true );
+}
+
+G4Material* GeometricObject::get_material() const { 
+    return m_material; 
+}
+
+G4String GeometricObject::get_material_name() const {
+    return m_material->GetName();
+}
+
+G4VSensitiveDetector* GeometricObject::get_sensitiveDetector() const { 
+    return m_sensitiveDetector; 
+}
+
+G4VSolid* GeometricObject::get_solid() const { 
+    return m_solid; 
+}
+
+G4LogicalVolume* GeometricObject::get_logicalVolume() const { 
+    return m_logicalVolume; 
+}

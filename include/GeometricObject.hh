@@ -23,35 +23,39 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
+#ifndef GeometricObject_h
+#define GeometricObject_h
 
-#include "GeometricObject.hh"
-#include "Lens.hh"
+#include "G4VSolid.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Material.hh"
+#include "G4VSensitiveDetector.hh"
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
-
-class LensParameterFileReader
+class GeometricObject
 {
     public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
+        GeometricObject();
+        GeometricObject( G4VSolid*, G4Material*, G4VSensitiveDetector* = nullptr );
+       ~GeometricObject();
 
-        vector< Lens >* get_lenses() const { return lensList; }
+        void set_material         ( G4Material          * );
+        void set_material         ( G4String              );
+        void set_sensitiveDetector( G4VSensitiveDetector* );
+        void set_solid            ( G4VSolid            * );
+        void set_logicalVolume    ( G4LogicalVolume     * );
+
+        void make_logicalVolume();
+
+        G4Material         * get_material         () const;
+        G4String             get_material_name    () const;
+        G4SensitiveDetector* get_sensitiveDetector() const;
+        G4VSolid           * get_solid            () const;
+        G4LogicalVolume    * get_logicalVolume    () const;
 
     private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
-
-        void readParameters();
+        G4String              m_name             { ""      };
+        G4Material          * m_material         { nullptr };
+        G4VSensitiveDetector* m_sensitiveDetector{ nullptr };
+        G4VSolid            * m_solid            { nullptr };
+        G4LogicalVolume     * m_logicalVolume    { nullptr };
 };
-
-#endif

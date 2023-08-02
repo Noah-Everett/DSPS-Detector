@@ -23,35 +23,18 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
+#include "LensSurface.hh"
 
-#include "GeometricObject.hh"
-#include "Lens.hh"
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
-
-class LensParameterFileReader
-{
-    public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
-
-        vector< Lens >* get_lenses() const { return lensList; }
-
-    private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
-
-        void readParameters();
-};
-
-#endif
+LensSurface::LensSurface( G4double t_radius_x  , G4double t_radius_y  , 
+                          G4double t_yLimit_min, G4double t_yLimit_max,
+                          G4String t_material_name                     ) :
+    m_radius_x     ( t_radius_x      ),
+    m_radius_y     ( t_radius_y      ),
+    m_yLimit_min   ( t_yLimit_min    ),
+    m_yLimit_max   ( t_yLimit_max    ),
+    m_material_name( t_material_name ) {
+    
+    m_geometricObject->set_material( t_material_name );
+    G4Ellipsoid* ellipsoid = new G4Ellipsoid( "surface_ellipsoid", m_radius_x, m_radius_y, m_radius_y );
+}

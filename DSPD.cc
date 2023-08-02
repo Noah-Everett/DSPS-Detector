@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
     auto runManager = G4RunManagerFactory::CreateRunManager();
 
-    Materials           * materials = new Materials           ( constructionMessenger        );
+    Materials           * materials = new Materials           ( constructionMessenger            );
     DetectorConstruction* det       = new DetectorConstruction( constructionMessenger, materials );
     runManager->SetUserInitialization(det);
 

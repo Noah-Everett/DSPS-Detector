@@ -23,35 +23,15 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
+#include "G4VSensitiveDetector.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4Step.hh"
 
-#include "GeometricObject.hh"
-#include "Lens.hh"
+class PhotoSensorSD : public G4VSensitiveDetector {
+public:
+    PhotoSensorSD(const G4String& name);
+    virtual ~PhotoSensorSD();
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
-
-class LensParameterFileReader
-{
-    public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
-
-        vector< Lens >* get_lenses() const { return lensList; }
-
-    private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
-
-        void readParameters();
+    virtual void Initialize(G4HCofThisEvent* hce);
+    virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
 };
-
-#endif

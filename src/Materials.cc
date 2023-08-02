@@ -32,11 +32,11 @@ Materials::Materials( ConstructionMessenger* t_constructionMessenger )
 
 void Materials::print_materials() {
     G4cout << "Attemting to use materials:" << G4endl
-           << "  world_medium--------: " << m_constructionMessenger->get_world_medium_material       () << G4endl
+           << "  world_medium--------: " << m_constructionMessenger->get_world_material              () << G4endl
            << "  detector_wall-------: " << m_constructionMessenger->get_detector_wall_material      () << G4endl
            << "  calorimeter---------: " << m_constructionMessenger->get_calorimeter_material        () << G4endl
            << "  detector_medium-----: " << m_constructionMessenger->get_detector_medium_material    () << G4endl
-           << "  lens----------------: " << m_constructionMessenger->get_lens_material               () << G4endl
+        //    << "  lens----------------: " << m_constructionMessenger->get_lens_material               () << G4endl
            << "  photoSensor_surface-: " << m_constructionMessenger->get_photoSensor_surface_material() << G4endl;
 }
 

@@ -44,6 +44,7 @@ set(DSPD_SCRIPTS
     macros/event_1e_1200keV.mac
     macros/GUI_show.mac
     macros/gui.mac
+    macros/lensParameters_test.mac
     macros/vis.mac
    )
 
