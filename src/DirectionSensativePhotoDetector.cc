@@ -31,7 +31,7 @@ DirectionSensativePhotoDetector::DirectionSensativePhotoDetector( LensParameterF
     : m_lensParameterFileReader( t_lensParameterFileReader ),
       m_photoSensor( new PhotoSensor( t_photoSensor_surface_material, t_photoSensor_body_material, 
                                       t_photoSensor_surface_size    , t_photoSensor_body_size     ) ) {   
-    m_lensSystem = m_lensParameterFileReader->getLensSystem();
+    m_lensSystem = m_lensParameterFileReader->get_lensSystem();
 }
 
 DirectionSensativePhotoDetector::~DirectionSensativePhotoDetector() {

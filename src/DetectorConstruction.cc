@@ -147,6 +147,13 @@ void DetectorConstruction::make_calorimeter() {
 }
 
 void DetectorConstruction::make_directionSensitivePhotoDetector() {
+
+    m_directionSensitivePhotoDetector = 
+    new DirectionSensitivePhotoDetector( m_lensParameterFileReader,
+                                         G4Material::GetMaterial( m_constructionMessenger->get_photoDetector_surface_material() ),
+                                         G4Material::GetMaterial( m_constructionMessenger->get_photoDetector_body_material   () ),
+                                         m_constructionMessenger->get_photoSensor_surface_size                               ()  ,
+                                         m_constructionMessenger->get_photoSensor_body_size                                  ()   );
 }
 
 void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {

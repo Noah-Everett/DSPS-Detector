@@ -29,11 +29,11 @@ PhotoSensor::PhotoSensor( G4Material   * t_surface_material, G4Material   * t_bo
                           G4ThreeVector  t_surface_size    , G4ThreeVector  t_body_size     ) 
     : m_surface( new GeometricObjectBox() ),
       m_body   ( new GeometricObjectBox() ) {
-    m_surface->set_material( m_surface_material );
-    m_body   ->set_material( m_body_material    );
+    m_surface->set_material( t_surface_material );
+    m_body   ->set_material( t_body_material    );
 
-    m_surface->set_sold( new G4Box( "surface", t_surface_size.x()/2, t_surface_size.y()/2, t_surface_size.z()/2 ) );
-    m_body   ->set_sold( new G4Box( "body"   , t_body_size   .x()/2, t_body_size   .y()/2, t_body_size   .z()/2 ) );
+    m_surface->set_solid( new G4Box( "surface", t_surface_size.x()/2, t_surface_size.y()/2, t_surface_size.z()/2 ) );
+    m_body   ->set_solid( new G4Box( "body"   , t_body_size   .x()/2, t_body_size   .y()/2, t_body_size   .z()/2 ) );
 
     m_surface->make_logicalVolume();
     m_body   ->make_logicalVolume();
@@ -46,6 +46,15 @@ PhotoSensor::~PhotoSensor() {
 void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     , 
                          G4ThreeVector     t_translation        , 
                          G4LogicalVolume * t_motherLogicalVolume, 
-                         G4bool            t_isMany              ); 
-    m_surface->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
+                         G4bool            t_isMany              ) {
+    G4double surface_z = m_surface->get_solid()->GetZHalfLength();
+    G4double body_z    = m_body   ->get_solid()->GetZHalfLength();
+    G4ThreeVector translation_surface( 0, 0, surface_z/4 - body_z   /4 );
+    G4ThreeVector translation_body   ( 0, 0, body_z   /4 - surface_z/4 );
+    translation_surface *= *t_rotationMatrix;
+    translation_body    *= *t_rotationMatrix;
+    translation_surface += t_translation;
+    translation_body    += t_translation;
+    m_surface->place( t_rotationMatrix, translation_surface, t_motherLogicalVolume, t_isMany );
+    m_body   ->place( t_rotationMatrix, translation_body   , t_motherLogicalVolume, t_isMany );
 }

@@ -36,13 +36,13 @@
 class DirectionSensativePhotoDetector
 {
     public:
-        DirectionSensativePhotoDetector( LensParameterFileReader* );
+        DirectionSensativePhotoDetector( LensParameterFileReader*, G4Material*, G4Material*, G4ThreeVector, G4ThreeVector );
        ~DirectionSensativePhotoDetector();
 
     protected:
         LensParameterFileReader* m_lensParameterFileReader;
-        LensSystem * m_lensSystem;
-        PhotoSensor* m_photoSenor;
+        LensSystem * m_lensSystem ;
+        PhotoSensor* m_photoSensor;
 };
 
 #endif
