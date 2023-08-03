@@ -40,11 +40,11 @@ target_link_libraries(DSPD ${Geant4_LIBRARIES} )
 # relies on these scripts being in the current working directory.
 #
 set(DSPD_SCRIPTS
-    macros/detector_DSPD.mac
-    macros/event_1e_1200keV.mac
-    macros/GUI_show.mac
+    macros/parameters_detector.mac
+    macros/parameters_GUI.mac
+    macros/parameters_lens.mac
+    macros/event.mac
     macros/gui.mac
-    macros/lensParameters_test.mac
     macros/vis.mac
    )
 

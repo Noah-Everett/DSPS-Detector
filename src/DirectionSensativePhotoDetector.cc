@@ -24,3 +24,16 @@
 // ********************************************************************
 
 #include "DirectionSensativePhotoDetector.hh"
+
+DirectionSensativePhotoDetector::DirectionSensativePhotoDetector( LensParameterFileReader* t_lensParameterFileReader,
+                                                                  G4Material   * t_photoSensor_surface_material, G4Material   * t_photoSensor_body_material,
+                                                                  G4ThreeVector t_photoSensor_surface_size     , G4ThreeVector  t_photoSensor_body_size    )
+    : m_lensParameterFileReader( t_lensParameterFileReader ),
+      m_photoSensor( new PhotoSensor( t_photoSensor_surface_material, t_photoSensor_body_material, 
+                                      t_photoSensor_surface_size    , t_photoSensor_body_size     ) ) {   
+    m_lensSystem = m_lensParameterFileReader->getLensSystem();
+}
+
+DirectionSensativePhotoDetector::~DirectionSensativePhotoDetector() {
+    delete m_photoSensor;
+}

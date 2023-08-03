@@ -43,16 +43,19 @@
 #include "ConstructionMessenger.hh"
 #include "Materials.hh"
 #include "LensParameterFileReader.hh"
-#include "PhotoSensorSensativeDetector.hh"
+#include "PhotoSensorSensitiveDetector.hh"
 #include "GeometricObject.hh"
 #include "LensSurface.hh"
 #include "Lens.hh"
 #include "LensSystem.hh"
 #include "PhotoSensor.hh"
 #include "LensSensativeDetector.hh"
+#include "DirectionSensativePhotoDetector.hh"
 
 #include <vector>
+
 using std::vector;
+using CLHEP::pi;
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -65,32 +68,38 @@ public:
 
     G4VPhysicalVolume* Construct() override;
     
-    void print_parameters();
+    void set_materials();
+    void set_checkOverlaps( G4bool );
 
     void make_world                          ();
     void make_detector                       ();
     void make_calorimeter                    ();
-    void make_lens_system                    ();
-    void make_directionSensativePhotoDetector();
+    void make_directionSensitivePhotoDetector();
+
+    void place_surface( G4ThreeVector );
+
+    void print_parameters();
 
 protected:
     G4bool m_checkOverlaps{ true };
+
+    G4ThreeVector m_axis_x{ 1.0, 0.0, 0.0 };
+    G4ThreeVector m_axis_y{ 0.0, 1.0, 0.0 };
+    G4ThreeVector m_axis_z{ 0.0, 0.0, 1.0 };
+
+    G4double m_pi_2{ 0.5 * pi };
 
     ConstructionMessenger  * m_constructionMessenger  { nullptr };
     Materials              * m_materials              { nullptr };
     LensParameterFileReader* m_lensParameterFileReader{ nullptr };
     
-    GeometricObject* m_world              { new GeometricObject() };
-    GeometricObject* m_detector_wall      { new GeometricObject() };
-    GeometricObject* m_detector_medium    { new GeometricObject() };
-    GeometricObject* m_detector           { new GeometricObject() };
-    GeometricObject* m_calorimeter        { new GeometricObject() };
-    GeometricObject* m_lensSystem         { new GeometricObject() };
-    GeometricObject* m_photoSensor_surface{ new GeometricObject() };
-    GeometricObject* m_photoSensor_body   { new GeometricObject() };
-    GeometricObject* m_photoSensor        { new GeometricObject() };
+    GeometricObjectBox* m_world          { new GeometricObjectBox() };
+    GeometricObjectBox* m_detector_wall  { new GeometricObjectBox() };
+    GeometricObjectBox* m_detector_medium{ new GeometricObjectBox() };
+    GeometricObjectBox* m_calorimeter    { new GeometricObjectBox() };
 
-    LensSystem* m_lensSystem{ nullptr };
+    LensSystem                     * m_lensSystem                     { nullptr };
+    DirectionSensativePhotoDetector* m_directionSensitivePhotoDetector{ nullptr };
 };
 
 #endif

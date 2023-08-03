@@ -24,3 +24,34 @@
 // ********************************************************************
 
 #include "LensSystem.hh"
+
+LensSystem::LensSystem() {
+}
+
+LensSystem::~LensSystem() {
+    for( Lens* lens : *m_lenses ) {
+        delete lens;
+    }
+    delete m_lenses;
+}
+
+void LensSystem::add_lens( Lens* t_lens ) {
+    m_lenses->push_back( t_lens );
+}
+
+void  LensSystem::place( G4RotationMatrix* t_rotationMatrix     , 
+                         G4ThreeVector     t_translationVector  , 
+                         G4LogicalVolume * t_motherLogicalVolume, 
+                         G4bool            t_isMany              ) {
+    for( Lens* lens : *m_lenses ) {
+        lens->place( t_rotationMatrix, t_translationVector, t_motherLogicalVolume, t_isMany );
+    }
+}
+
+vector< Lens* >* LensSystem::get_lenses() const { 
+    return m_lenses; 
+}
+
+Lens* LensSystem::get_lens( G4int t_index ) const { 
+    return m_lenses->at( t_index ); 
+}

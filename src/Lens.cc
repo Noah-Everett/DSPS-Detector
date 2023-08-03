@@ -25,10 +25,10 @@
 
 #include "Lens.hh"
 
-Lens::Lens( Surface * t_surface_1                     , 
-            Surface * t_surface_2                     , 
-            G4double  t_distanceBetweenSurfaces       , 
-            G4double  t_distanceOfLensCenterFromOrigin ) :
+Lens::Lens( LensSurface * t_lensSurface_1                     , 
+            LensSurface * t_lensSurface_2                     , 
+            G4double      t_distanceBetweenSurfaces       , 
+            G4double      t_distanceOfLensCenterFromOrigin ) :
     m_lensSurface_1                 ( t_lensSurface_1                  ),
     m_lensSurface_2                 ( t_lensSurface_2                  ),
     m_distanceBetweenSurfaces       ( t_distanceBetweenSurfaces        ),
@@ -39,28 +39,34 @@ Lens::Lens( Surface * t_surface_1                     ,
                                                          0.5 * m_lensSurface_1->get_yLimit(),
                                                          0.5 * m_distanceBetweenSurfaces     );
     m_middleTube->set_solid   ( lensMiddle                      );
-    m_middleTube->set_material( m_lensSurface_1->get_material() );
+    m_middleTube->set_material( m_lensSurface_1->get_geometricObject()->get_material() );
     m_middleTube->make_logicalVolume();
 }
 
-friend ostream& Lens::operator<<( ostream& t_os, Lens* t_lens )
+Lens::~Lens() {
+    if( m_lensSurface_1 ) delete m_lensSurface_1;
+    if( m_lensSurface_2 ) delete m_lensSurface_2;
+    if( m_middleTube    ) delete m_middleTube   ;
+}
+
+ostream& operator<<( ostream& t_os, Lens* t_lens )
 {
-    t_os << t_lens*;
+    t_os << *t_lens;
     return t_os;
 }
 
-friend ostream& Lens::operator<<( ostream& t_os, const Lens& t_lens )
+ostream& operator<<( ostream& t_os, const Lens& t_lens )
 {
-    t_os << "[" << t_lens.m_surface_1                      << ", "
-                << t_lens.m_surface_2                      << ", "
-                << t_lens.m_distanceBetweenSurfaces        << ", "
-                << t_lens.m_distanceOfLensCenterFromOrigin 
+    t_os << "[" << t_lens.get_lensSurface_1                 () << ", "
+                << t_lens.get_lensSurface_2                 () << ", "
+                << t_lens.get_distanceBetweenSurfaces       () << ", "
+                << t_lens.get_distanceOfLensCenterFromOrigin() 
          << "]";
     return t_os;
 }
 
 void Lens::place( G4RotationMatrix * t_rotationMatrix     , 
-                  G4ThreeVector    * t_translation        ,
+                  G4ThreeVector      t_translation        ,
                   G4LogicalVolume  * t_motherLogicalVolume,
                   G4bool             t_isMany             ,
                   G4int              t_copyNumber          ) {

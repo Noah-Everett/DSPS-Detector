@@ -26,7 +26,7 @@
 #ifndef LensSystem_h
 #define LensSystem_h
 
-#include "globals.hh"
+#include "G4PVPlacement.hh"
 
 #include "GeometricObject.hh"
 #include "LensSurface.hh"
@@ -39,14 +39,15 @@ using std::vector;
 class LensSystem
 {
     public:
-        LensSystem() {}
-       ~LensSystem() {}
+        LensSystem();
+       ~LensSystem();
 
-        void add_lens( Lens* lens ) { m_lenses->push_back( lens ); }
+        void add_lens( Lens* );
 
-        void place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        void place( G4RotationMatrix*, G4ThreeVector , G4LogicalVolume*, G4bool = false );
 
-        vector< Lens* >* get_lenses() const { return m_lenses; }
+        vector< Lens* >* get_lenses(       ) const;
+        Lens           * get_lens  ( G4int ) const;
 
     protected:
         vector< Lens* >* m_lenses{ new vector< Lens* >() };

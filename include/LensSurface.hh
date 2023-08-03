@@ -27,11 +27,14 @@
 #define LensSurface_h
 
 #include "globals.hh"
-#include "G4VPlacement.hh"
+#include "G4PVPlacement.hh"
+#include "G4Ellipsoid.hh"
+#include "G4Exception.hh"
 
 #include "GeometricObject.hh"
 
 #include <iostream>
+#include <cmath>
 
 using std::ostream;
 
@@ -46,23 +49,24 @@ class LensSurface
         friend ostream& operator<<( ostream& ,       LensSurface* );
         friend ostream& operator<<( ostream& , const LensSurface& );
 
-        G4double         get_radius_x       ();
-        G4double         get_radius_y       ();
-        G4double         get_yLimit_min     ();
-        G4double         get_yLimit_max     ();
-        G4double         get_yLimit         ();
-        G4double         get_xLimit         ();
-        GeometricObject* get_geometricObject();
+        G4double                  get_radius_x       () const;
+        G4double                  get_radius_y       () const;
+        G4double                  get_yLimit_min     () const;
+        G4double                  get_yLimit_max     () const;
+        G4double                  get_yLimit         () const;
+        G4double                  get_xLimit         () const;
+        GeometricObjectEllipsoid* get_geometricObject() const;
 
-        G4PVPlacement* place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        G4PVPlacement* place( G4RotationMatrix*, G4ThreeVector , G4LogicalVolume*, G4bool = false );
 
     protected:
-        G4double         m_radius_x       ;
-        G4double         m_radius_y       ;
-        G4double         m_yLimit_min     ;
-        G4double         m_yLimit_max     ;
-        G4double         m_xLimit         ;
-        GeometricObject* m_geometricObject{ new GeometricObject() };
+        G4double m_radius_x  ;
+        G4double m_radius_y  ;
+        G4double m_yLimit_min;
+        G4double m_yLimit_max;
+        G4double m_xLimit    ;
+
+        GeometricObjectEllipsoid* m_geometricObject{ new GeometricObjectEllipsoid() };
 };
 
 #endif

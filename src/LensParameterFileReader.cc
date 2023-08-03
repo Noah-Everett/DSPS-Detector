@@ -27,23 +27,9 @@
 
 #include <regex>
 
-
+// readParameters credit: mostly written by ChatGPT 3.5 (:
 LensParameterFileReader::LensParameterFileReader( G4String t_path ) 
     : m_path( t_path )
-{
-    readParameters();
-}
-
-LensParameterFileReader::~LensParameterFileReader()
-{
-    for( lens : m_lenses )
-        delete lens;
-    delete m_lenses;
-}
-
-
-// readParameters credit: mostly written by ChatGPT 3.5 (:
-void LensParameterFileReader::readParameters()
 {
     std::ifstream infile(m_path);
     if (!infile)
@@ -52,9 +38,8 @@ void LensParameterFileReader::readParameters()
         return;
     }
 
-    lensList.clear(); // Clear the list of lenses before populating it.
-
     std::string line;
+    int nLens = 0;
     while (std::getline(infile, line))
     {
         if (line.empty() || line[0] == '#')
@@ -84,28 +69,29 @@ void LensParameterFileReader::readParameters()
             continue;
         }
 
-        Surface* left_surface { new Surface() };
-        Surface* right_surface{ new Surface() };
-        double d, n, x_l;
-
         // Extract the values for each tuple from the 'values' vector.
-        left_surface->set_radius_x   = values[ 0 ];
-        left_surface->set_radius_y   = values[ 1 ];
-        left_surface->set_yLimit_min = values[ 2 ];
-        left_surface->set_yLimit_max = values[ 3 ];
-
-        d = values[ 4 ];
-        n = values[ 5 ];
-
-        right_surface->set_radius_x   = values[ 6 ];
-        right_surface->set_radius_y   = values[ 7 ];
-        right_surface->set_yLimit_min = values[ 8 ];
-        right_surface->set_yLimit_max = values[ 9 ];
-
-        x_l = values[ 10 ];
+        G4double surface_1_radius_x   = values[ 0  ];
+        G4double surface_1_radius_y   = values[ 1  ];
+        G4double surface_1_yLimit_min = values[ 2  ];
+        G4double surface_1_yLimit_max = values[ 3  ];
+        G4double d                    = values[ 4  ];
+        G4double n                    = values[ 5  ];
+        G4double surface_2_radius_x   = values[ 6  ];
+        G4double surface_2_radius_y   = values[ 7  ];
+        G4double surface_2_yLimit_min = values[ 8  ];
+        G4double surface_2_yLimit_max = values[ 9  ];
+        G4double x_l                  = values[ 10 ];
+        
+        LensSurface* left_surface { new LensSurface( surface_1_radius_x, surface_1_radius_y, surface_1_yLimit_min, surface_1_yLimit_max, std::to_string(nLens) ) };
+        LensSurface* right_surface{ new LensSurface( surface_2_radius_x, surface_2_radius_y, surface_2_yLimit_min, surface_2_yLimit_max, std::to_string(nLens) ) };
 
         // Create a Lens object with the extracted parameters and add it to the lensList.
-        Lens* lens = new Lens(left_surface, d, n, right_surface, x_l);
-        m_lenses->push_back(lens);
+        Lens* lens = new Lens(left_surface, right_surface, d, x_l);
+        m_lensSystem->add_lens(lens);
+        nLens++;
     }
+}
+
+LensParameterFileReader::~LensParameterFileReader() {
+    delete m_lensSystem;
 }

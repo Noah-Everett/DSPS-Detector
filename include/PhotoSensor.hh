@@ -27,6 +27,7 @@
 #define PhotoSensor_h
 
 #include "globals.hh"
+#include "G4Box.hh"
 
 #include "GeometricObject.hh"
 #include "PhotoSensorSensitiveDetector.hh"
@@ -34,15 +35,15 @@
 class PhotoSensor
 {
     public:
-        PhotoSensor();
+        PhotoSensor( G4Material*, G4Material*, G4ThreeVector, G4ThreeVector );
        ~PhotoSensor();
 
-        void place();
+        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
     protected:
-        GeometricObject             * m_surface{ nullptr };
-        GeometricObject             * m_body   { nullptr };
-        PhotoSensorSensitiveDetector* m_sensitiveDetector{ new PhotoSensorSensitiveDetector() };
+        GeometricObjectBox          * m_surface          { nullptr };
+        GeometricObjectBox          * m_body             { nullptr };
+        PhotoSensorSensitiveDetector* m_sensitiveDetector{ nullptr };
 };
 
 #endif

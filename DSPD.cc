@@ -51,8 +51,8 @@ int main(int argc, char** argv)
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 2 ] );
     } else {
-        UImanager->ApplyCommand( G4String( "/control/execute macros/detector_DSPD.mac" ) );
-        UImanager->ApplyCommand( G4String( "/control/execute macros/GUI_show.mac"      ) );
+        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_detector.mac" ) );
+        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_GUI.mac"      ) );
     }
 
     G4UIExecutive* ui = nullptr;

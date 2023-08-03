@@ -29,6 +29,7 @@
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 #include "G4RotationMatrix.hh"
+#include "G4EllipticalTube.hh"
 
 #include "LensSurface.hh"
 #include "GeometricObject.hh"
@@ -46,26 +47,26 @@ using std::stringstream;
 class Lens
 {
     public:
-        Lens( LensSurface*, G4double, G4double, LensSurface*, G4double );
+        Lens( LensSurface*, LensSurface*, G4double, G4double );
        ~Lens();
         
         friend ostream& operator<<( ostream&,       Lens* );
         friend ostream& operator<<( ostream&, const Lens& );
 
-        LensSurface    * get_lensSurface_1                 () const { return m_lensSurface_1                 ; }
-        LensSurface    * get_lensSurface_2                 () const { return m_lensSurface_2                 ; }
-        GeometricObject* get_middleTube                    () const { return m_middleTube                    ; }
-        G4double         get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
-        G4double         get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
+        LensSurface                  * get_lensSurface_1                 () const { return m_lensSurface_1                 ; }
+        LensSurface                  * get_lensSurface_2                 () const { return m_lensSurface_2                 ; }
+        GeometricObjectEllipticalTube* get_middleTube                    () const { return m_middleTube                    ; }
+        G4double                       get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
+        G4double                       get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
 
-        void place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false, G4int = 0 );
 
     protected:
-        LensSurface    * m_lensSurface_1                    ;
-        LensSurface    * m_lensSurface_2                    ;
-        GeometricObject* m_middleTube{ new GeometricObject };
-        G4double         m_distanceBetweenSurfaces          ;
-        G4double         m_distanceOfLensCenterFromOrigin   ;
+        LensSurface                  * m_lensSurface_1                                  ;
+        LensSurface                  * m_lensSurface_2                                  ;
+        GeometricObjectEllipticalTube* m_middleTube{ new GeometricObjectEllipticalTube };
+        G4double                       m_distanceBetweenSurfaces                        ;
+        G4double                       m_distanceOfLensCenterFromOrigin                 ;
 
 };
 

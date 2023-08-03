@@ -43,37 +43,37 @@ class  ConstructionMessenger : public G4UImessenger
     
         void SetNewValue( G4UIcommand* command, G4String newValue );
 
-        G4ThreeVector get_world_size                              ()
-        G4double      get_world_size_x                            ()
-        G4double      get_world_size_y                            ()
-        G4double      get_world_size_z                            ()
-        G4String      get_world_material                          ()
-        G4double      get_detector_wall_thickness                 ()
-        G4String      get_detector_wall_material                  ()
-        G4String      get_detector_medium_material                ()
-        G4ThreeVector get_calorimeter_size                        ()
-        G4double      get_calorimeter_size_width                  ()
-        G4double      get_calorimeter_size_height                 ()
-        G4double      get_calorimeter_size_depth                  ()
-        G4double      get_calorimeter_size_widthAndHeight         ()
-        G4String      get_calorimeter_material                    ()
-        G4ThreeVector get_photoSensor_surface_size                ()
-        G4double      get_photoSensor_surface_size_width          ()
-        G4double      get_photoSensor_surface_size_height         ()
-        G4double      get_photoSensor_surface_size_depth          ()
-        G4double      get_photoSensor_surface_size_widthAndHeight ()
-        G4String      get_photoSensor_surface_material            ()
-        G4ThreeVector get_photoSensor_body_size                   ()
-        G4double      get_photoSensor_body_size_width             ()
-        G4double      get_photoSensor_body_size_height            ()
-        G4double      get_photoSensor_body_size_depth             ()
-        G4double      get_photoSensor_body_size_widthAndHeight    ()
-        G4String      get_photoSensor_body_material               ()
-        G4String      get_lens_parameterFilePath                  ()
-        G4ThreeVector get_directionSensativePhotoDetector_amount  ()
-        G4int         get_directionSensativePhotoDetector_amount_x()
-        G4int         get_directionSensativePhotoDetector_amount_y()
-        G4int         get_directionSensativePhotoDetector_amount_z()
+        G4ThreeVector get_world_size                              ();
+        G4double      get_world_size_x                            ();
+        G4double      get_world_size_y                            ();
+        G4double      get_world_size_z                            ();
+        G4String      get_world_material                          ();
+        G4double      get_detector_wall_thickness                 ();
+        G4String      get_detector_wall_material                  ();
+        G4String      get_detector_medium_material                ();
+        G4ThreeVector get_calorimeter_size                        ();
+        G4double      get_calorimeter_size_width                  ();
+        G4double      get_calorimeter_size_height                 ();
+        G4double      get_calorimeter_size_depth                  ();
+        G4String      get_calorimeter_material                    ();
+        G4ThreeVector get_photoSensor_surface_size                ();
+        G4double      get_photoSensor_surface_size_width          ();
+        G4double      get_photoSensor_surface_size_height         ();
+        G4double      get_photoSensor_surface_size_depth          ();
+        G4double      get_photoSensor_surface_size_widthAndHeight ();
+        G4String      get_photoSensor_surface_material            ();
+        G4ThreeVector get_photoSensor_body_size                   ();
+        G4double      get_photoSensor_body_size_width             ();
+        G4double      get_photoSensor_body_size_height            ();
+        G4double      get_photoSensor_body_size_depth             ();
+        G4double      get_photoSensor_body_size_widthAndHeight    ();
+        G4String      get_photoSensor_body_material               ();
+        G4String      get_lens_parameterFilePath                  ();
+        G4ThreeVector get_directionSensitivePhotoDetector_amount  ();
+        G4int         get_directionSensitivePhotoDetector_amount_x();
+        G4int         get_directionSensitivePhotoDetector_amount_y();
+        G4int         get_directionSensitivePhotoDetector_amount_z();
+        G4bool        get_checkOverlaps                           ();
 
         void set_world_size                              ( G4ThreeVector );
         void set_world_size_x                            ( G4double      );
@@ -87,7 +87,6 @@ class  ConstructionMessenger : public G4UImessenger
         void set_calorimeter_size_width                  ( G4double      );
         void set_calorimeter_size_height                 ( G4double      );
         void set_calorimeter_size_depth                  ( G4double      );
-        void set_calorimeter_size_widthAndHeight         ( G4double      );
         void set_calorimeter_material                    ( G4String      );
         void set_photoSensor_surface_size                ( G4ThreeVector );
         void set_photoSensor_surface_size_width          ( G4double      );
@@ -102,10 +101,11 @@ class  ConstructionMessenger : public G4UImessenger
         void set_photoSensor_body_size_widthAndHeight    ( G4double      );
         void set_photoSensor_body_material               ( G4String      );
         void set_lens_parameterFilePath                  ( G4String      );
-        void set_directionSensativePhotoDetector_amount  ( G4ThreeVector );
-        void set_directionSensativePhotoDetector_amount_x( G4double      );
-        void set_directionSensativePhotoDetector_amount_y( G4double      );
-        void set_directionSensativePhotoDetector_amount_z( G4double      );
+        void set_directionSensitivePhotoDetector_amount  ( G4ThreeVector );
+        void set_directionSensitivePhotoDetector_amount_x( G4double      );
+        void set_directionSensitivePhotoDetector_amount_y( G4double      );
+        void set_directionSensitivePhotoDetector_amount_z( G4double      );
+        void set_checkOverlaps                           ( G4bool        );
 
         void print_parameters();
 
@@ -122,7 +122,8 @@ class  ConstructionMessenger : public G4UImessenger
         G4UIcmdWith3VectorAndUnit * m_command_photoSensor_body_size                 { nullptr }; G4ThreeVector m_variable_photoSensor_body_size                 { 100.0 * mm, 100.0 * mm, 1.0 * mm };
         G4UIcmdWithAString        * m_command_photoSensor_body_material             { nullptr }; G4String      m_variable_photoSensor_body_material             { "G4Air" };
         G4UIcmdWithAString        * m_command_lens_parameterFilePath                { nullptr }; G4String      m_variable_lens_parameterFilePath                { "" };
-        G4UIcmdWith3Vector        * m_command_directionSensativePhotoDetector_amount{ nullptr }; G4ThreeVector m_variable_directionSensativePhotoDetector_amount{ 1, 1, 1 };
+        G4UIcmdWith3Vector        * m_command_directionSensitivePhotoDetector_amount{ nullptr }; G4ThreeVector m_variable_directionSensitivePhotoDetector_amount{ 1, 1, 1 };
+        G4UIcmdWithABool          * m_command_checkOverlaps                         { nullptr }; G4bool        m_variable_checkOverlaps                         { true };
 };
 
 #endif

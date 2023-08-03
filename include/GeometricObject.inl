@@ -23,12 +23,13 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "GeometricObject.hh"
+template< class SolidType >
+GeometricObject< SolidType >::GeometricObject() {}
 
-GeometricObject::GeometricObject() {}
-
-GeometricObject::GeometricObject( G4VSolid* t_solid, G4Material* t_material, G4VSensitiveDetector* t_sensitiveDetector ) :
-{
+template< class SolidType >
+GeometricObject< SolidType >::GeometricObject( SolidType           * t_solid            , 
+                                               G4Material          * t_material         , 
+                                               G4VSensitiveDetector* t_sensitiveDetector ) {
     set_solid            ( t_solid             );
     set_material         ( t_material          );
     set_sensitiveDetector( t_sensitiveDetector );
@@ -36,58 +37,71 @@ GeometricObject::GeometricObject( G4VSolid* t_solid, G4Material* t_material, G4V
     make_logicalVolume();
 }
 
-GeometricObject::~GeometricObject() {}
+template< class SolidType >
+GeometricObject< SolidType >::~GeometricObject() {}
 
-void GeometricObject::set_material( G4Material* t_material ) { 
+template< class SolidType >
+void GeometricObject< SolidType >::set_material( G4Material* t_material ) { 
     m_material = t_material; 
 }
 
-void GeometricObject::set_material( G4String t_materialName ) { 
+template< class SolidType >
+void GeometricObject< SolidType >::set_material( G4String t_materialName ) { 
     m_material = G4Material::GetMaterial( t_materialName ); 
 }
 
-void GeometricObject::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
+template< class SolidType >
+void GeometricObject< SolidType >::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
     m_sensitiveDetector = t_sensitiveDetector; 
     if( m_logicalVolume ) m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
 }
 
-void GeometricObject::set_solid( G4VSolid* t_solid ) { 
+template< class SolidType >
+void GeometricObject< SolidType >::set_solid( SolidType* t_solid ) { 
     m_solid = t_solid; 
     m_name  = m_solid->GetName();
 }
 
-void GeometricObject::set_logicalVolume( G4LogicalVolume* t_logicalVolume ) { 
+template< class SolidType >
+void GeometricObject< SolidType >::set_logicalVolume( G4LogicalVolume* t_logicalVolume ) { 
     m_logicalVolume = t_logicalVolume; 
 }
 
-void GeometricObject::make_logicalVolume() {
+template< class SolidType >
+void GeometricObject< SolidType >::make_logicalVolume() {
     m_logicalVolume = new G4LogicalVolume( m_solid, m_material, m_name, nullptr, m_sensitiveDetector, nullptr, true );
 }
 
-G4Material* GeometricObject::get_material() const { 
+template< class SolidType >
+G4Material* GeometricObject< SolidType >::get_material() const { 
     return m_material; 
 }
 
-G4String GeometricObject::get_material_name() const {
+template< class SolidType >
+G4String GeometricObject< SolidType >::get_material_name() const {
     return m_material->GetName();
 }
 
-G4VSensitiveDetector* GeometricObject::get_sensitiveDetector() const { 
+template< class SolidType >
+G4VSensitiveDetector* GeometricObject< SolidType >::get_sensitiveDetector() const { 
     return m_sensitiveDetector; 
 }
 
-G4VSolid* GeometricObject::get_solid() const { 
+template< class SolidType >
+SolidType* GeometricObject< SolidType >::get_solid() const { 
     return m_solid; 
 }
 
-G4LogicalVolume* GeometricObject::get_logicalVolume() const { 
+template< class SolidType >
+G4LogicalVolume* GeometricObject< SolidType >::get_logicalVolume() const { 
     return m_logicalVolume; 
 }
 
-G4PVPlacement* GeometricObject::place( G4RotationMatrix* t_rotationMatrix   , 
-                                       G4ThreeVector   * t_translationVector, 
-                                       G4LogicalVolume * t_motherLogicalVolume, 
-                                       G4bool            t_isMany = false ) {
+template< class SolidType >
+G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotationMatrix     , 
+                                                    G4ThreeVector     t_translationVector  , 
+                                                    G4LogicalVolume * t_motherLogicalVolume, 
+                                                    G4bool            t_isMany              ) {
     G4int copyNumber = 0;
     if( t_isMany ) {
         copyNumber = m_copyNumber;

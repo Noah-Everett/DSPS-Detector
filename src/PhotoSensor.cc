@@ -25,6 +25,27 @@
 
 #include "PhotoSensor.hh"
 
-PhotoSensor::PhotoSensor() {
-    
+PhotoSensor::PhotoSensor( G4Material   * t_surface_material, G4Material   * t_body_material, 
+                          G4ThreeVector  t_surface_size    , G4ThreeVector  t_body_size     ) 
+    : m_surface( new GeometricObjectBox() ),
+      m_body   ( new GeometricObjectBox() ) {
+    m_surface->set_material( m_surface_material );
+    m_body   ->set_material( m_body_material    );
+
+    m_surface->set_sold( new G4Box( "surface", t_surface_size.x()/2, t_surface_size.y()/2, t_surface_size.z()/2 ) );
+    m_body   ->set_sold( new G4Box( "body"   , t_body_size   .x()/2, t_body_size   .y()/2, t_body_size   .z()/2 ) );
+
+    m_surface->make_logicalVolume();
+    m_body   ->make_logicalVolume();
+}
+
+PhotoSensor::~PhotoSensor() {
+    delete m_surface;
+    delete m_body;
+}
+void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     , 
+                         G4ThreeVector     t_translation        , 
+                         G4LogicalVolume * t_motherLogicalVolume, 
+                         G4bool            t_isMany              ); 
+    m_surface->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
 }

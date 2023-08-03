@@ -47,13 +47,12 @@ class LensParameterFileReader
         LensParameterFileReader( G4String t_path );
        ~LensParameterFileReader();
 
-        vector< Lens* >* get_lenses() const { return m_lenses; }
+        G4String    get_path      () const { return m_path      ; }
+        LensSystem* get_lensSystem() const { return m_lensSystem; }
 
     private:
-        G4String         m_path                            ;
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
-
-        void readParameters();
+        G4String    m_path                          ;
+        LensSystem* m_lensSystem{ new LensSystem() };
 };
 
 #endif

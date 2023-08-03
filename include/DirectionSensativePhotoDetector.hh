@@ -30,17 +30,19 @@
 
 #include "GeometricObject.hh"
 #include "LensSystem.hh"
-#include "PhotoSenor.hh"
+#include "PhotoSensor.hh"
+#include "LensParameterFileReader.hh"
 
 class DirectionSensativePhotoDetector
 {
     public:
-        DirectionSensativePhotoDetector() {}
-       ~DirectionSensativePhotoDetector() {}
+        DirectionSensativePhotoDetector( LensParameterFileReader* );
+       ~DirectionSensativePhotoDetector();
 
     protected:
-        LensSystem* m_lensSystem;
-        PhotoSenor* m_photoSenor;
+        LensParameterFileReader* m_lensParameterFileReader;
+        LensSystem * m_lensSystem;
+        PhotoSensor* m_photoSenor;
 };
 
 #endif

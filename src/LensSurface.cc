@@ -25,10 +25,6 @@
 
 #include "LensSurface.hh"
 
-#include "G4Exception.hh"
-
-#include <cmath>
-
 LensSurface::LensSurface( G4double t_radius_x  , G4double t_radius_y  , 
                           G4double t_yLimit_min, G4double t_yLimit_max,
                           G4String t_material_name                     ) :
@@ -49,7 +45,7 @@ LensSurface::LensSurface( G4double t_radius_x  , G4double t_radius_y  ,
              m_xLimit = ( -c_2 + sign * sqrt( pow( c_2, 2 ) -4 * c_1 * c_3 ) ) / ( 2 * c_1 );
 
     m_geometricObject->set_material( t_material_name );
-    G4Ellipsoid* ellipsoid = new G4Ellipsoid( "lensSurface", m_radius_y, m_radius_y, m_radius_x, z_min, 0.0 );
+    G4Ellipsoid* ellipsoid = new G4Ellipsoid( "lensSurface", m_radius_y, m_radius_y, m_radius_x, m_xLimit, 0.0 );
     m_geometricObject->set_solid( ellipsoid );
     m_geometricObject->make_logicalVolume();
 }
@@ -58,12 +54,12 @@ LensSurface::~LensSurface() {
     delete m_geometricObject;
 }
         
-friend ostream& LensSurface::operator<<( ostream& t_os, LensSurface* t_surface ) {
-    t_os << t_surface*;
+ostream& operator<<( ostream& t_os, LensSurface* t_surface ) {
+    t_os << *t_surface;
     return t_os;
 }
 
-friend ostream& LensSurface::operator<<( ostream& t_os, const LensSurface& t_surface ) {
+ostream& operator<<( ostream& t_os, const LensSurface& t_surface ) {
     t_os << "(" << t_surface.get_radius_x  () << ", " 
                 << t_surface.get_radius_y  () << ", " 
                 << t_surface.get_yLimit_min() << ", " 
@@ -72,38 +68,40 @@ friend ostream& LensSurface::operator<<( ostream& t_os, const LensSurface& t_sur
     return t_os;
 }
 
-G4double LensSurface::get_radius_x() { 
+G4double LensSurface::get_radius_x() const {
     return m_radius_x;
 }
 
-G4double LensSurface::get_radius_y() { 
+G4double LensSurface::get_radius_y() const {
     return m_radius_y;
 }
 
-G4double LensSurface::get_yLimit_min() { 
+G4double LensSurface::get_yLimit_min() const {
     return m_yLimit_min;
 }
 
-G4double LensSurface::get_yLimit_max() { 
+G4double LensSurface::get_yLimit_max() const {
     return m_yLimit_max;
 }
-G4double LensSurface::get_yLimit() { 
+G4double LensSurface::get_yLimit() const {
     if( abs( m_yLimit_min ) == abs( m_yLimit_max ) )
         return abs( m_yLimit_min );
     else 
         G4Exception( "LensSurface::get_yLimit", "LensSurface002", FatalException, "abs( yLimit_max ) != abs( yLimit_min )" );
+        return 0;
+}
 
-G4double LensSurface::get_xLimit() { 
+G4double LensSurface::get_xLimit() const {
     return m_xLimit;
 }
 
-GeometricObject* LensSurface::get_geometricObject() { 
+GeometricObjectEllipsoid* LensSurface::get_geometricObject() const {
     return m_geometricObject;
 }
 
-G4PVPlacement* LensSurface::place( G4RotationMatrix* t_rotationMatrix   , 
-                                   G4ThreeVector   * t_translationVector, 
+G4PVPlacement* LensSurface::place( G4RotationMatrix* t_rotationMatrix     , 
+                                   G4ThreeVector     t_translationVector  , 
                                    G4LogicalVolume * t_motherLogicalVolume, 
-                                   G4bool            t_isMany = false ) {
+                                   G4bool            t_isMany              ) {
     return m_geometricObject->place( t_rotationMatrix, t_translationVector, t_motherLogicalVolume, t_isMany );
 }

@@ -23,21 +23,20 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "PhotoSensorSD.hh"
+#ifndef PhotoSensorSensitiveDetector_h
+#define PhotoSensorSensitiveDetector_h
 
-PhotoSensorSD::PhotoSensorSD(const G4String& name) : G4VSensitiveDetector(name) {}
+#include "G4VSensitiveDetector.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4Step.hh"
 
-PhotoSensorSD::~PhotoSensorSD() {}
+class PhotoSensorSensitiveDetector : public G4VSensitiveDetector {
+public:
+    PhotoSensorSensitiveDetector(const G4String& name);
+    virtual ~PhotoSensorSensitiveDetector();
 
-void PhotoSensorSD::Initialize(G4HCofThisEvent* hce) {}
+    virtual void Initialize(G4HCofThisEvent* hce);
+    virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
+};
 
-G4bool PhotoSensorSD::ProcessHits(G4Step* step, G4TouchableHistory* hist) {
-    // Process hits when energy deposition occurs in the sensitive volume.
-    // You can access the energy deposition information from the step and store it for further analysis.
-    // For example:
-    G4double energyDeposition = step->GetTotalEnergyDeposit();
-
-    // Your custom implementation to store the energyDeposition or perform other actions.
-
-    return true;
-}
+#endif

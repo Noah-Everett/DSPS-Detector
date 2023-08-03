@@ -30,38 +30,48 @@
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4VSensitiveDetector.hh"
-#include "G4VPlacement.hh"
+#include "G4PVPlacement.hh"
+#include "G4Box.hh"
+#include "G4Ellipsoid.hh"
+#include "G4EllipticalTube.hh"
 
+#define GeometricObjectBox            GeometricObject< G4Box            >
+#define GeometricObjectEllipsoid      GeometricObject< G4Ellipsoid      >
+#define GeometricObjectEllipticalTube GeometricObject< G4EllipticalTube >
+
+template< class SolidType >
 class GeometricObject
 {
     public:
         GeometricObject();
-        GeometricObject( G4VSolid*, G4Material*, G4VSensitiveDetector* = nullptr );
+        GeometricObject( SolidType*, G4Material*, G4VSensitiveDetector* = nullptr );
        ~GeometricObject();
 
         void set_material         ( G4Material          * );
         void set_material         ( G4String              );
         void set_sensitiveDetector( G4VSensitiveDetector* );
-        void set_solid            ( G4VSolid            * );
+        void set_solid            ( SolidType           * );
         void set_logicalVolume    ( G4LogicalVolume     * );
 
         void make_logicalVolume();
 
-        G4VPlacement* place( G4RotationMatrix*, G4ThreeVector*, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        G4PVPlacement* place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
         G4Material          * get_material         () const;
         G4String              get_material_name    () const;
         G4VSensitiveDetector* get_sensitiveDetector() const;
-        G4VSolid            * get_solid            () const;
+        SolidType           * get_solid            () const;
         G4LogicalVolume     * get_logicalVolume    () const;
 
     private:
         G4String              m_name             { ""      };
         G4Material          * m_material         { nullptr };
         G4VSensitiveDetector* m_sensitiveDetector{ nullptr };
-        G4VSolid            * m_solid            { nullptr };
+        SolidType           * m_solid            { nullptr };
         G4LogicalVolume     * m_logicalVolume    { nullptr };
         G4int                 m_copyNumber       { 0       };
 };
+
+#include "GeometricObject.inl"
 
 #endif
