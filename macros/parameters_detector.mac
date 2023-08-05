@@ -1,14 +1,74 @@
 /geometry/world/size                             2.5 2.5 2.5 m
-/geometry/world/material                         G4Air
+/geometry/world/material                         ANNIEWater_unDoped
+/geometry/world/visibility                       true
+/geometry/world/color                            blue
+/geometry/world/alpha                            0.5
+/geometry/world/forceSolid                       false
+
 /geometry/detector/wall/thickness                10 cm
-/geometry/detector/wall/material                 G4StainlessSteel
+/geometry/detector/wall/material                 ANNIEWater_unDoped #G4StainlessSteel
+/geometry/detector/wall/visibility               true
+/geometry/detector/wall/color                    black
+/geometry/detector/wall/alpha                    0.5
+/geometry/detector/wall/forceSolid               false
+
 /geometry/detector/medium/material               LXe
-/geometry/calorimeter/size                       10.0 2.00 5.00 cm
+/geometry/detector/medium/visibility             true
+/geometry/detector/medium/color                  cyan
+/geometry/detector/medium/alpha                  0.1
+/geometry/detector/medium/forceSolid             false
+
+/geometry/calorimeter/size                       10.0 2.00 20.0 cm
 /geometry/calorimeter/material                   aluminum
+/geometry/calorimeter/visibility                 true
+/geometry/calorimeter/color                      green
+/geometry/calorimeter/alpha                      0.1
+/geometry/calorimeter/forceSolid                 false
+
 /geometry/photoSensor/surface/size               10.0 10.0 0.50 cm
 /geometry/photoSensor/surface/material           aluminum
+/geometry/photoSensor/surface/visibility         true
+/geometry/photoSensor/surface/color              red
+/geometry/photoSensor/surface/alpha              0.5
+/geometry/photoSensor/surface/forceSolid         true
+
 /geometry/photoSensor/body/size                  10.0 10.0 2.00 cm
 /geometry/photoSensor/body/material              aluminum
-/geometry/lens/parameterFilePath                 /Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/build/macros/lensParameters_test.mac
+/geometry/photoSensor/body/visibility            true
+/geometry/photoSensor/body/color                 brown
+/geometry/photoSensor/body/alpha                 0.5
+/geometry/photoSensor/body/forceSolid            true
+
+/geometry/lens/incramentCurrentLens
+/geometry/lens/surfaces/1/radius/x               -50.0 cm
+/geometry/lens/surfaces/1/radius/y               25.0 cm
+/geometry/lens/surfaces/1/yLimits                5 cm
+/geometry/lens/surfaces/2/radius/x               100.0 cm
+/geometry/lens/surfaces/2/radius/y               25.0 cm
+/geometry/lens/surfaces/2/yLimits                5 cm
+/geometry/lens/distance                          5.0 cm
+/geometry/lens/position                          30 cm
+/geometry/lens/material                          SNPH2
+/geometry/lens/visibility                        true
+/geometry/lens/color                             magenta
+/geometry/lens/alpha                             0.5
+/geometry/lens/forceSolid                        true
+
+/geometry/lens/incramentCurrentLens
+/geometry/lens/surfaces/1/radius/x               -50.0 cm
+/geometry/lens/surfaces/1/radius/y               25.0 cm
+/geometry/lens/surfaces/1/yLimits                5 cm
+/geometry/lens/surfaces/2/radius/x               100.0 cm
+/geometry/lens/surfaces/2/radius/y               25.0 cm
+/geometry/lens/surfaces/2/yLimits                5 cm
+/geometry/lens/distance                          5.0 cm
+/geometry/lens/position                          22 cm
+/geometry/lens/material                          SNPH2
+/geometry/lens/visibility                        true
+/geometry/lens/color                             magenta
+/geometry/lens/alpha                             0.5
+/geometry/lens/forceSolid                        true
+
 /geometry/directionSensitivePhotoDetector/amount 10 10 10
+
 /geometry/checkOverlaps                          true

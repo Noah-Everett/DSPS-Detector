@@ -25,23 +25,28 @@
 
 #include "PhotoSensor.hh"
 
-PhotoSensor::PhotoSensor( G4Material   * t_surface_material, G4Material   * t_body_material, 
-                          G4ThreeVector  t_surface_size    , G4ThreeVector  t_body_size     ) 
-    : m_surface( new GeometricObjectBox() ),
-      m_body   ( new GeometricObjectBox() ) {
-    m_surface->set_material( t_surface_material );
-    m_body   ->set_material( t_body_material    );
+PhotoSensor::PhotoSensor() {
+    m_surface->set_material( m_constructionMessenger->get_photoSensor_surface_material() );
+    m_body   ->set_material( m_constructionMessenger->get_photoSensor_body_material   () );
 
-    m_surface->set_solid( new G4Box( "surface", t_surface_size.x()/2, t_surface_size.y()/2, t_surface_size.z()/2 ) );
-    m_body   ->set_solid( new G4Box( "body"   , t_body_size   .x()/2, t_body_size   .y()/2, t_body_size   .z()/2 ) );
+    G4ThreeVector surface_size = m_constructionMessenger->get_photoSensor_surface_size();
+    G4ThreeVector body_size    = m_constructionMessenger->get_photoSensor_body_size   ();
+    m_surface->set_solid( new G4Box( "surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
+    m_body   ->set_solid( new G4Box( "body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
+
+    m_surface->set_visAttributes( m_constructionMessenger->get_photoSensor_surface_visAttributes() );
+    m_body   ->set_visAttributes( m_constructionMessenger->get_photoSensor_body_visAttributes   () );
+
+    m_surface->set_sensitiveDetector( m_sensitiveDetector );
 
     m_surface->make_logicalVolume();
     m_body   ->make_logicalVolume();
 }
 
 PhotoSensor::~PhotoSensor() {
-    delete m_surface;
-    delete m_body;
+    if( m_surface           ) delete m_surface;
+    if( m_body              ) delete m_body;
+    if( m_sensitiveDetector ) delete m_sensitiveDetector;
 }
 void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     , 
                          G4ThreeVector     t_translation        , 
@@ -49,10 +54,11 @@ void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     ,
                          G4bool            t_isMany              ) {
     G4double surface_z = m_surface->get_solid()->GetZHalfLength();
     G4double body_z    = m_body   ->get_solid()->GetZHalfLength();
-    G4ThreeVector translation_surface( 0, 0, surface_z/4 - body_z   /4 );
-    G4ThreeVector translation_body   ( 0, 0, body_z   /4 - surface_z/4 );
-    translation_surface *= *t_rotationMatrix;
-    translation_body    *= *t_rotationMatrix;
+    G4double total_z   = surface_z * 2 + body_z * 2;
+    G4ThreeVector translation_surface( 0, 0, -total_z/2 + surface_z );
+    G4ThreeVector translation_body   ( 0, 0,  total_z/2 - body_z    );
+    translation_surface = *t_rotationMatrix * translation_surface;
+    translation_body    = *t_rotationMatrix * translation_body;
     translation_surface += t_translation;
     translation_body    += t_translation;
     m_surface->place( t_rotationMatrix, translation_surface, t_motherLogicalVolume, t_isMany );

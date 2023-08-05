@@ -23,18 +23,39 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "RunAction.hh"
+#ifndef OutputManager_h
+#define OutputManager_h
 
-RunAction::RunAction() {
-}
+#include "globals.hh"
+#include "G4AnalysisManager.hh"
 
-RunAction::~RunAction() {
-}
+#include "OutputMessenger.hh"
 
-void RunAction::BeginOfRunAction(const G4Run*)
+#include <map>
+
+using std::map;
+
+class OutputManager
 {
-}
+    public:
+        static OutputManager* get_instance   ();
+        static void           delete_instance();
 
-void RunAction::EndOfRunAction(const G4Run* run)
-{
-}
+        void add_histogram_1D( G4String, G4String, G4int, G4double, G4double );
+        void add_histogram_2D( G4String, G4String, G4int, G4double, G4double, G4int, G4double, G4double );
+        
+        G4int get_histogram_id( G4String );
+
+    private:
+                 OutputManager();
+        virtual ~OutputManager();
+        OutputMessenger  * m_outputMessenger{ OutputMessenger::get_instance() };
+        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance() };
+
+        map<G4String, G4int> m_histogramIdMap;
+
+    protected:
+        static OutputManager* m_instance;
+};
+
+#endif

@@ -16,6 +16,12 @@ else()
 endif()
 
 #----------------------------------------------------------------------------
+# Find NEST package
+#
+find_package(NEST REQUIRED)
+include_directories(${NEST_INCLUDE_DIRS})
+
+#----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
@@ -32,7 +38,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(DSPD DSPD.cc ${sources} ${headers})
-target_link_libraries(DSPD ${Geant4_LIBRARIES} )
+target_link_libraries(DSPD ${Geant4_LIBRARIES} NEST::NESTCore NEST::NESTG4)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
@@ -43,6 +49,7 @@ set(DSPD_SCRIPTS
     macros/parameters_detector.mac
     macros/parameters_GUI.mac
     macros/parameters_lens.mac
+    macros/parameters_output.mac
     macros/event.mac
     macros/gui.mac
     macros/vis.mac

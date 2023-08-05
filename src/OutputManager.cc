@@ -23,36 +23,49 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef LensParameterFileReader_h
-#define LensParameterFileReader_h
+#include "OutputManager.hh"
 
-#include "GeometricObject.hh"
-#include "LensSurface.hh"
-#include "Lens.hh"
-#include "LensSystem.hh"
+OutputManager* OutputManager::m_instance{ nullptr };
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+OutputManager* OutputManager::get_instance() {
+    if ( !m_instance ) {
+        m_instance = new OutputManager();
+    }
+    return m_instance;
+}
 
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
+void OutputManager::delete_instance() {
+    if ( m_instance ) {
+        delete m_instance;
+        m_instance = nullptr;
+    }
+}
 
-class LensParameterFileReader
-{
-    public:
-        LensParameterFileReader( G4String t_path );
-       ~LensParameterFileReader();
+OutputManager::OutputManager() {
+    m_analysisManager->SetDefaultFileType( "root" );
+    m_analysisManager->SetFileName( m_outputMessenger->get_fileName() );
+    m_analysisManager->SetVerboseLevel( 1 );
+    m_analysisManager->SetActivation( true );
+    m_analysisManager->OpenFile();
+}
 
-        G4String    get_path      () const { return m_path      ; }
-        LensSystem* get_lensSystem() const { return m_lensSystem; }
+OutputManager::~OutputManager() {
+    m_analysisManager->Write();
+    m_analysisManager->CloseFile();
+}
 
-    private:
-        G4String    m_path                          ;
-        LensSystem* m_lensSystem{ new LensSystem() };
-};
+void OutputManager::add_histogram_1D( G4String t_name, G4String t_title, G4int t_nbins, G4double t_xmin, G4double t_xmax ) {
+    G4cout << "OutputManager::add_histogram_1D: " << t_name << G4endl;
+    m_analysisManager->CreateH1( t_name, t_title, t_nbins, t_xmin, t_xmax );
+    m_histogramIdMap.insert( std::make_pair( t_name, m_histogramIdMap.size() ) );
+}
 
-#endif
+void OutputManager::add_histogram_2D( G4String t_name, G4String t_title, G4int t_nbinsx, G4double t_xmin, G4double t_xmax, G4int t_nbinsy, G4double t_ymin, G4double t_ymax ) {
+    G4cout << "OutputManager::add_histogram_2D: " << t_name << G4endl;
+    m_analysisManager->CreateH2( t_name, t_title, t_nbinsx, t_xmin, t_xmax, t_nbinsy, t_ymin, t_ymax );
+    m_histogramIdMap.insert( std::make_pair( t_name, m_histogramIdMap.size() ) );
+}
+
+G4int OutputManager::get_histogram_id( G4String t_name ) {
+    return m_histogramIdMap.at( t_name );
+}

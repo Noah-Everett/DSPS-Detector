@@ -30,6 +30,7 @@
 #include "G4PVPlacement.hh"
 #include "G4Ellipsoid.hh"
 #include "G4Exception.hh"
+#include "G4SubtractionSolid.hh"
 
 #include "GeometricObject.hh"
 
@@ -43,19 +44,19 @@ class LensSurface
     public:
         LensSurface( G4double t_radius_x  , G4double t_radius_y  , 
                      G4double t_yLimit_min, G4double t_yLimit_max,
-                     G4String t_material_name                     );
+                     G4String t_material_name, G4VisAttributes* t_visAttributes );
        ~LensSurface();
 
         friend ostream& operator<<( ostream& ,       LensSurface* );
         friend ostream& operator<<( ostream& , const LensSurface& );
 
-        G4double                  get_radius_x       () const;
-        G4double                  get_radius_y       () const;
-        G4double                  get_yLimit_min     () const;
-        G4double                  get_yLimit_max     () const;
-        G4double                  get_yLimit         () const;
-        G4double                  get_xLimit         () const;
-        GeometricObjectEllipsoid* get_geometricObject() const;
+        G4double                         get_radius_x       () const;
+        G4double                         get_radius_y       () const;
+        G4double                         get_yLimit_min     () const;
+        G4double                         get_yLimit_max     () const;
+        G4double                         get_yLimit         () const;
+        G4double                         get_xLimit         () const;
+        GeometricObjectSubtractionSolid* get_geometricObject() const;
 
         G4PVPlacement* place( G4RotationMatrix*, G4ThreeVector , G4LogicalVolume*, G4bool = false );
 
@@ -65,8 +66,9 @@ class LensSurface
         G4double m_yLimit_min;
         G4double m_yLimit_max;
         G4double m_xLimit    ;
+        G4ThreeVector m_size ;
 
-        GeometricObjectEllipsoid* m_geometricObject{ new GeometricObjectEllipsoid() };
+        GeometricObjectSubtractionSolid* m_geometricObject{ new GeometricObjectSubtractionSolid() };
 };
 
 #endif

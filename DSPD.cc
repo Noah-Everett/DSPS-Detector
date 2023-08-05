@@ -28,6 +28,7 @@
 #include "ConstructionMessenger.hh"
 #include "UIMessenger.hh"
 #include "Materials.hh"
+#include "OutputMessenger.hh"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -44,15 +45,18 @@
 
 int main(int argc, char** argv)
 {
-    ConstructionMessenger* constructionMessenger = new ConstructionMessenger();
-    UIMessenger          * UImessenger           = new UIMessenger          ();
+    ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
+    UIMessenger          * UImessenger           = UIMessenger          ::get_instance();
+    OutputMessenger      * outputMessenger       = OutputMessenger      ::get_instance();
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     if( argc == 3 ) {
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 2 ] );
+        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 3 ] );
     } else {
         UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_detector.mac" ) );
         UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_GUI.mac"      ) );
+        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_output.mac"   ) );
     }
 
     G4UIExecutive* ui = nullptr;
@@ -61,9 +65,9 @@ int main(int argc, char** argv)
 
     auto runManager = G4RunManagerFactory::CreateRunManager();
 
-    Materials           * materials = new Materials           ( constructionMessenger            );
-    DetectorConstruction* det       = new DetectorConstruction( constructionMessenger, materials );
-    runManager->SetUserInitialization(det);
+    Materials* materials = Materials::get_instance();
+    DetectorConstruction* det = new DetectorConstruction();
+    runManager->SetUserInitialization( det );
 
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
@@ -82,7 +86,7 @@ int main(int argc, char** argv)
     physicsList->RegisterPhysics(opticalPhysics);
     runManager->SetUserInitialization(physicsList);
 
-    runManager->SetUserInitialization(new ActionInitialization());
+    runManager->SetUserInitialization(new ActionInitialization() );
 
     // initialize visualization
     G4VisManager* visManager = new G4VisExecutive;
@@ -104,7 +108,6 @@ int main(int argc, char** argv)
     // job termination
     delete visManager;
     delete runManager;
-    delete materials;
     return 0;
 }
 

@@ -28,10 +28,17 @@
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "SteppingAction.hh"
+#include "StackingAction.hh"
+
+ActionInitialization::ActionInitialization() {
+}
+
+ActionInitialization::~ActionInitialization() {
+}
 
 void ActionInitialization::BuildForMaster() const
 {
-  RunAction* runAction = new RunAction;
+  RunAction* runAction = new RunAction();
   SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 }
 
@@ -40,7 +47,7 @@ void ActionInitialization::Build() const
     PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
     SetUserAction( primaryGeneratorAction );
 
-    RunAction* runAction = new RunAction;
+    RunAction* runAction = new RunAction();
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 
     EventAction* eventAction = new EventAction( runAction );
@@ -48,6 +55,9 @@ void ActionInitialization::Build() const
 
     SteppingAction* steppingAction = new SteppingAction( eventAction, runAction, primaryGeneratorAction );
     SetUserAction( steppingAction );
+
+    StackingAction* stackingAction = new StackingAction();
+    SetUserAction( stackingAction );
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

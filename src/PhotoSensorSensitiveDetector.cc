@@ -25,19 +25,22 @@
 
 #include "PhotoSensorSensitiveDetector.hh"
 
-PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector(const G4String& name) : G4VSensitiveDetector(name) {}
+PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name ) 
+    : G4VSensitiveDetector( t_name ) {
+    m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
+}
 
-PhotoSensorSensitiveDetector::~PhotoSensorSensitiveDetector() {}
+PhotoSensorSensitiveDetector::~PhotoSensorSensitiveDetector() {
+}
 
-void PhotoSensorSensitiveDetector::Initialize(G4HCofThisEvent* hce) {}
+void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
+}
 
-G4bool PhotoSensorSensitiveDetector::ProcessHits(G4Step* step, G4TouchableHistory* hist) {
-    // Process hits when energy deposition occurs in the sensitive volume.
-    // You can access the energy deposition information from the step and store it for further analysis.
-    // For example:
-    G4double energyDeposition = step->GetTotalEnergyDeposit();
+G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
+    G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
+    m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
+}
 
-    // Your custom implementation to store the energyDeposition or perform other actions.
-
-    return true;
+G4String PhotoSensorSensitiveDetector::get_name() {
+    return m_name;
 }

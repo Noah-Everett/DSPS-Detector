@@ -31,19 +31,21 @@
 
 #include "GeometricObject.hh"
 #include "PhotoSensorSensitiveDetector.hh"
+#include "ConstructionMessenger.hh"
 
 class PhotoSensor
 {
     public:
-        PhotoSensor( G4Material*, G4Material*, G4ThreeVector, G4ThreeVector );
+        PhotoSensor();
        ~PhotoSensor();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
     protected:
-        GeometricObjectBox          * m_surface          { nullptr };
-        GeometricObjectBox          * m_body             { nullptr };
-        PhotoSensorSensitiveDetector* m_sensitiveDetector{ nullptr };
+        GeometricObjectBox          * m_surface          { new GeometricObjectBox() };
+        GeometricObjectBox          * m_body             { new GeometricObjectBox() };
+        PhotoSensorSensitiveDetector* m_sensitiveDetector{ new PhotoSensorSensitiveDetector( "PhotoSensor" ) };
+        ConstructionMessenger       * m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 
 #endif

@@ -23,18 +23,35 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "RunAction.hh"
+#include "OutputMessenger.hh"
 
-RunAction::RunAction() {
+OutputMessenger* OutputMessenger::m_instance{ nullptr };
+
+OutputMessenger* OutputMessenger::get_instance() {
+    if( !m_instance )
+        m_instance = new OutputMessenger();
+    
+    return m_instance;
 }
 
-RunAction::~RunAction() {
+void OutputMessenger::delete_instance() {
+    if( m_instance ) {
+        delete m_instance;
+        m_instance = nullptr;
+    }
 }
 
-void RunAction::BeginOfRunAction(const G4Run*)
-{
+OutputMessenger::OutputMessenger() {
+    m_parameter_fileName = new G4UIcmdWithAString( "/output/fileName", this );
 }
 
-void RunAction::EndOfRunAction(const G4Run* run)
-{
+OutputMessenger::~OutputMessenger() {
+    if( m_parameter_fileName ) delete m_parameter_fileName;
+}
+
+void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue ) {
+    if( t_command == m_parameter_fileName ) {
+        set_fileName( t_newValue );
+        G4cout << "Setting `fileName' to " << t_newValue << G4endl;
+    }
 }

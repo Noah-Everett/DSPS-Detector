@@ -31,6 +31,7 @@
 #include "GeometricObject.hh"
 #include "LensSurface.hh"
 #include "Lens.hh"
+#include "ConstructionMessenger.hh"
 
 #include <vector>
 
@@ -39,18 +40,19 @@ using std::vector;
 class LensSystem
 {
     public:
-        LensSystem();
+        LensSystem( G4bool = true );
        ~LensSystem();
 
         void add_lens( Lens* );
 
         void place( G4RotationMatrix*, G4ThreeVector , G4LogicalVolume*, G4bool = false );
 
-        vector< Lens* >* get_lenses(       ) const;
+        vector< Lens* >  get_lenses(       ) const;
         Lens           * get_lens  ( G4int ) const;
 
     protected:
-        vector< Lens* >* m_lenses{ new vector< Lens* >() };
+        vector< Lens* > m_lenses;
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 
 #endif

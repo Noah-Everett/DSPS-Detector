@@ -36,8 +36,8 @@
 class UIMessenger : public G4UImessenger
 {
     public:
-        UIMessenger();
-       ~UIMessenger();
+        static UIMessenger* get_instance   ();
+        static void         delete_instance();
     
         void SetNewValue( G4UIcommand* command, G4String newValue );
 
@@ -45,7 +45,13 @@ class UIMessenger : public G4UImessenger
 
         void set_showGUI( G4bool t_variable_showGUI ){ m_variable_showGUI = t_variable_showGUI; }
 
+    private:
+        static UIMessenger* m_instance;
+
     protected:
+        UIMessenger();
+       ~UIMessenger();
+
         G4UIcmdWithABool* m_parameter_showGUI{ nullptr };
 
         G4bool m_variable_showGUI{ false };

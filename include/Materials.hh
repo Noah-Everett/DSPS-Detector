@@ -38,16 +38,22 @@
 class Materials
 {
 public:
-    Materials( ConstructionMessenger* );
-   ~Materials() {}
+    static Materials* get_instance   ();
+    static void       delete_instance();
 
     void print_materials();
 
 protected:
+    Materials();
+   ~Materials() {}
+
+    static Materials* m_instance;
+
     void constructMaterials                   ();
     void constructMaterial_G4Water            ();
     void constructMaterial_G4Air              ();
     void constructMaterial_G4StainlessSteel   ();
+    void constructMaterial_G4Vacuum           ();
     void constructMaterial_LXe                ();
     void constructMaterial_ANNIETankSteel     ();
     void constructMaterial_ANNIEMRDIron       ();
@@ -57,7 +63,7 @@ protected:
     void constructMaterial_aluminum           ();
     void constructMaterial_SNPH2              ();
 
-    ConstructionMessenger* m_constructionMessenger{ nullptr };
+    ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 
     G4NistManager* m_nist{ G4NistManager::Instance() };
 
@@ -68,6 +74,7 @@ protected:
     G4Material* m_material_G4Water            { nullptr };
     G4Material* m_material_G4Air              { nullptr };
     G4Material* m_material_G4StainlessSteel   { nullptr };
+    G4Material* m_material_G4Vacuum           { nullptr };
     G4Material* m_material_ANNIEWater_unDoped { nullptr };
     G4Material* m_material_ANNIEWater_GdDoped { nullptr };
     G4Material* m_material_aluminum           { nullptr };

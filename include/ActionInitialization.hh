@@ -28,14 +28,18 @@
 
 #include "G4VUserActionInitialization.hh"
 
+#include "OutputMessenger.hh"
+
 class ActionInitialization : public G4VUserActionInitialization
 {
     public:
-        ActionInitialization(){};
-       ~ActionInitialization(){};
+        ActionInitialization();
+       ~ActionInitialization();
 
         void BuildForMaster() const override;
         void Build() const override;
+    
+    protected:
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -23,26 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef DirectionSensativePhotoDetector_h
-#define DirectionSensativePhotoDetector_h
+#include "DirectionSensitivePhotoDetector.hh"
 
-#include "globals.hh"
+DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector() {
+    // if( t_photoSensor_surface_size.x() != t_photoSensor_body_size.x() ||
+    //     t_photoSensor_surface_size.y() != t_photoSensor_body_size.y() )
+    //     G4Exception("DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector()", "InvalidSetup", FatalException, "PhotoSensor surface and body must have the same size.");
+    // m_size = t_photoSensor_surface_size;
+    // m_size.setZ( t_photoSensor_surface_size.z() + t_photoSensor_body_size.z() );
+}
 
-#include "GeometricObject.hh"
-#include "LensSystem.hh"
-#include "PhotoSensor.hh"
-#include "LensParameterFileReader.hh"
+DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
+    delete m_photoSensor;
+}
 
-class DirectionSensativePhotoDetector
-{
-    public:
-        DirectionSensativePhotoDetector( LensParameterFileReader*, G4Material*, G4Material*, G4ThreeVector, G4ThreeVector );
-       ~DirectionSensativePhotoDetector();
+void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {
+    m_photoSensor->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
+    m_lensSystem ->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
+}
 
-    protected:
-        LensParameterFileReader* m_lensParameterFileReader;
-        LensSystem * m_lensSystem ;
-        PhotoSensor* m_photoSensor;
-};
-
-#endif
+G4ThreeVector DirectionSensitivePhotoDetector::get_size() const {
+    return m_size;
+}
+G4double DirectionSensitivePhotoDetector::get_width() const {
+    return m_size.x();
+}
+G4double DirectionSensitivePhotoDetector::get_height() const {
+    return m_size.y();
+}
+G4double DirectionSensitivePhotoDetector::get_depth() const {
+    return m_size.z();
+}

@@ -25,9 +25,24 @@
 
 #include "Materials.hh"
 
-Materials::Materials( ConstructionMessenger* t_constructionMessenger ) 
-    : m_constructionMessenger( t_constructionMessenger ) {
+Materials* Materials::m_instance{ nullptr };
+
+Materials::Materials() {
     constructMaterials();
+}
+
+Materials* Materials::get_instance() {
+    if( !m_instance ) {
+        m_instance = new Materials();
+    }
+    return m_instance;
+}
+
+void Materials::delete_instance() {
+    if( m_instance ) {
+        delete m_instance;
+        m_instance = nullptr;
+    }
 }
 
 void Materials::print_materials() {
@@ -44,6 +59,7 @@ void Materials::constructMaterials() {
     constructMaterial_G4Water            ();
     constructMaterial_G4Air              ();
     constructMaterial_G4StainlessSteel   ();
+    constructMaterial_G4Vacuum           ();
     constructMaterial_LXe                ();
     constructMaterial_ANNIETankSteel     ();
     constructMaterial_ANNIEMRDIron       ();
@@ -176,4 +192,8 @@ void Materials::constructMaterial_SNPH2() {
     m_materialPropertiesTable_SNPH2->AddProperty( "ABSLENGTH", lxe_Energy, glass_AbsLength );
     m_materialPropertiesTable_SNPH2->AddProperty( "RINDEX"   , "Fused Silica"              );
     m_material_SNPH2->SetMaterialPropertiesTable( m_materialPropertiesTable_SNPH2 );
+}
+
+void Materials::constructMaterial_G4Vacuum() {
+    m_material_G4Vacuum = new G4Material( "G4Vacuum", 1.0, 1.01 * CLHEP::g / CLHEP::mole, 1.e-25 * CLHEP::g / CLHEP::cm3, kStateGas, 2.73 * CLHEP::kelvin, 3.e-18 * CLHEP::pascal );
 }

@@ -23,17 +23,24 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "DirectionSensativePhotoDetector.hh"
+#ifndef StackingAction_h
+#define StackingAction_h
 
-DirectionSensativePhotoDetector::DirectionSensativePhotoDetector( LensParameterFileReader* t_lensParameterFileReader,
-                                                                  G4Material   * t_photoSensor_surface_material, G4Material   * t_photoSensor_body_material,
-                                                                  G4ThreeVector t_photoSensor_surface_size     , G4ThreeVector  t_photoSensor_body_size    )
-    : m_lensParameterFileReader( t_lensParameterFileReader ),
-      m_photoSensor( new PhotoSensor( t_photoSensor_surface_material, t_photoSensor_body_material, 
-                                      t_photoSensor_surface_size    , t_photoSensor_body_size     ) ) {   
-    m_lensSystem = m_lensParameterFileReader->get_lensSystem();
-}
+#include "G4UserStackingAction.hh"
+#include "globals.hh"
 
-DirectionSensativePhotoDetector::~DirectionSensativePhotoDetector() {
-    delete m_photoSensor;
-}
+#include "NESTStackingAction.hh"
+
+class StackingAction : public NESTStackingAction
+{
+  public:
+    StackingAction();
+   ~StackingAction() override;
+
+    G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track*) override;
+};
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#endif
+

@@ -33,6 +33,7 @@
 
 #include "LensSurface.hh"
 #include "GeometricObject.hh"
+#include "ConstructionMessenger.hh"
 
 #include <vector>
 #include <iostream>
@@ -47,7 +48,7 @@ using std::stringstream;
 class Lens
 {
     public:
-        Lens( LensSurface*, LensSurface*, G4double, G4double );
+        Lens( G4int );
        ~Lens();
         
         friend ostream& operator<<( ostream&,       Lens* );
@@ -59,15 +60,16 @@ class Lens
         G4double                       get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
         G4double                       get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
 
-        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false, G4int = 0 );
+        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
     protected:
         LensSurface                  * m_lensSurface_1                                  ;
         LensSurface                  * m_lensSurface_2                                  ;
         GeometricObjectEllipticalTube* m_middleTube{ new GeometricObjectEllipticalTube };
+        ConstructionMessenger        * m_constructionMessenger{ ConstructionMessenger::get_instance() };
         G4double                       m_distanceBetweenSurfaces                        ;
         G4double                       m_distanceOfLensCenterFromOrigin                 ;
-
+        G4ThreeVector                  m_size                                           ;
 };
 
 #endif

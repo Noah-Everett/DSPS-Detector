@@ -42,7 +42,6 @@
 
 #include "ConstructionMessenger.hh"
 #include "Materials.hh"
-#include "LensParameterFileReader.hh"
 #include "PhotoSensorSensitiveDetector.hh"
 #include "GeometricObject.hh"
 #include "LensSurface.hh"
@@ -50,7 +49,7 @@
 #include "LensSystem.hh"
 #include "PhotoSensor.hh"
 #include "LensSensativeDetector.hh"
-#include "DirectionSensativePhotoDetector.hh"
+#include "DirectionSensitivePhotoDetector.hh"
 
 #include <vector>
 
@@ -63,14 +62,11 @@ class G4LogicalVolume;
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-    DetectorConstruction( ConstructionMessenger*, Materials* );
+    DetectorConstruction();
    ~DetectorConstruction();
 
     G4VPhysicalVolume* Construct() override;
     
-    void set_materials();
-    void set_checkOverlaps( G4bool );
-
     void make_world                          ();
     void make_detector                       ();
     void make_calorimeter                    ();
@@ -88,10 +84,10 @@ protected:
     G4ThreeVector m_axis_z{ 0.0, 0.0, 1.0 };
 
     G4double m_pi_2{ 0.5 * pi };
+    G4double m_pi  { pi };
 
-    ConstructionMessenger  * m_constructionMessenger  { nullptr };
-    Materials              * m_materials              { nullptr };
-    LensParameterFileReader* m_lensParameterFileReader{ nullptr };
+    ConstructionMessenger  * m_constructionMessenger  { ConstructionMessenger::get_instance() };
+    Materials              * m_materials              { Materials::get_instance() };    
     
     GeometricObjectBox* m_world          { new GeometricObjectBox() };
     GeometricObjectBox* m_detector_wall  { new GeometricObjectBox() };
@@ -99,7 +95,7 @@ protected:
     GeometricObjectBox* m_calorimeter    { new GeometricObjectBox() };
 
     LensSystem                     * m_lensSystem                     { nullptr };
-    DirectionSensativePhotoDetector* m_directionSensitivePhotoDetector{ nullptr };
+    DirectionSensitivePhotoDetector* m_directionSensitivePhotoDetector{ nullptr };
 };
 
 #endif

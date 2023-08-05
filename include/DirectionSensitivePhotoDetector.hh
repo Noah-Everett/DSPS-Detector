@@ -23,18 +23,35 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "RunAction.hh"
+#ifndef DirectionSensitivePhotoDetector_h
+#define DirectionSensitivePhotoDetector_h
 
-RunAction::RunAction() {
-}
+#include "globals.hh"
+#include "G4Material.hh"
 
-RunAction::~RunAction() {
-}
+#include "GeometricObject.hh"
+#include "LensSystem.hh"
+#include "PhotoSensor.hh"
+#include "ConstructionMessenger.hh"
 
-void RunAction::BeginOfRunAction(const G4Run*)
+class DirectionSensitivePhotoDetector
 {
-}
+    public:
+        DirectionSensitivePhotoDetector();
+       ~DirectionSensitivePhotoDetector();
 
-void RunAction::EndOfRunAction(const G4Run* run)
-{
-}
+        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
+
+        G4ThreeVector get_size  () const;
+        G4double      get_width () const;
+        G4double      get_height() const;
+        G4double      get_depth () const;
+
+    protected:
+        LensSystem * m_lensSystem { new LensSystem ( true ) };
+        PhotoSensor* m_photoSensor{ new PhotoSensor() };
+        G4ThreeVector m_size;
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
+};
+
+#endif

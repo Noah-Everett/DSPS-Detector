@@ -25,22 +25,35 @@
 
 #include "Lens.hh"
 
-Lens::Lens( LensSurface * t_lensSurface_1                     , 
-            LensSurface * t_lensSurface_2                     , 
-            G4double      t_distanceBetweenSurfaces       , 
-            G4double      t_distanceOfLensCenterFromOrigin ) :
-    m_lensSurface_1                 ( t_lensSurface_1                  ),
-    m_lensSurface_2                 ( t_lensSurface_2                  ),
-    m_distanceBetweenSurfaces       ( t_distanceBetweenSurfaces        ),
-    m_distanceOfLensCenterFromOrigin( t_distanceOfLensCenterFromOrigin ) {
-
-    G4EllipticalTube* lensMiddle = new G4EllipticalTube( "lensMiddle"                       , 
-                                                         0.5 * m_lensSurface_1->get_yLimit(),
-                                                         0.5 * m_lensSurface_1->get_yLimit(),
-                                                         0.5 * m_distanceBetweenSurfaces     );
-    m_middleTube->set_solid   ( lensMiddle                      );
-    m_middleTube->set_material( m_lensSurface_1->get_geometricObject()->get_material() );
+Lens::Lens( G4int t_nLens ) {
+    G4cout << "HERE a" << G4endl;
+    G4cout << t_nLens << G4endl;
+    G4cout << m_constructionMessenger << G4endl;
+    m_lensSurface_1 = new LensSurface( m_constructionMessenger->get_lens_surface_1_radius_x( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_1_radius_y( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_1_yLimits ( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_1_yLimits ( t_nLens ),
+                                       m_constructionMessenger->get_lens_material          ( t_nLens ),
+                                       m_constructionMessenger->get_lens_visAttributes     ( t_nLens ) );
+    G4cout << "HERE b" << G4endl;
+    m_lensSurface_2 = new LensSurface( m_constructionMessenger->get_lens_surface_2_radius_x( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_2_radius_y( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_2_yLimits ( t_nLens ),
+                                       m_constructionMessenger->get_lens_surface_2_yLimits ( t_nLens ),
+                                       m_constructionMessenger->get_lens_material          ( t_nLens ),
+                                       m_constructionMessenger->get_lens_visAttributes     ( t_nLens ) );
+    G4cout << "HERE c" << G4endl;
+    m_middleTube->set_solid( new G4EllipticalTube( "lensMiddle"                                                   ,
+                                                   m_constructionMessenger->get_lens_surface_2_yLimits ( t_nLens ),
+                                                   m_constructionMessenger->get_lens_surface_2_yLimits ( t_nLens ),
+                                             0.5 * m_constructionMessenger->get_lens_distance          ( t_nLens ) ) ); 
+    G4cout << "HERE d" << G4endl;
+    m_middleTube->set_material( m_constructionMessenger->get_lens_material( t_nLens ) );
+    G4cout << "HERE e" << G4endl;
+    m_middleTube->set_visAttributes( m_constructionMessenger->get_lens_visAttributes( t_nLens ) );
+    G4cout << "HERE f" << G4endl;
     m_middleTube->make_logicalVolume();
+    G4cout << "HERE g" << G4endl;
 }
 
 Lens::~Lens() {
@@ -68,7 +81,8 @@ ostream& operator<<( ostream& t_os, const Lens& t_lens )
 void Lens::place( G4RotationMatrix * t_rotationMatrix     , 
                   G4ThreeVector      t_translation        ,
                   G4LogicalVolume  * t_motherLogicalVolume,
-                  G4bool             t_isMany             ,
-                  G4int              t_copyNumber          ) {
-    
+                  G4bool             t_isMany              ) {
+    m_lensSurface_1->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
+    m_lensSurface_2->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
+    m_middleTube   ->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
 }

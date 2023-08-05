@@ -23,18 +23,15 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "RunAction.hh"
+#include "StackingAction.hh"
 
-RunAction::RunAction() {
-}
+#include "G4Track.hh"
 
-RunAction::~RunAction() {
-}
+StackingAction::StackingAction() { }
 
-void RunAction::BeginOfRunAction(const G4Run*)
+StackingAction::~StackingAction() { }
+
+G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(const G4Track* track)
 {
-}
-
-void RunAction::EndOfRunAction(const G4Run* run)
-{
+  return fUrgent;
 }

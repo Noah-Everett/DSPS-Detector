@@ -49,6 +49,23 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step )
     G4StepPoint* stepPoint_pre  = t_step->GetPreStepPoint();
     G4StepPoint* stepPoint_post = t_step->GetPostStepPoint();
 
-    G4String particleName = track->GetDefinition()->GetParticleName();
-    G4String processName  = stepPoint_post->GetProcessDefinedStep()->GetProcessName();
+    // track->SetMaxAllowedStep(0.1 * cm); // Set the maximum step size (in your desired unit)
+
+
+    // G4String particleName = track->GetDefinition()->GetParticleName();
+    // G4String processName  = stepPoint_post->GetProcessDefinedStep()->GetProcessName();
+
+    // //print debugging info to find why photons are stopping in the middle of the detector
+    // if( track->GetVolume()->GetName() != "detector_medium" ) {
+    // G4cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << G4endl;
+    // G4cout << "particleName: " << particleName << G4endl;
+    // G4cout << "processName: " << processName << G4endl;
+    // G4cout << "track->GetTrackID(): " << track->GetTrackID() << G4endl;
+    // G4cout << "track->GetParentID(): " << track->GetParentID() << G4endl;
+    // G4cout << "track->GetKineticEnergy(): " << track->GetKineticEnergy() << G4endl;
+    // G4cout << "track->GetVolume()->GetName(): " << track->GetVolume()->GetName() << G4endl;
+    // G4cout << "track->GetVolume()->GetLogicalVolume()->GetName(): " << track->GetVolume()->GetLogicalVolume()->GetName() << G4endl;
+    // G4cout << "track->GetVolume()->GetLogicalVolume()->GetMaterial()->GetName(): " << track->GetVolume()->GetLogicalVolume()->GetMaterial()->GetName() << G4endl;
+    // }
+
 }

@@ -30,13 +30,26 @@
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 
-class PhotoSensorSensitiveDetector : public G4VSensitiveDetector {
-public:
-    PhotoSensorSensitiveDetector(const G4String& name);
-    virtual ~PhotoSensorSensitiveDetector();
+#include "OutputMessenger.hh"
+#include "OutputManager.hh"
 
-    virtual void Initialize(G4HCofThisEvent* hce);
-    virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
+class OutputManager;
+
+class PhotoSensorSensitiveDetector : public G4VSensitiveDetector 
+{
+    public:
+        PhotoSensorSensitiveDetector( G4String );
+        virtual ~PhotoSensorSensitiveDetector();
+
+        virtual void Initialize( G4HCofThisEvent* );
+        virtual G4bool ProcessHits( G4Step*, G4TouchableHistory* );
+
+        G4String get_name();
+    
+    protected:
+        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance() };
+        OutputManager* m_outputManager{ OutputManager::get_instance() };
+        G4String m_name;
 };
 
 #endif

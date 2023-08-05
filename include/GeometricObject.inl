@@ -29,10 +29,14 @@ GeometricObject< SolidType >::GeometricObject() {}
 template< class SolidType >
 GeometricObject< SolidType >::GeometricObject( SolidType           * t_solid            , 
                                                G4Material          * t_material         , 
-                                               G4VSensitiveDetector* t_sensitiveDetector ) {
+                                               G4VSensitiveDetector* t_sensitiveDetector,
+                                               G4bool                t_visibility       ,
+                                               G4VisAttributes     * t_visAttributes     ) {
     set_solid            ( t_solid             );
     set_material         ( t_material          );
     set_sensitiveDetector( t_sensitiveDetector );
+    set_visibility       ( t_visibility        );
+    set_visAttributes    ( t_visAttributes     );
 
     make_logicalVolume();
 }
@@ -65,11 +69,70 @@ void GeometricObject< SolidType >::set_solid( SolidType* t_solid ) {
 template< class SolidType >
 void GeometricObject< SolidType >::set_logicalVolume( G4LogicalVolume* t_logicalVolume ) { 
     m_logicalVolume = t_logicalVolume; 
+    if( m_visAttributes )
+        m_logicalVolume->SetVisAttributes( m_visAttributes );
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_visibility( G4bool t_visibility ) { 
+    m_visibility = t_visibility; 
+    if( m_visAttributes ) 
+        m_visAttributes->SetVisibility( m_visibility );
+    else
+        G4Exception( "GeometricObject::set_visibility", "GeometricObject", FatalException, "VisAttributes not set" );
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_visAttributes( G4VisAttributes* t_visAttributes ) { 
+    m_visAttributes = t_visAttributes; 
+    if( m_visAttributes ) {
+        m_visAttributes->SetVisibility( m_visibility );
+        if( m_logicalVolume ) 
+            m_logicalVolume->SetVisAttributes( m_visAttributes );
+    }
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_colour( G4String t_colourName ) { 
+    G4Colour temp;
+    if( !G4Colour::GetColour( t_colourName, temp ) )
+        G4Exception( "GeometricObject::set_colour", "GeometricObject", FatalException, "Colour not found" );
+    else if( m_visAttributes ) 
+        m_visAttributes->SetColour( temp );
+    else
+        G4Exception( "GeometricObject::set_colour", "GeometricObject", FatalException, "VisAttributes not set" );
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_colour( G4Colour t_colour ) { 
+    if( m_visAttributes ) 
+        m_visAttributes->SetColour( t_colour );
+    else
+        G4Exception( "GeometricObject::set_colour", "GeometricObject", FatalException, "VisAttributes not set" );
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_alpha( G4double t_alpha ) { 
+    if( m_visAttributes ) {
+        G4Colour temp = m_visAttributes->GetColour();
+        m_visAttributes->SetColour( G4Colour( temp.GetRed(), temp.GetGreen(), temp.GetBlue(), t_alpha ) );
+    } else
+        G4Exception( "GeometricObject::set_alpha", "GeometricObject", FatalException, "VisAttributes not set" );
+}
+
+template< class SolidType >
+void GeometricObject< SolidType >::set_forceSolid( G4bool t_forceSolid ) { 
+    if( m_visAttributes ) 
+        m_visAttributes->SetForceSolid( t_forceSolid );
+    else
+        G4Exception( "GeometricObject::set_forceSolid", "GeometricObject", FatalException, "VisAttributes not set" );
 }
 
 template< class SolidType >
 void GeometricObject< SolidType >::make_logicalVolume() {
     m_logicalVolume = new G4LogicalVolume( m_solid, m_material, m_name, nullptr, m_sensitiveDetector, nullptr, true );
+    if( m_visAttributes ) 
+        m_logicalVolume->SetVisAttributes( m_visAttributes );
 }
 
 template< class SolidType >
@@ -95,6 +158,16 @@ SolidType* GeometricObject< SolidType >::get_solid() const {
 template< class SolidType >
 G4LogicalVolume* GeometricObject< SolidType >::get_logicalVolume() const { 
     return m_logicalVolume; 
+}
+
+template< class SolidType >
+G4bool GeometricObject< SolidType >::get_visibility() const { 
+    return m_visibility; 
+}
+
+template< class SolidType >
+G4VisAttributes* GeometricObject< SolidType >::get_visAttributes() const { 
+    return m_visAttributes; 
 }
 
 template< class SolidType >

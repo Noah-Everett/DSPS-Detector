@@ -23,18 +23,37 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "RunAction.hh"
+#ifndef OutputMessenger_h
+#define OutputMessenger_h
 
-RunAction::RunAction() {
-}
+#include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
+#include "G4UImessenger.hh"
+#include "G4SystemOfUnits.hh"
 
-RunAction::~RunAction() {
-}
-
-void RunAction::BeginOfRunAction(const G4Run*)
+class OutputMessenger : public G4UImessenger
 {
-}
+    public:
+        static OutputMessenger* get_instance   ();
+        static void             delete_instance();
+    
+        void SetNewValue( G4UIcommand* command, G4String newValue );
 
-void RunAction::EndOfRunAction(const G4Run* run)
-{
-}
+        G4String get_fileName(){ return m_variable_fileName; }
+
+        void set_fileName( G4String t_variable_fileName ){ m_variable_fileName = t_variable_fileName; }
+
+    protected:
+                 OutputMessenger();
+        virtual ~OutputMessenger();
+        
+        G4UIcmdWithAString* m_parameter_fileName{ nullptr };
+        G4String m_variable_fileName{ "" };
+    
+    private:
+        static OutputMessenger* m_instance;
+};
+
+#endif
