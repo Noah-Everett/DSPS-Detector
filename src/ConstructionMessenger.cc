@@ -83,6 +83,7 @@ ConstructionMessenger::ConstructionMessenger() {
     m_command_lens_color                             = new G4UIcmdWithAString       ( "/geometry/lens/color"                            , this );
     m_command_lens_alpha                             = new G4UIcmdWithADouble       ( "/geometry/lens/alpha"                            , this );
     m_command_lens_forceSolid                        = new G4UIcmdWithABool         ( "/geometry/lens/forceSolid"                       , this );
+    m_command_lens_circular                          = new G4UIcmdWithABool         ( "/geometry/lens/circular"                         , this );
 
     m_command_directionSensitivePhotoDetector_amount = new G4UIcmdWith3Vector       ( "/geometry/directionSensitivePhotoDetector/amount", this );
     m_command_checkOverlaps                          = new G4UIcmdWithABool         ( "/geometry/checkOverlaps"                         , this );
@@ -144,6 +145,7 @@ ConstructionMessenger::~ConstructionMessenger() {
     if( m_command_lens_color                             ) delete m_command_lens_color                            ;
     if( m_command_lens_alpha                             ) delete m_command_lens_alpha                            ;
     if( m_command_lens_forceSolid                        ) delete m_command_lens_forceSolid                       ;
+    if( m_command_lens_circular                          ) delete m_command_lens_circular                         ;
 
     if( m_command_directionSensitivePhotoDetector_amount ) delete m_command_directionSensitivePhotoDetector_amount;
     if( m_command_checkOverlaps                          ) delete m_command_checkOverlaps                         ;
@@ -367,6 +369,10 @@ void ConstructionMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newV
         set_lens_forceSolid( m_variable_lens_currentLens, m_command_lens_forceSolid->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `lens_forceSolid' to " 
                << t_newValue << G4endl;
+    } else if( t_command == m_command_lens_circular ) { 
+        set_lens_circular( m_variable_lens_currentLens, m_command_lens_circular->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `lens_circular' to " 
+               << t_newValue << G4endl;
     } else if( t_command == m_command_directionSensitivePhotoDetector_amount ) {
         set_directionSensitivePhotoDetector_amount( m_command_directionSensitivePhotoDetector_amount->GetNew3VectorValue( t_newValue ) );
         G4cout << "Setting `directionSensitivePhotoDetector_amount' to " 
@@ -447,6 +453,7 @@ void ConstructionMessenger::print_parameters() {
            << " |--< lens_color >-------------------------------: " << get_lens_color                              ( nLens ) << G4endl
            << " |--< lens_alpha >-------------------------------: " << get_lens_alpha                              ( nLens ) << G4endl
            << " |--< lens_forceSolid >--------------------------: " << get_lens_forceSolid                         ( nLens ) << G4endl
+           << " |--< lens_circular >----------------------------: " << get_lens_circular                           ( nLens ) << G4endl
            << " |                                                 "                                                          << G4endl;
     }
     G4cout << " |--< directionSensitivePhotoDetector_amount_x >-: " << get_directionSensitivePhotoDetector_amount_x() << G4endl
@@ -694,6 +701,9 @@ G4double ConstructionMessenger::get_lens_alpha( G4int t_lens_index ) {
 G4bool ConstructionMessenger::get_lens_forceSolid( G4int t_lens_index ) {
     return m_variable_lens_forceSolids[ t_lens_index ];
 }
+G4bool ConstructionMessenger::get_lens_circular( G4int t_lens_index ) {
+    return m_variable_lens_circulars[ t_lens_index ];
+}
 G4VisAttributes* ConstructionMessenger::get_lens_visAttributes( G4int t_lens_index ) {
     return m_variable_lens_visAttributess[ t_lens_index ];
 }
@@ -926,6 +936,7 @@ void ConstructionMessenger::set_lens_incramentCurrentLens() {
     m_variable_lens_colors            .push_back( "" );
     m_variable_lens_alphas            .push_back( 0 );
     m_variable_lens_forceSolids       .push_back( false );
+    m_variable_lens_circulars         .push_back( false );
     m_variable_lens_visAttributess    .push_back( new G4VisAttributes() );
 }
 void ConstructionMessenger::set_lens_surface_1_radius_x( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_1_radius_x ) {
@@ -970,6 +981,9 @@ void ConstructionMessenger::set_lens_alpha( G4int t_variable_lens_currentLens, G
 void ConstructionMessenger::set_lens_forceSolid( G4int t_variable_lens_currentLens, G4bool t_variable_lens_forceSolid ) {
     m_variable_lens_forceSolids[ t_variable_lens_currentLens ] = t_variable_lens_forceSolid;
     set_visAttributes_forceSolid( t_variable_lens_forceSolid, m_variable_lens_visAttributess[ t_variable_lens_currentLens ] );
+}
+void ConstructionMessenger::set_lens_circular( G4int t_variable_lens_currentLens, G4bool t_variable_lens_circular ) {
+    m_variable_lens_circulars[ t_variable_lens_currentLens ] = t_variable_lens_circular;
 }
 void ConstructionMessenger::set_directionSensitivePhotoDetector_amount( G4ThreeVector t_variable_directionSensitivePhotoDetector_amount ) { 
     m_variable_directionSensitivePhotoDetector_amount = t_variable_directionSensitivePhotoDetector_amount;

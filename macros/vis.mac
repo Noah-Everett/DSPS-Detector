@@ -75,3 +75,5 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
+
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 100

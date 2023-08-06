@@ -31,7 +31,6 @@
 #include "G4RotationMatrix.hh"
 #include "G4EllipticalTube.hh"
 
-#include "LensSurface.hh"
 #include "GeometricObject.hh"
 #include "ConstructionMessenger.hh"
 
@@ -39,6 +38,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+using CLHEP::pi;
 
 using std::vector;
 using std::ostream;
@@ -54,22 +55,20 @@ class Lens
         friend ostream& operator<<( ostream&,       Lens* );
         friend ostream& operator<<( ostream&, const Lens& );
 
-        LensSurface                  * get_lensSurface_1                 () const { return m_lensSurface_1                 ; }
-        LensSurface                  * get_lensSurface_2                 () const { return m_lensSurface_2                 ; }
-        GeometricObjectEllipticalTube* get_middleTube                    () const { return m_middleTube                    ; }
-        G4double                       get_distanceBetweenSurfaces       () const { return m_distanceBetweenSurfaces       ; }
-        G4double                       get_distanceOfLensCenterFromOrigin() const { return m_distanceOfLensCenterFromOrigin; }
+        GeometricObjectUnionSolid* get_geometricObject() const;
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
     protected:
-        LensSurface                  * m_lensSurface_1                                  ;
-        LensSurface                  * m_lensSurface_2                                  ;
-        GeometricObjectEllipticalTube* m_middleTube{ new GeometricObjectEllipticalTube };
-        ConstructionMessenger        * m_constructionMessenger{ ConstructionMessenger::get_instance() };
-        G4double                       m_distanceBetweenSurfaces                        ;
-        G4double                       m_distanceOfLensCenterFromOrigin                 ;
-        G4ThreeVector                  m_size                                           ;
+        GeometricObjectUnionSolid* m_geometricObject{ new GeometricObjectUnionSolid() };
+        ConstructionMessenger    * m_constructionMessenger{ ConstructionMessenger::get_instance() };
+        G4ThreeVector              m_size;
+        
+        G4ThreeVector m_axis_y{ 0, 1, 0 };
+        G4double m_pi_2 = 0.5 * pi;
+        G4double m_pi   =       pi;
+
+        G4double get_xLimit( G4double, G4double, G4double, G4double );
 };
 
 #endif

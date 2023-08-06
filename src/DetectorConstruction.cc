@@ -56,11 +56,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     m_detector_wall  ->place( nullptr, G4ThreeVector(0,0,0), m_world        ->get_logicalVolume() );
     m_detector_medium->place( nullptr, G4ThreeVector(0,0,0), m_detector_wall->get_logicalVolume() );
 
-    place_surface(  m_axis_x );
+    // place_surface(  m_axis_x );
     // place_surface( -m_axis_x );
     // place_surface(  m_axis_y );
     // place_surface( -m_axis_y );
-    // place_surface(  m_axis_z );
+    place_surface(  m_axis_z );
     // place_surface( -m_axis_z );
 
     return world_pv;

@@ -44,7 +44,6 @@
 #include "Materials.hh"
 #include "PhotoSensorSensitiveDetector.hh"
 #include "GeometricObject.hh"
-#include "LensSurface.hh"
 #include "Lens.hh"
 #include "LensSystem.hh"
 #include "PhotoSensor.hh"

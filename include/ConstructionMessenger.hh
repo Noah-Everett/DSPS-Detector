@@ -126,6 +126,7 @@ class  ConstructionMessenger : public G4UImessenger
         G4String         get_lens_color                              ( G4int );
         G4double         get_lens_alpha                              ( G4int );
         G4bool           get_lens_forceSolid                         ( G4int );
+        G4bool           get_lens_circular                           ( G4int );
 
         G4ThreeVector    get_directionSensitivePhotoDetector_amount  ();
         G4int            get_directionSensitivePhotoDetector_amount_x();
@@ -202,6 +203,7 @@ class  ConstructionMessenger : public G4UImessenger
         void set_lens_color                              ( G4int, G4String );
         void set_lens_alpha                              ( G4int, G4double );
         void set_lens_forceSolid                         ( G4int, G4bool   );
+        void set_lens_circular                           ( G4int, G4bool   );
 
         void set_directionSensitivePhotoDetector_amount  ( G4ThreeVector );
         void set_directionSensitivePhotoDetector_amount_x( G4double      );
@@ -277,6 +279,7 @@ class  ConstructionMessenger : public G4UImessenger
         G4UIcmdWithAString       * m_command_lens_color                            { nullptr }; G4String      m_variable_lens_color                            { "" };
         G4UIcmdWithADouble       * m_command_lens_alpha                            { nullptr }; G4double      m_variable_lens_alpha                            { 0.0 };
         G4UIcmdWithABool         * m_command_lens_forceSolid                       { nullptr }; G4bool        m_variable_lens_forceSolid                       { true };
+        G4UIcmdWithABool         * m_command_lens_circular                         { nullptr }; G4bool        m_variable_lens_circular                         { true };
 
         G4UIcmdWith3Vector       * m_command_directionSensitivePhotoDetector_amount{ nullptr }; G4ThreeVector m_variable_directionSensitivePhotoDetector_amount{ 1, 1, 1 };
         G4UIcmdWithABool         * m_command_checkOverlaps                         { nullptr }; G4bool        m_variable_checkOverlaps                         { true };
@@ -301,6 +304,7 @@ class  ConstructionMessenger : public G4UImessenger
         vector< G4String > m_variable_lens_colors;
         vector< G4double > m_variable_lens_alphas;
         vector< G4bool >   m_variable_lens_forceSolids;
+        vector< G4bool >   m_variable_lens_circulars;
         vector< G4VisAttributes* > m_variable_lens_visAttributess;
 };
 

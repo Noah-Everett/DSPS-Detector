@@ -29,7 +29,6 @@
 #include "G4PVPlacement.hh"
 
 #include "GeometricObject.hh"
-#include "LensSurface.hh"
 #include "Lens.hh"
 #include "ConstructionMessenger.hh"
 

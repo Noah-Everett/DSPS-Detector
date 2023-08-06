@@ -41,33 +41,35 @@
 
 /geometry/lens/incramentCurrentLens
 /geometry/lens/surfaces/1/radius/x               -50.0 cm
-/geometry/lens/surfaces/1/radius/y               25.0 cm
-/geometry/lens/surfaces/1/yLimits                5 cm
+/geometry/lens/surfaces/1/radius/y               45.0 cm
+/geometry/lens/surfaces/1/yLimits                15.0 cm
 /geometry/lens/surfaces/2/radius/x               100.0 cm
-/geometry/lens/surfaces/2/radius/y               25.0 cm
-/geometry/lens/surfaces/2/yLimits                5 cm
-/geometry/lens/distance                          5.0 cm
+/geometry/lens/surfaces/2/radius/y               45.0 cm
+/geometry/lens/surfaces/2/yLimits                15.0 cm
+/geometry/lens/distance                          20.0 cm
 /geometry/lens/position                          30 cm
 /geometry/lens/material                          SNPH2
 /geometry/lens/visibility                        true
 /geometry/lens/color                             magenta
 /geometry/lens/alpha                             0.5
 /geometry/lens/forceSolid                        true
+/geometry/lens/circular                          false
 
-/geometry/lens/incramentCurrentLens
-/geometry/lens/surfaces/1/radius/x               -50.0 cm
-/geometry/lens/surfaces/1/radius/y               25.0 cm
-/geometry/lens/surfaces/1/yLimits                5 cm
-/geometry/lens/surfaces/2/radius/x               100.0 cm
-/geometry/lens/surfaces/2/radius/y               25.0 cm
-/geometry/lens/surfaces/2/yLimits                5 cm
-/geometry/lens/distance                          5.0 cm
-/geometry/lens/position                          22 cm
-/geometry/lens/material                          SNPH2
-/geometry/lens/visibility                        true
-/geometry/lens/color                             magenta
-/geometry/lens/alpha                             0.5
-/geometry/lens/forceSolid                        true
+# /geometry/lens/incramentCurrentLens
+# /geometry/lens/surfaces/1/radius/x            -50.0 cm
+# /geometry/lens/surfaces/1/radius/y            25.0 cm
+# /geometry/lens/surfaces/1/yLimits             20 cm
+# /geometry/lens/surfaces/2/radius/x            100.0 cm
+# /geometry/lens/surfaces/2/radius/y            25.0 cm
+# /geometry/lens/surfaces/2/yLimits             20 cm
+# /geometry/lens/distance                       5.0 cm
+# /geometry/lens/position                       22 cm
+# /geometry/lens/material                       SNPH2
+# /geometry/lens/visibility                     true
+# /geometry/lens/color                          magenta
+# /geometry/lens/alpha                          0.5
+# /geometry/lens/forceSolid                     true
+# /geometry/lens/circular                       true
 
 /geometry/directionSensitivePhotoDetector/amount 10 10 10
 
