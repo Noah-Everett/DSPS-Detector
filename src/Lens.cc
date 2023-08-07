@@ -43,8 +43,6 @@ Lens::Lens( G4int t_nLens ) {
     G4VisAttributes* visAttributes      = m_constructionMessenger->get_lens_visAttributes     ( t_nLens );
     G4double         width              = m_constructionMessenger->get_calorimeter_size_width (         );
 
-    // if( width < surface_1_yLimits || width < surface_2_yLimits )
-    //     G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Calorimeter width is smaller than lens yLimits" );
     if( surface_1_yLimits != surface_2_yLimits )
         G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Lens yLimits are not equal" );
 
@@ -55,25 +53,6 @@ Lens::Lens( G4int t_nLens ) {
     G4double middleTube_size         = distance - abs( surface_1_radius_x - surface_1_xLimit ) - abs( surface_2_radius_x - surface_2_xLimit );
     G4int    surface_1_radius_x_sign = surface_1_radius_x > 0 ? 1 : -1;
     G4int    surface_2_radius_x_sign = surface_2_radius_x > 0 ? 1 : -1;
-
-    G4cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++" << G4endl;
-    G4cout << "surface_1_radius_x = " << surface_1_radius_x << G4endl;
-    G4cout << "surface_1_radius_y = " << surface_1_radius_y << G4endl;
-    G4cout << "surface_1_yLimits  = " << surface_1_yLimits  << G4endl;
-    G4cout << "surface_2_radius_x = " << surface_2_radius_x << G4endl;
-    G4cout << "surface_2_radius_y = " << surface_2_radius_y << G4endl;
-    G4cout << "surface_2_yLimits  = " << surface_2_yLimits  << G4endl;
-    G4cout << "distance           = " << distance           << G4endl;
-    G4cout << "position           = " << position           << G4endl;
-    G4cout << "material           = " << material           << G4endl;
-    G4cout << "circular           = " << circular           << G4endl;
-    G4cout << "width              = " << width              << G4endl;
-    G4cout << "surface_1_position = " << surface_1_position << G4endl;
-    G4cout << "surface_2_position = " << surface_2_position << G4endl;
-    G4cout << "surface_1_xLimit   = " << surface_1_xLimit   << G4endl;
-    G4cout << "surface_2_xLimit   = " << surface_2_xLimit   << G4endl;
-    G4cout << "middleTube_size    = " << middleTube_size    << G4endl;
-    G4cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++" << G4endl;
 
     G4Ellipsoid     * surface_1_init  = new G4Ellipsoid     ( "surface_1_init" , surface_1_radius_y, surface_1_radius_y, abs( surface_1_radius_x ) );
     G4Ellipsoid     * surface_2_init  = new G4Ellipsoid     ( "surface_2_init" , surface_2_radius_y, surface_2_radius_y, abs( surface_2_radius_x ) );
@@ -104,24 +83,21 @@ Lens::Lens( G4int t_nLens ) {
         surface_1_subtract  = new G4SubtractionSolid( "surface_1_subtract" , surface_1_trim , tube );
         surface_2_subtract  = new G4SubtractionSolid( "surface_2_subtract" , surface_2_trim , tube );
         middleTube_subtract = new G4SubtractionSolid( "middleTube_subtract", middleTube_init, tube );
-        // middleTube_subtract = tube;
     } else {
-        G4Box* box_inner = new G4Box( "box_inner", width    , width    , max_distance*4 );
+        G4Box* box_inner = new G4Box( "box_inner", width/2  , width/2  , max_distance*4 );
         G4Box* box_outer = new G4Box( "box_outer", max_width, max_width, max_distance*4 );
         G4SubtractionSolid* box = new G4SubtractionSolid( "surface_1", box_outer, box_inner );
 
         surface_1_subtract  = new G4SubtractionSolid( "surface_1_subtract" , surface_1_trim , box );
         surface_2_subtract  = new G4SubtractionSolid( "surface_2_subtract" , surface_2_trim , box );
         middleTube_subtract = new G4SubtractionSolid( "middleTube_subtract", middleTube_init, box );
-        // middleTube_subtract = box;
     }
 
-    // G4Box* test = new G4Box( "test", 0.00001, 0.00001, 0.00001 );
+    G4String name = "lens_";
+    name += std::to_string( t_nLens );
+    G4UnionSolid* temp = new G4UnionSolid( name, middleTube_subtract, surface_1_subtract, nullptr, G4ThreeVector( 0, 0, -surface_1_xLimit + middleTube_size/2*surface_1_radius_x_sign ) );
 
-    // G4UnionSolid* temp = new G4UnionSolid( "temp", middleTube_trim, surface_1_trim, nullptr, G4ThreeVector( 0, 0, surface_1_radius_x_sign * ( middleTube_size/2 - abs( surface_1_radius_x + abs( surface_1_xLimit ) ) ) ) );
-    G4UnionSolid* temp = new G4UnionSolid( "temp", middleTube_subtract, surface_1_subtract, nullptr, G4ThreeVector( 0, 0, -surface_1_xLimit + middleTube_size/2*surface_1_radius_x_sign ) );
-
-    m_geometricObject->set_solid( new G4UnionSolid( "lens", temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
+    m_geometricObject->set_solid( new G4UnionSolid( name, temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
     // m_geometricObject->set_solid( temp );
     m_geometricObject->set_material( material );
     m_geometricObject->set_visAttributes( visAttributes );

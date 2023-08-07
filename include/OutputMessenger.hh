@@ -41,16 +41,24 @@ class OutputMessenger : public G4UImessenger
     
         void SetNewValue( G4UIcommand* command, G4String newValue );
 
-        G4String get_fileName(){ return m_variable_fileName; }
+        G4bool   get_photoSensor_hits_save    () const;
+        G4String get_photoSensor_hits_fileName() const;
+        G4bool   get_GDML_save                () const;
+        G4String get_GDML_fileName            () const;
 
-        void set_fileName( G4String t_variable_fileName ){ m_variable_fileName = t_variable_fileName; }
+        void set_photoSensor_hits_save    ( G4bool   );
+        void set_photoSensor_hits_fileName( G4String );
+        void set_GDML_save                ( G4bool   );
+        void set_GDML_fileName            ( G4String );
 
     protected:
                  OutputMessenger();
         virtual ~OutputMessenger();
         
-        G4UIcmdWithAString* m_parameter_fileName{ nullptr };
-        G4String m_variable_fileName{ "" };
+        G4UIcmdWithABool  * m_command_photoSensor_hits_save    { nullptr }; G4bool   m_variable_photoSensor_hits_save    { false };
+        G4UIcmdWithAString* m_command_photoSensor_hits_fileName{ nullptr }; G4String m_variable_photoSensor_hits_fileName{ "" };
+        G4UIcmdWithABool  * m_command_GDML_save                { nullptr }; G4bool   m_variable_GDML_save                { false };
+        G4UIcmdWithAString* m_command_GDML_fileName            { nullptr }; G4String m_variable_GDML_fileName            { "" };
     
     private:
         static OutputMessenger* m_instance;

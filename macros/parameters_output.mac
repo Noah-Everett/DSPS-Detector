@@ -1,1 +1,4 @@
-/output/fileName outputFile.root
+/output/photoSensor/hits/save     true
+/output/photoSensor/hits/fileName outputFile.root
+/output/GDML/save                 true
+/output/GDML/fileName             gdmlFile.gdml

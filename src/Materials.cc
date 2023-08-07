@@ -189,8 +189,8 @@ void Materials::constructMaterial_SNPH2() {
     m_material_SNPH2->AddElement( m_element_H, 2 );
     m_material_SNPH2->AddElement( m_element_C, 1 );
 
-    m_materialPropertiesTable_SNPH2->AddProperty( "ABSLENGTH", lxe_Energy, glass_AbsLength );
-    m_materialPropertiesTable_SNPH2->AddProperty( "RINDEX"   , "Fused Silica"              );
+    m_materialPropertiesTable_SNPH2->AddProperty( "ABSLENGTH", lxe_Energy, SNPH2_AbsLength );
+    m_materialPropertiesTable_SNPH2->AddProperty( "RINDEX"   , lxe_Energy, SNPH2_RIND      );
     m_material_SNPH2->SetMaterialPropertiesTable( m_materialPropertiesTable_SNPH2 );
 }
 

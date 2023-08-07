@@ -38,6 +38,7 @@ void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
 
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
     G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
+    G4cout << "HERE" << G4endl;
     m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
 }
 

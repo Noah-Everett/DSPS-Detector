@@ -26,15 +26,14 @@
 #include "DirectionSensitivePhotoDetector.hh"
 
 DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector() {
-    // if( t_photoSensor_surface_size.x() != t_photoSensor_body_size.x() ||
-    //     t_photoSensor_surface_size.y() != t_photoSensor_body_size.y() )
-    //     G4Exception("DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector()", "InvalidSetup", FatalException, "PhotoSensor surface and body must have the same size.");
-    // m_size = t_photoSensor_surface_size;
-    // m_size.setZ( t_photoSensor_surface_size.z() + t_photoSensor_body_size.z() );
+    m_size = m_constructionMessenger->get_photoSensor_surface_size();
+    m_size.setZ( m_constructionMessenger->get_photoSensor_surface_size().z() + m_constructionMessenger->get_photoSensor_body_size().z() );
 }
 
 DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
-    delete m_photoSensor;
+    if( m_photoSensor ) delete m_photoSensor;
+    if( m_lensSystem  ) delete m_lensSystem;
+    if( m_parser      ) delete m_parser;
 }
 
 void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {

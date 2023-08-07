@@ -28,6 +28,7 @@
 
 #include "globals.hh"
 #include "G4AnalysisManager.hh"
+#include "G4Step.hh"
 
 #include "OutputMessenger.hh"
 
@@ -46,11 +47,13 @@ class OutputManager
         
         G4int get_histogram_id( G4String );
 
+        void save_track_primary( G4Step* );
+
     private:
                  OutputManager();
         virtual ~OutputManager();
-        OutputMessenger  * m_outputMessenger{ OutputMessenger::get_instance() };
-        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance() };
+        OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
+        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance    () };
 
         map<G4String, G4int> m_histogramIdMap;
 

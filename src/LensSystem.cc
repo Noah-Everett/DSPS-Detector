@@ -26,16 +26,11 @@
 #include "LensSystem.hh"
 
 LensSystem::LensSystem( G4bool t_makeLenses ) {
-    G4cout << "HERE" << G4endl;
     if( !t_makeLenses ) 
         return;
 
-    G4cout << "HERE" << G4endl;
-    for( G4int nLens{ 0 }; nLens < m_constructionMessenger->get_lens_amount(); nLens++ ) {
-        G4cout << "HERE 1" << G4endl;
+    for( G4int nLens{ 0 }; nLens < m_constructionMessenger->get_lens_amount(); nLens++ )
         add_lens( new Lens( nLens ) );
-        G4cout << "HERE 2" << G4endl;
-    }
 }
 
 LensSystem::~LensSystem() {
@@ -51,8 +46,10 @@ void  LensSystem::place( G4RotationMatrix* t_rotationMatrix     ,
                          G4ThreeVector     t_translationVector  , 
                          G4LogicalVolume * t_motherLogicalVolume, 
                          G4bool            t_isMany              ) {
-    for( Lens* lens : m_lenses ) {
-        lens->place( t_rotationMatrix, t_translationVector, t_motherLogicalVolume, t_isMany );
+    for( G4int nLens{ 0 }; nLens < m_lenses.size(); nLens++ ) {
+        G4ThreeVector position( 0, 0, m_constructionMessenger->get_lens_position( nLens ) );
+        position = *t_rotationMatrix * position;
+        m_lenses[ nLens ]->place( t_rotationMatrix, position + t_translationVector, t_motherLogicalVolume, t_isMany );
     }
 }
 

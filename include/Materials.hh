@@ -194,7 +194,8 @@ protected:
     G4double m_MRDScintilator_mpt_fastTimeConst{ 10.0*ns };
     G4double m_MRDScintilator_mpt_birksConstant{ 0.126*mm/MeV };
 
-    std::vector<G4double> glass_AbsLength = { 420. * cm, 420. * cm, 420. * cm };
+    std::vector<G4double> SNPH2_AbsLength = { 420. * cm, 420. * cm, 420. * cm };
+    std::vector<G4double> SNPH2_RIND      = { 1.98     , 1.98     , 1.98      };
 };
 
 #endif

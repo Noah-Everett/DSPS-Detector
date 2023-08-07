@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     // initialize visualization
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
-
+    
     if( ui ) {
         UImanager->ApplyCommand("/control/execute macros/vis.mac");
         if(ui->IsGUI()) {
@@ -104,6 +104,9 @@ int main(int argc, char** argv)
     } else if( argc == 4 ) {
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 3 ] );
     }
+    
+    if( outputMessenger->get_GDML_save() )
+        det->make_GDMLFile( outputMessenger->get_GDML_fileName() );
 
     // job termination
     delete visManager;

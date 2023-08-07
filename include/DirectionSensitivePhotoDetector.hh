@@ -28,6 +28,7 @@
 
 #include "globals.hh"
 #include "G4Material.hh"
+#include "G4GDMLParser.hh"
 
 #include "GeometricObject.hh"
 #include "LensSystem.hh"
@@ -52,6 +53,7 @@ class DirectionSensitivePhotoDetector
         PhotoSensor* m_photoSensor{ new PhotoSensor() };
         G4ThreeVector m_size;
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
+        G4GDMLParser* m_parser{ new G4GDMLParser() };
 };
 
 #endif

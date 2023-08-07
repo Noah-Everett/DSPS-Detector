@@ -53,7 +53,7 @@ void ActionInitialization::Build() const
     EventAction* eventAction = new EventAction( runAction );
     SetUserAction( eventAction );
 
-    SteppingAction* steppingAction = new SteppingAction( eventAction, runAction, primaryGeneratorAction );
+    SteppingAction* steppingAction = new SteppingAction();
     SetUserAction( steppingAction );
 
     StackingAction* stackingAction = new StackingAction();

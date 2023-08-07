@@ -27,11 +27,12 @@
 #define SteppingAction_h
 
 #include "G4Step.hh"
-
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
+
+#include "OutputManager.hh"
 
 class G4LogicalVolume;
 
@@ -43,14 +44,10 @@ public:
     SteppingAction(EventAction* eventAction, RunAction* runAction, PrimaryGeneratorAction* t_primaryGeneratorAction );
    ~SteppingAction() override;
 
-    // method from the base class
     void UserSteppingAction( const G4Step* ) override;
     
 private:
-    EventAction           * m_eventAction           { nullptr };
-    RunAction             * m_runAction             { nullptr };
-    PrimaryGeneratorAction* m_primaryGeneratorAction{ nullptr };
-    G4AnalysisManager     * m_analysisManager       { G4AnalysisManager::Instance() };
+    OutputManager* m_outputManager{ OutputManager::get_instance() };
 };
 
 #endif

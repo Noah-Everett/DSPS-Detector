@@ -43,7 +43,7 @@ void OutputManager::delete_instance() {
 
 OutputManager::OutputManager() {
     m_analysisManager->SetDefaultFileType( "root" );
-    m_analysisManager->SetFileName( m_outputMessenger->get_fileName() );
+    m_analysisManager->SetFileName( m_outputMessenger->get_photoSensor_hits_fileName() );
     m_analysisManager->SetVerboseLevel( 1 );
     m_analysisManager->SetActivation( true );
     m_analysisManager->OpenFile();
@@ -68,4 +68,8 @@ void OutputManager::add_histogram_2D( G4String t_name, G4String t_title, G4int t
 
 G4int OutputManager::get_histogram_id( G4String t_name ) {
     return m_histogramIdMap.at( t_name );
+}
+
+void OutputManager::save_track_primary( G4Step* t_step ) {
+    
 }

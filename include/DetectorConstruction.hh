@@ -39,6 +39,7 @@
 #include "G4Trd.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4GDMLParser.hh"
 
 #include "ConstructionMessenger.hh"
 #include "Materials.hh"
@@ -70,6 +71,7 @@ public:
     void make_detector                       ();
     void make_calorimeter                    ();
     void make_directionSensitivePhotoDetector();
+    void make_GDMLFile                       ( G4String );
 
     void place_surface( G4ThreeVector );
 
@@ -87,11 +89,15 @@ protected:
 
     ConstructionMessenger  * m_constructionMessenger  { ConstructionMessenger::get_instance() };
     Materials              * m_materials              { Materials::get_instance() };    
+    G4GDMLParser           * m_GDMLParser             { new G4GDMLParser() };
     
-    GeometricObjectBox* m_world          { new GeometricObjectBox() };
-    GeometricObjectBox* m_detector_wall  { new GeometricObjectBox() };
-    GeometricObjectBox* m_detector_medium{ new GeometricObjectBox() };
-    GeometricObjectBox* m_calorimeter    { new GeometricObjectBox() };
+    G4VPhysicalVolume* m_world_physicalVolume{ nullptr };
+
+    GeometricObjectBox* m_world             { new GeometricObjectBox() };
+    GeometricObjectBox* m_detector_wall     { new GeometricObjectBox() };
+    GeometricObjectBox* m_detector_medium   { new GeometricObjectBox() };
+    GeometricObjectBox* m_calorimeter       { new GeometricObjectBox() };
+    GeometricObjectBox* m_calorimeter_middle{ new GeometricObjectBox() };
 
     LensSystem                     * m_lensSystem                     { nullptr };
     DirectionSensitivePhotoDetector* m_directionSensitivePhotoDetector{ nullptr };
