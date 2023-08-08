@@ -47,7 +47,6 @@ class PhotoSensorSensitiveDetector : public G4VSensitiveDetector
         G4String get_name();
     
     protected:
-        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance() };
         OutputManager* m_outputManager{ OutputManager::get_instance() };
         G4String m_name;
 };

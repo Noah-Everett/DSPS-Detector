@@ -42,20 +42,26 @@ class OutputManager
         static OutputManager* get_instance   ();
         static void           delete_instance();
 
+        void create_histograms();
+        void create_tuples    ();
+
         void add_histogram_1D( G4String, G4String, G4int, G4double, G4double );
         void add_histogram_2D( G4String, G4String, G4int, G4double, G4double, G4int, G4double, G4double );
+        void add_tuple_initialize    ( G4String, G4String );
+        void add_tuple_finalize      ( G4String, G4String );
+        void add_tuple_column_intiger( G4String );
+        void add_tuple_column_double ( G4String );
+        void add_tuple_column_3vector( G4String );
+        void add_tuple_column_string ( G4String );
+        void add_tuple_column_boolean( G4String );
         
-        G4int get_histogram_id( G4String );
-
-        void save_track_primary( G4Step* );
+        void save_primary_track_step( const G4Step* );
 
     private:
                  OutputManager();
         virtual ~OutputManager();
         OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
         G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance    () };
-
-        map<G4String, G4int> m_histogramIdMap;
 
     protected:
         static OutputManager* m_instance;

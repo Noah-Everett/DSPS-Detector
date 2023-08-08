@@ -29,12 +29,27 @@ RunAction::RunAction() {
 }
 
 RunAction::~RunAction() {
+    m_outputManager->delete_instance();
 }
 
-void RunAction::BeginOfRunAction(const G4Run*)
-{
+void RunAction::BeginOfRunAction(const G4Run*) {
+    m_analysisManager = G4AnalysisManager::Instance();
+    m_analysisManager->SetDefaultFileType( "root" );
+    m_analysisManager->SetFileName( m_outputMessenger->get_fileName() );
+    m_analysisManager->SetVerboseLevel( 1 );
+    m_analysisManager->SetActivation( true );
+    m_analysisManager->OpenFile();
+
+    m_outputManager->make_histograms();
+    m_outputManager->make_tuples();
 }
 
-void RunAction::EndOfRunAction(const G4Run* run)
-{
+void RunAction::EndOfRunAction(const G4Run* run) {
+    m_analysisManager = G4AnalysisManager::Instance();
+    G4cout << "DELETING OUTPUTMANAGER" << G4endl;
+    G4cout << "HERE 1" << G4endl;
+    m_analysisManager->Write();
+    G4cout << "HERE 1" << G4endl;
+    m_analysisManager->CloseFile();
+    G4cout << "HERE 1" << G4endl;
 }

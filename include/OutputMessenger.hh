@@ -41,24 +41,77 @@ class OutputMessenger : public G4UImessenger
     
         void SetNewValue( G4UIcommand* command, G4String newValue );
 
-        G4bool   get_photoSensor_hits_save    () const;
-        G4String get_photoSensor_hits_fileName() const;
-        G4bool   get_GDML_save                () const;
-        G4String get_GDML_fileName            () const;
+        G4bool   get_GDML_save                                    () const;
+        G4String get_GDML_fileName                                () const;
+        G4String get_fileName                                     () const;
+        G4bool   get_photoSensor_hits_position_binned_save        () const;
+        G4int    get_photoSensor_hits_position_binned_nBinsPerSide() const;
+        G4bool   get_photoSensor_hits_position_save               () const;
+        G4bool   get_photoSensor_hits_time_save                   () const;
+        G4bool   get_photoSensor_hits_process_save                () const;
+        G4bool   get_primary_position_save                        () const;
+        G4bool   get_primary_emission_photon_save                 () const;
+        G4bool   get_primary_emission_photon_electron_save        () const;
+        G4bool   get_primary_process_save                         () const;
+        G4bool   get_primary_time_save                            () const;
+        G4bool   get_photon_length_save                           () const;
+        G4bool   get_photon_process_save                          () const;
+        G4bool   get_photon_time_save                             () const;
 
-        void set_photoSensor_hits_save    ( G4bool   );
-        void set_photoSensor_hits_fileName( G4String );
-        void set_GDML_save                ( G4bool   );
-        void set_GDML_fileName            ( G4String );
+        void set_GDML_save                                    ( G4bool   value );
+        void set_GDML_fileName                                ( G4String value );
+        void set_fileName                                     ( G4String value );
+        void set_photoSensor_hits_position_binned_save        ( G4bool   value );
+        void set_photoSensor_hits_position_binned_nBinsPerSide( G4int    value );
+        void set_photoSensor_hits_position_save               ( G4bool   value );
+        void set_photoSensor_hits_time_save                   ( G4bool   value );
+        void set_photoSensor_hits_process_save                ( G4bool   value );
+        void set_primary_position_save                        ( G4bool   value );
+        void set_primary_emission_photon_save                 ( G4bool   value );
+        void set_primary_emission_photon_electron_save        ( G4bool   value );
+        void set_primary_process_save                         ( G4bool   value );
+        void set_primary_time_save                            ( G4bool   value );
+        void set_photon_length_save                           ( G4bool   value );
+        void set_photon_process_save                          ( G4bool   value );
+        void set_photon_time_save                             ( G4bool   value );
 
     protected:
                  OutputMessenger();
         virtual ~OutputMessenger();
         
-        G4UIcmdWithABool  * m_command_photoSensor_hits_save    { nullptr }; G4bool   m_variable_photoSensor_hits_save    { false };
-        G4UIcmdWithAString* m_command_photoSensor_hits_fileName{ nullptr }; G4String m_variable_photoSensor_hits_fileName{ "" };
-        G4UIcmdWithABool  * m_command_GDML_save                { nullptr }; G4bool   m_variable_GDML_save                { false };
-        G4UIcmdWithAString* m_command_GDML_fileName            { nullptr }; G4String m_variable_GDML_fileName            { "" };
+        G4UIcmdWithABool    * m_command_GDML_save;
+        G4UIcmdWithAString  * m_command_GDML_fileName;
+        G4UIcmdWithAString  * m_command_fileName;
+        G4UIcmdWithABool    * m_command_photoSensor_hits_position_binned_save;
+        G4UIcmdWithAnInteger* m_command_photoSensor_hits_position_binned_nBinsPerSide;
+        G4UIcmdWithABool    * m_command_photoSensor_hits_position_save;
+        G4UIcmdWithABool    * m_command_photoSensor_hits_time_save;
+        G4UIcmdWithAString  * m_command_photoSensor_hits_process_save;
+        G4UIcmdWithABool    * m_command_primary_position_save;
+        G4UIcmdWithABool    * m_command_primary_emission_photon_save;
+        G4UIcmdWithABool    * m_command_primary_emission_photon_electron_save;
+        G4UIcmdWithABool    * m_command_primary_process_save;
+        G4UIcmdWithABool    * m_command_primary_time_save;
+        G4UIcmdWithABool    * m_command_photon_length_save;
+        G4UIcmdWithABool    * m_command_photon_process_save;
+        G4UIcmdWithABool    * m_command_photon_time_save;
+
+        G4bool   m_variable_GDML_save;
+        G4String m_variable_GDML_fileName;
+        G4String m_variable_fileName;
+        G4bool   m_variable_photoSensor_hits_position_binned_save;
+        G4int    m_variable_photoSensor_hits_position_binned_nBinsPerSide;
+        G4bool   m_variable_photoSensor_hits_position_save;
+        G4bool   m_variable_photoSensor_hits_time_save;
+        G4String m_variable_photoSensor_hits_process_save;
+        G4bool   m_variable_primary_position_save;
+        G4bool   m_variable_primary_emission_photon_save;
+        G4bool   m_variable_primary_emission_photon_electron_save;
+        G4bool   m_variable_primary_process_save;
+        G4bool   m_variable_primary_time_save;
+        G4bool   m_variable_photon_length_save;
+        G4bool   m_variable_photon_process_save;
+        G4bool   m_variable_photon_time_save;
     
     private:
         static OutputMessenger* m_instance;

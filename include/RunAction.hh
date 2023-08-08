@@ -31,6 +31,9 @@
 #include "globals.hh"
 #include "G4AnalysisManager.hh"
 
+#include "OutputMessenger.hh"
+#include "OutputManager.hh"
+
 class RunAction : public G4UserRunAction
 {
     public:
@@ -41,6 +44,9 @@ class RunAction : public G4UserRunAction
         void   EndOfRunAction(const G4Run*) override;
 
     private:
+        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance    () };
+        OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
+        OutputManager    * m_outputManager  { OutputManager    ::get_instance() };
 };
 
 #endif

@@ -33,6 +33,7 @@
 #include "PrimaryGeneratorAction.hh"
 
 #include "OutputManager.hh"
+#include "OutputMessenger.hh"
 
 class G4LogicalVolume;
 
@@ -41,13 +42,14 @@ class EventAction;
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-    SteppingAction(EventAction* eventAction, RunAction* runAction, PrimaryGeneratorAction* t_primaryGeneratorAction );
+    SteppingAction();
    ~SteppingAction() override;
 
     void UserSteppingAction( const G4Step* ) override;
     
 private:
-    OutputManager* m_outputManager{ OutputManager::get_instance() };
+    OutputManager  * m_outputManager  { OutputManager  ::get_instance() };
+    OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
 };
 
 #endif

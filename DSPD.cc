@@ -29,6 +29,7 @@
 #include "UIMessenger.hh"
 #include "Materials.hh"
 #include "OutputMessenger.hh"
+#include "OutputManager.hh"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
