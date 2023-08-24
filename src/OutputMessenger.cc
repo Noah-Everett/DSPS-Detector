@@ -52,7 +52,7 @@ OutputMessenger::OutputMessenger() {
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
     m_command_primary_position_save                         = new G4UIcmdWithABool    ( "/output/primary/position/save"                         , this );
     m_command_primary_emission_photon_save                  = new G4UIcmdWithABool    ( "/output/primary/emission/photon/save"                  , this );
-    m_command_primary_emission_photon_electron_save         = new G4UIcmdWithABool    ( "/output/primary/emission/photon/electron/save"         , this );
+    m_command_primary_emission_electron_save                = new G4UIcmdWithABool    ( "/output/primary/emission/electron/save"                , this );
     m_command_primary_process_save                          = new G4UIcmdWithABool    ( "/output/primary/process/save"                          , this );
     m_command_primary_time_save                             = new G4UIcmdWithABool    ( "/output/primary/time/save"                             , this );
     m_command_photon_length_save                            = new G4UIcmdWithABool    ( "/output/photon/length/save"                            , this );
@@ -71,7 +71,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
     if( m_command_primary_position_save                         ) delete m_command_primary_position_save;
     if( m_command_primary_emission_photon_save                  ) delete m_command_primary_emission_photon_save;
-    if( m_command_primary_emission_photon_electron_save         ) delete m_command_primary_emission_photon_electron_save;
+    if( m_command_primary_emission_electron_save                ) delete m_command_primary_emission_electron_save;
     if( m_command_primary_process_save                          ) delete m_command_primary_process_save;
     if( m_command_primary_time_save                             ) delete m_command_primary_time_save;
     if( m_command_photon_length_save                            ) delete m_command_photon_length_save;
@@ -84,10 +84,10 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
         set_GDML_save( m_command_GDML_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/GDML/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_GDML_fileName ) {
-        set_GDML_fileName( m_command_GDML_fileName->GetNewStringValue( t_newValue ) );
+        set_GDML_fileName( t_newValue );
         G4cout << "Setting `/GDML/fileName' to " << t_newValue << G4endl;
     } else if( t_command == m_command_fileName ) {
-        set_fileName( m_command_fileName->GetNewStringValue( t_newValue ) );
+        set_fileName( t_newValue );
         G4cout << "Setting `/output/fileName' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photoSensor_hits_position_binned_save ) {
         set_photoSensor_hits_position_binned_save( m_command_photoSensor_hits_position_binned_save->GetNewBoolValue( t_newValue ) );
@@ -110,8 +110,8 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_primary_emission_photon_save ) {
         set_primary_emission_photon_save( m_command_primary_emission_photon_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/emission/photon/save' to " << t_newValue << G4endl;
-    } else if( t_command == m_command_primary_emission_photon_electron_save ) {
-        set_primary_emission_photon_electron_save( m_command_primary_emission_photon_electron_save->GetNewBoolValue( t_newValue ) );
+    } else if( t_command == m_command_primary_emission_electron_save ) {
+        set_primary_emission_electron_save( m_command_primary_emission_electron_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/emission/photon/electron/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_primary_process_save ) {
         set_primary_process_save( m_command_primary_process_save->GetNewBoolValue( t_newValue ) );
@@ -163,8 +163,8 @@ G4bool OutputMessenger::get_primary_position_save() const {
 G4bool OutputMessenger::get_primary_emission_photon_save() const {
     return m_variable_primary_emission_photon_save;
 }
-G4bool OutputMessenger::get_primary_emission_photon_electron_save() const {
-    return m_variable_primary_emission_photon_electron_save;
+G4bool OutputMessenger::get_primary_emission_electron_save() const {
+    return m_variable_primary_emission_electron_save;
 }
 G4bool OutputMessenger::get_primary_process_save() const {
     return m_variable_primary_process_save;
@@ -212,8 +212,8 @@ void OutputMessenger::set_primary_position_save( G4bool t_newValue ) {
 void OutputMessenger::set_primary_emission_photon_save( G4bool t_newValue ) {
     m_variable_primary_emission_photon_save = t_newValue;
 }
-void OutputMessenger::set_primary_emission_photon_electron_save( G4bool t_newValue ) {
-    m_variable_primary_emission_photon_electron_save = t_newValue;
+void OutputMessenger::set_primary_emission_electron_save( G4bool t_newValue ) {
+    m_variable_primary_emission_electron_save = t_newValue;
 }
 void OutputMessenger::set_primary_process_save( G4bool t_newValue ) {
     m_variable_primary_process_save = t_newValue;

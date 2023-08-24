@@ -30,6 +30,7 @@
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWith3VectorAndUnit.hh"
+#include "G4UIcmdWithAnInteger.hh"
 #include "G4UImessenger.hh"
 #include "G4SystemOfUnits.hh"
 
@@ -51,7 +52,7 @@ class OutputMessenger : public G4UImessenger
         G4bool   get_photoSensor_hits_process_save                () const;
         G4bool   get_primary_position_save                        () const;
         G4bool   get_primary_emission_photon_save                 () const;
-        G4bool   get_primary_emission_photon_electron_save        () const;
+        G4bool   get_primary_emission_electron_save               () const;
         G4bool   get_primary_process_save                         () const;
         G4bool   get_primary_time_save                            () const;
         G4bool   get_photon_length_save                           () const;
@@ -68,7 +69,7 @@ class OutputMessenger : public G4UImessenger
         void set_photoSensor_hits_process_save                ( G4bool   value );
         void set_primary_position_save                        ( G4bool   value );
         void set_primary_emission_photon_save                 ( G4bool   value );
-        void set_primary_emission_photon_electron_save        ( G4bool   value );
+        void set_primary_emission_electron_save               ( G4bool   value );
         void set_primary_process_save                         ( G4bool   value );
         void set_primary_time_save                            ( G4bool   value );
         void set_photon_length_save                           ( G4bool   value );
@@ -86,10 +87,10 @@ class OutputMessenger : public G4UImessenger
         G4UIcmdWithAnInteger* m_command_photoSensor_hits_position_binned_nBinsPerSide;
         G4UIcmdWithABool    * m_command_photoSensor_hits_position_save;
         G4UIcmdWithABool    * m_command_photoSensor_hits_time_save;
-        G4UIcmdWithAString  * m_command_photoSensor_hits_process_save;
+        G4UIcmdWithABool    * m_command_photoSensor_hits_process_save;
         G4UIcmdWithABool    * m_command_primary_position_save;
         G4UIcmdWithABool    * m_command_primary_emission_photon_save;
-        G4UIcmdWithABool    * m_command_primary_emission_photon_electron_save;
+        G4UIcmdWithABool    * m_command_primary_emission_electron_save;
         G4UIcmdWithABool    * m_command_primary_process_save;
         G4UIcmdWithABool    * m_command_primary_time_save;
         G4UIcmdWithABool    * m_command_photon_length_save;
@@ -103,10 +104,10 @@ class OutputMessenger : public G4UImessenger
         G4int    m_variable_photoSensor_hits_position_binned_nBinsPerSide;
         G4bool   m_variable_photoSensor_hits_position_save;
         G4bool   m_variable_photoSensor_hits_time_save;
-        G4String m_variable_photoSensor_hits_process_save;
+        G4bool   m_variable_photoSensor_hits_process_save;
         G4bool   m_variable_primary_position_save;
         G4bool   m_variable_primary_emission_photon_save;
-        G4bool   m_variable_primary_emission_photon_electron_save;
+        G4bool   m_variable_primary_emission_electron_save;
         G4bool   m_variable_primary_process_save;
         G4bool   m_variable_primary_time_save;
         G4bool   m_variable_photon_length_save;

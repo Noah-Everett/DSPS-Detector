@@ -42,8 +42,6 @@
 #include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 int main(int argc, char** argv)
 {
     ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
@@ -114,5 +112,3 @@ int main(int argc, char** argv)
     delete runManager;
     return 0;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

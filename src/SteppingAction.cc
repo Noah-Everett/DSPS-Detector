@@ -45,7 +45,5 @@ SteppingAction::~SteppingAction() {
 }
 
 void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
-    if( m_outputMessenger->get_primary_track_save() && t_step->GetTrack()->GetParentID() == 0 ) {
-        m_outputManager->save_primary_track_step( t_step );
-    }
+    m_outputManager->save_step( t_step );
 }
