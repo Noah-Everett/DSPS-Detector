@@ -28,6 +28,7 @@
 
 #include "globals.hh"
 #include "G4Box.hh"
+#include "G4SDManager.hh"
 
 #include "GeometricObject.hh"
 #include "PhotoSensorSensitiveDetector.hh"
@@ -36,7 +37,7 @@
 class PhotoSensor
 {
     public:
-        PhotoSensor();
+        PhotoSensor( G4String t_name );
        ~PhotoSensor();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
@@ -44,7 +45,7 @@ class PhotoSensor
     protected:
         GeometricObjectBox          * m_surface          { new GeometricObjectBox() };
         GeometricObjectBox          * m_body             { new GeometricObjectBox() };
-        PhotoSensorSensitiveDetector* m_sensitiveDetector{ new PhotoSensorSensitiveDetector( "PhotoSensor" ) };
+        PhotoSensorSensitiveDetector* m_sensitiveDetector{                          };
         ConstructionMessenger       * m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 

@@ -25,7 +25,7 @@
 
 #include "LensSystem.hh"
 
-LensSystem::LensSystem( G4bool t_makeLenses ) {
+LensSystem::LensSystem( G4String t_name, G4bool t_makeLenses ) {
     if( !t_makeLenses ) 
         return;
 

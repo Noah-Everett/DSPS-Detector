@@ -50,10 +50,14 @@
 #include "PhotoSensor.hh"
 #include "LensSensativeDetector.hh"
 #include "DirectionSensitivePhotoDetector.hh"
+#include "CalorimeterSensitiveDetector.hh"
+#include "Calorimeter.hh"
 
 #include <vector>
+#include <string>
 
 using std::vector;
+using std::to_string;
 using CLHEP::pi;
 
 class G4VPhysicalVolume;
@@ -66,16 +70,10 @@ public:
    ~DetectorConstruction();
 
     G4VPhysicalVolume* Construct() override;
-    
-    void make_world                          ();
-    void make_detector                       ();
-    void make_calorimeter                    ();
-    void make_directionSensitivePhotoDetector();
-    void make_GDMLFile                       ( G4String );
-
-    void place_surface( G4ThreeVector );
 
     void print_parameters();
+    
+    void make_GDMLFile( G4String );
 
 protected:
     G4bool m_checkOverlaps{ true };
@@ -96,11 +94,19 @@ protected:
     GeometricObjectBox* m_world             { new GeometricObjectBox() };
     GeometricObjectBox* m_detector_wall     { new GeometricObjectBox() };
     GeometricObjectBox* m_detector_medium   { new GeometricObjectBox() };
-    GeometricObjectBox* m_calorimeter       { new GeometricObjectBox() };
-    GeometricObjectBox* m_calorimeter_middle{ new GeometricObjectBox() };
 
-    LensSystem                     * m_lensSystem                     { nullptr };
-    DirectionSensitivePhotoDetector* m_directionSensitivePhotoDetector{ nullptr };
+    vector< Calorimeter                    * > m_calorimeters_full;
+    vector< Calorimeter                    * > m_calorimeters_middle;
+    vector< DirectionSensitivePhotoDetector* > m_directionSensitivePhotoDetectors;
+
+private: 
+    void make_world   ();
+    void make_detector();
+    Calorimeter                    * make_calorimeter_full               ( G4String );
+    Calorimeter                    * make_calorimeter_middle             ( G4String );
+    DirectionSensitivePhotoDetector* make_directionSensitivePhotoDetector( G4String );
+
+    void place_surface( G4ThreeVector );
 };
 
 #endif

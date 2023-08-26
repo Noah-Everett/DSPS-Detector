@@ -25,15 +25,14 @@
 
 #include "DirectionSensitivePhotoDetector.hh"
 
-DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector() {
-    m_size = m_constructionMessenger->get_photoSensor_surface_size();
-    m_size.setZ( m_constructionMessenger->get_photoSensor_surface_size().z() + m_constructionMessenger->get_photoSensor_body_size().z() );
+DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name ) {
+    m_lensSystem  = new LensSystem ( t_name + "_lensSystem" , true );
+    m_photoSensor = new PhotoSensor( t_name + "_photoSensor"       );
 }
 
 DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
     if( m_photoSensor ) delete m_photoSensor;
     if( m_lensSystem  ) delete m_lensSystem;
-    if( m_parser      ) delete m_parser;
 }
 
 void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {
@@ -41,15 +40,19 @@ void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix,
     m_lensSystem ->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
 }
 
-G4ThreeVector DirectionSensitivePhotoDetector::get_size() const {
-    return m_size;
+G4ThreeVector DirectionSensitivePhotoDetector::get_size() {
+    return G4ThreeVector( get_width(), get_height(), get_depth() );
 }
-G4double DirectionSensitivePhotoDetector::get_width() const {
-    return m_size.x();
+
+G4double DirectionSensitivePhotoDetector::get_width() {
+    return ConstructionMessenger::get_instance()->get_photoSensor_surface_size_width();
 }
-G4double DirectionSensitivePhotoDetector::get_height() const {
-    return m_size.y();
+
+G4double DirectionSensitivePhotoDetector::get_height() {
+    return ConstructionMessenger::get_instance()->get_photoSensor_surface_size_height();
 }
-G4double DirectionSensitivePhotoDetector::get_depth() const {
-    return m_size.z();
+
+G4double DirectionSensitivePhotoDetector::get_depth() {
+    return ConstructionMessenger::get_instance()->get_photoSensor_surface_size_depth()
+         + ConstructionMessenger::get_instance()->get_photoSensor_body_size_depth();
 }

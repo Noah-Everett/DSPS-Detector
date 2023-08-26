@@ -25,7 +25,7 @@
 
 #include "PhotoSensor.hh"
 
-PhotoSensor::PhotoSensor() {
+PhotoSensor::PhotoSensor( G4String t_name ) {
     m_surface->set_material( m_constructionMessenger->get_photoSensor_surface_material() );
     m_body   ->set_material( m_constructionMessenger->get_photoSensor_body_material   () );
 
@@ -37,10 +37,12 @@ PhotoSensor::PhotoSensor() {
     m_surface->set_visAttributes( m_constructionMessenger->get_photoSensor_surface_visAttributes() );
     m_body   ->set_visAttributes( m_constructionMessenger->get_photoSensor_body_visAttributes   () );
 
-    m_surface->set_sensitiveDetector( m_sensitiveDetector );
-
     m_surface->make_logicalVolume();
     m_body   ->make_logicalVolume();
+
+    m_sensitiveDetector = new PhotoSensorSensitiveDetector( t_name );
+    G4SDManager::GetSDMpointer()->AddNewDetector( m_sensitiveDetector );
+    m_surface->set_sensitiveDetector( m_sensitiveDetector );
 }
 
 PhotoSensor::~PhotoSensor() {

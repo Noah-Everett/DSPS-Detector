@@ -23,26 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "PhotoSensorSensitiveDetector.hh"
+#ifndef Calorimeter_h
+#define Calorimeter_h
 
-PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name ) 
-    : G4VSensitiveDetector( t_name ) {
-    // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
-}
+#include "globals.hh"
+#include "G4Material.hh"
 
-PhotoSensorSensitiveDetector::~PhotoSensorSensitiveDetector() {
-}
+#include "GeometricObject.hh"
+#include "ConstructionMessenger.hh"
+#include "CalorimeterSensitiveDetector.hh"
 
-void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
-}
+class Calorimeter
+{
+    public:
+        Calorimeter( G4String t_name, G4ThreeVector t_size );
+       ~Calorimeter();
 
-G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    G4cout << "PhotoSensorSensitiveDetector::ProcessHits" << G4endl;
-    // G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
-    // G4cout << "HERE" << G4endl;
-    // m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
-}
+        static G4ThreeVector get_size  ();
+        static G4double      get_width ();
+        static G4double      get_height();
+        static G4double      get_depth ();
 
-G4String PhotoSensorSensitiveDetector::get_name() {
-    return m_name;
-}
+        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
+
+    protected:
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
+
+        GeometricObjectBox* m_calorimeter{ nullptr };
+        CalorimeterSensitiveDetector* m_calorimeterSensitiveDetector{ nullptr };
+};
+
+#endif

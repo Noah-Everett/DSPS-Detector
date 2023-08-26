@@ -23,26 +23,26 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#include "PhotoSensorSensitiveDetector.hh"
+#include "CalorimeterSensitiveDetector.hh"
 
-PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name ) 
+CalorimeterSensitiveDetector::CalorimeterSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
     // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
 }
 
-PhotoSensorSensitiveDetector::~PhotoSensorSensitiveDetector() {
+CalorimeterSensitiveDetector::~CalorimeterSensitiveDetector() {
 }
 
-void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
+void CalorimeterSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
 }
 
-G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    G4cout << "PhotoSensorSensitiveDetector::ProcessHits" << G4endl;
+G4bool CalorimeterSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
+    G4cout << "CalorimeterSensitiveDetector::ProcessHits" << G4endl;
     // G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
     // G4cout << "HERE" << G4endl;
     // m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
 }
 
-G4String PhotoSensorSensitiveDetector::get_name() {
+G4String CalorimeterSensitiveDetector::get_name() {
     return m_name;
 }

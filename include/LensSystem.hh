@@ -39,7 +39,7 @@ using std::vector;
 class LensSystem
 {
     public:
-        LensSystem( G4bool = true );
+        LensSystem( G4String, G4bool = true );
        ~LensSystem();
 
         void add_lens( Lens* );

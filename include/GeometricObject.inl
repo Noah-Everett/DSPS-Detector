@@ -57,7 +57,8 @@ void GeometricObject< SolidType >::set_material( G4String t_materialName ) {
 template< class SolidType >
 void GeometricObject< SolidType >::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
     m_sensitiveDetector = t_sensitiveDetector; 
-    if( m_logicalVolume ) m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
+    if( m_logicalVolume ) 
+        m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
 }
 
 template< class SolidType >
@@ -133,6 +134,8 @@ void GeometricObject< SolidType >::make_logicalVolume() {
     m_logicalVolume = new G4LogicalVolume( m_solid, m_material, m_name, nullptr, m_sensitiveDetector, nullptr, true );
     if( m_visAttributes ) 
         m_logicalVolume->SetVisAttributes( m_visAttributes );
+    if( m_sensitiveDetector ) 
+        m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
 }
 
 template< class SolidType >
@@ -175,6 +178,9 @@ G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotation
                                                     G4ThreeVector     t_translationVector  , 
                                                     G4LogicalVolume * t_motherLogicalVolume, 
                                                     G4bool            t_isMany              ) {
+    if( !m_logicalVolume ) 
+        make_logicalVolume();
+
     G4int copyNumber = 0;
     if( t_isMany ) {
         copyNumber = m_copyNumber;

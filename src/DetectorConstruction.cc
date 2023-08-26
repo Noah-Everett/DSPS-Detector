@@ -36,8 +36,14 @@ DetectorConstruction::~DetectorConstruction() {
     if( m_world           ) delete m_world              ;
     if( m_detector_wall   ) delete m_detector_wall      ;
     if( m_detector_medium ) delete m_detector_medium    ;
-    if( m_calorimeter     ) delete m_calorimeter        ;
     if( m_GDMLParser      ) delete m_GDMLParser         ;
+
+    for( auto& calorimeter : m_calorimeters_full )
+        if( calorimeter ) delete calorimeter;
+    for( auto& calorimeter : m_calorimeters_middle )
+        if( calorimeter ) delete calorimeter;
+    for( auto& directionSensitivePhotoDetector : m_directionSensitivePhotoDetectors )
+        if( directionSensitivePhotoDetector ) delete directionSensitivePhotoDetector;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -49,8 +55,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     make_world                          ();
     make_detector                       ();
-    make_calorimeter                    ();
-    make_directionSensitivePhotoDetector();
     
     m_world_physicalVolume = 
     m_world          ->place( nullptr, G4ThreeVector(0,0,0), nullptr                              );
@@ -127,24 +131,25 @@ void DetectorConstruction::make_detector() {
     m_detector_medium->make_logicalVolume();
 }
 
-void DetectorConstruction::make_calorimeter() {
-    G4double calorimeter_size_width  = m_constructionMessenger->get_calorimeter_size_width () / 2;
-    G4double calorimeter_size_height = m_constructionMessenger->get_calorimeter_size_height() / 2;
-    G4double calorimeter_size_depth  = m_constructionMessenger->get_calorimeter_size_depth () / 2;
+Calorimeter* DetectorConstruction::make_calorimeter_full( G4String t_name ) {
+    Calorimeter* calorimeter = new Calorimeter( t_name, m_constructionMessenger->get_calorimeter_size() );
 
-    m_calorimeter->set_material( m_constructionMessenger->get_calorimeter_material() );
-    m_calorimeter->set_solid( new G4Box( "calorimeter", calorimeter_size_width, calorimeter_size_height, calorimeter_size_depth ) );
-    m_calorimeter->set_visAttributes( m_constructionMessenger->get_calorimeter_visAttributes() );
-    m_calorimeter->make_logicalVolume();
-
-    m_calorimeter_middle->set_material( m_constructionMessenger->get_calorimeter_material() );
-    m_calorimeter_middle->set_solid( new G4Box( "calorimeter_middle", calorimeter_size_height, calorimeter_size_height, calorimeter_size_depth ) );
-    m_calorimeter_middle->set_visAttributes( m_constructionMessenger->get_calorimeter_visAttributes() );
-    m_calorimeter_middle->make_logicalVolume();
+    m_calorimeters_full.push_back( calorimeter );
+    return calorimeter;
 }
 
-void DetectorConstruction::make_directionSensitivePhotoDetector() {
-    m_directionSensitivePhotoDetector = new DirectionSensitivePhotoDetector();
+Calorimeter* DetectorConstruction::make_calorimeter_middle( G4String t_name ) {
+    Calorimeter* calorimeter = new Calorimeter( t_name, G4ThreeVector( Calorimeter::get_height()/2, Calorimeter::get_height()/2, Calorimeter::get_depth()/2 ) );
+
+    m_calorimeters_middle.push_back( calorimeter );
+    return calorimeter;
+}
+
+DirectionSensitivePhotoDetector* DetectorConstruction::make_directionSensitivePhotoDetector( G4String t_name ) {
+    DirectionSensitivePhotoDetector* directionSensitivePhotoDetector = new DirectionSensitivePhotoDetector( t_name );
+
+    m_directionSensitivePhotoDetectors.push_back( directionSensitivePhotoDetector );
+    return directionSensitivePhotoDetector;
 }
 
 void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
@@ -153,13 +158,13 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
     G4double detector_medium_x  = m_detector_medium->get_solid()->GetXHalfLength();
     G4double detector_medium_y  = m_detector_medium->get_solid()->GetYHalfLength();
     G4double detector_medium_z  = m_detector_medium->get_solid()->GetZHalfLength();
-    G4double calorimeter_width  = m_calorimeter    ->get_solid()->GetXHalfLength();
-    G4double calorimeter_height = m_calorimeter    ->get_solid()->GetYHalfLength();
-    G4double calorimeter_depth  = m_calorimeter    ->get_solid()->GetZHalfLength();
-    G4double DSPD_depth         = m_directionSensitivePhotoDetector->get_depth() / 2;
-    G4int calorimeter_amount_x = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_x();
-    G4int calorimeter_amount_y = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_y();
-    G4int calorimeter_amount_z = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_z();
+    G4double calorimeter_width  = Calorimeter::get_width () / 2;
+    G4double calorimeter_height = Calorimeter::get_height() / 2;
+    G4double calorimeter_depth  = Calorimeter::get_depth () / 2;
+    G4double DSPD_depth         = DirectionSensitivePhotoDetector::get_depth() / 2;
+    G4int calorimeter_amount_x  = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_x();
+    G4int calorimeter_amount_y  = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_y();
+    G4int calorimeter_amount_z  = m_constructionMessenger->get_directionSensitivePhotoDetector_amount_z();
     G4ThreeVector detector_medium   ( detector_medium_x   , detector_medium_y   , detector_medium_z    );
     G4ThreeVector calorimeter       ( calorimeter_width   , calorimeter_height  , calorimeter_depth    );
     G4ThreeVector calorimeter_amount( calorimeter_amount_x, calorimeter_amount_y, calorimeter_amount_z );
@@ -168,11 +173,15 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
     G4ThreeVector axis = m_axis_z.cross( t_axis_normal );
     axis = axis.unit();
     G4RotationMatrix* rotationMatrix = new G4RotationMatrix( axis, angle );
-    rotationMatrix->print( G4cout );
     G4RotationMatrix* rotationMatrixTurn = new G4RotationMatrix( m_axis_z, m_pi_2 );
     *rotationMatrixTurn *= *rotationMatrix;
 
+    G4int    count { 0   };
+    G4String prefix{ "/" };
+
     // place "horizontal" calorimeters
+    count = 0;
+    G4cout << "place horizontal calorimeters" << G4endl;
     G4ThreeVector translation_initial_horizontal( detector_medium_x - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
                                                   detector_medium_y - calorimeter_height - 2*calorimeter_depth,
                                                   detector_medium_z - calorimeter_depth );
@@ -180,11 +189,13 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY() + 1; index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            m_calorimeter->place( rotationMatrix, *rotationMatrix * (translation_initial_horizontal + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            make_calorimeter_full( prefix + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_horizontal + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }
 
     // place "vertical" calorimeters
+    count = 0;
+    G4cout << "place vertical calorimeters" << G4endl;
     G4ThreeVector translation_initial_vertical( detector_medium_x - calorimeter_height - 2*calorimeter_depth,
                                                 detector_medium_y - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
                                                 detector_medium_z - calorimeter_depth );
@@ -192,11 +203,13 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            m_calorimeter->place( rotationMatrixTurn, *rotationMatrix * (translation_initial_vertical + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            make_calorimeter_full( prefix + to_string( count++ ) )->place( rotationMatrixTurn, *rotationMatrix * (translation_initial_vertical + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }
 
     // place "middle" calorimeters
+    count = 0;
+    G4cout << "place middle calorimeters" << G4endl;
     G4ThreeVector translation_initial_middle( detector_medium_x - calorimeter_height - 2*calorimeter_depth,
                                               detector_medium_y - calorimeter_height - 2*calorimeter_depth,
                                               detector_medium_z - calorimeter_depth );
@@ -204,11 +217,13 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY() + 1; index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            m_calorimeter_middle->place( rotationMatrix, *rotationMatrix * (translation_initial_middle + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            make_calorimeter_middle( prefix + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_middle + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }
 
     // place direction sensitive photodetectors
+    count = 0;
+    G4cout << "place direction sensitive photodetectors" << G4endl;
     G4ThreeVector translation_initial_DSPD( detector_medium_x - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
                                             detector_medium_y - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
                                             detector_medium_z - DSPD_depth );
@@ -216,7 +231,8 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            m_directionSensitivePhotoDetector->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            G4cout << prefix + to_string( count ) << G4endl;
+            make_directionSensitivePhotoDetector( prefix + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }
 }

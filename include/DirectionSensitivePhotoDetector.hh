@@ -28,7 +28,6 @@
 
 #include "globals.hh"
 #include "G4Material.hh"
-#include "G4GDMLParser.hh"
 
 #include "GeometricObject.hh"
 #include "LensSystem.hh"
@@ -38,22 +37,19 @@
 class DirectionSensitivePhotoDetector
 {
     public:
-        DirectionSensitivePhotoDetector();
+        DirectionSensitivePhotoDetector( G4String t_name );
        ~DirectionSensitivePhotoDetector();
+
+        static G4ThreeVector get_size  ();
+        static G4double      get_width ();
+        static G4double      get_height();
+        static G4double      get_depth ();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
 
-        G4ThreeVector get_size  () const;
-        G4double      get_width () const;
-        G4double      get_height() const;
-        G4double      get_depth () const;
-
     protected:
-        LensSystem * m_lensSystem { new LensSystem ( true ) };
-        PhotoSensor* m_photoSensor{ new PhotoSensor() };
-        G4ThreeVector m_size;
-        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
-        G4GDMLParser* m_parser{ new G4GDMLParser() };
+        LensSystem * m_lensSystem { nullptr };
+        PhotoSensor* m_photoSensor{ nullptr };
 };
 
 #endif
