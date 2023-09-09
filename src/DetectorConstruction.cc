@@ -39,11 +39,14 @@ DetectorConstruction::~DetectorConstruction() {
     if( m_GDMLParser      ) delete m_GDMLParser         ;
 
     for( auto& calorimeter : m_calorimeters_full )
-        if( calorimeter ) delete calorimeter;
+        if( calorimeter ) 
+            delete calorimeter;
     for( auto& calorimeter : m_calorimeters_middle )
-        if( calorimeter ) delete calorimeter;
+        if( calorimeter ) 
+            delete calorimeter;
     for( auto& directionSensitivePhotoDetector : m_directionSensitivePhotoDetectors )
-        if( directionSensitivePhotoDetector ) delete directionSensitivePhotoDetector;
+        if( directionSensitivePhotoDetector ) 
+            delete directionSensitivePhotoDetector;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -231,7 +234,6 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            G4cout << prefix + to_string( count ) << G4endl;
             make_directionSensitivePhotoDetector( prefix + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }

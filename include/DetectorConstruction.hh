@@ -43,14 +43,11 @@
 
 #include "ConstructionMessenger.hh"
 #include "Materials.hh"
-#include "PhotoSensorSensitiveDetector.hh"
 #include "GeometricObject.hh"
 #include "Lens.hh"
 #include "LensSystem.hh"
 #include "PhotoSensor.hh"
-#include "LensSensativeDetector.hh"
 #include "DirectionSensitivePhotoDetector.hh"
-#include "CalorimeterSensitiveDetector.hh"
 #include "Calorimeter.hh"
 
 #include <vector>

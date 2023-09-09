@@ -42,7 +42,13 @@ GeometricObject< SolidType >::GeometricObject( SolidType           * t_solid    
 }
 
 template< class SolidType >
-GeometricObject< SolidType >::~GeometricObject() {}
+GeometricObject< SolidType >::~GeometricObject() {
+    // if( m_material          ) delete m_material;
+    // if( m_sensitiveDetector ) delete m_sensitiveDetector;
+    if( m_solid             ) delete m_solid;
+    // if( m_logicalVolume     ) delete m_logicalVolume;
+    // if( m_visAttributes     ) delete m_visAttributes;
+}
 
 template< class SolidType >
 void GeometricObject< SolidType >::set_material( G4Material* t_material ) { 
@@ -134,7 +140,7 @@ void GeometricObject< SolidType >::make_logicalVolume() {
     m_logicalVolume = new G4LogicalVolume( m_solid, m_material, m_name, nullptr, m_sensitiveDetector, nullptr, true );
     if( m_visAttributes ) 
         m_logicalVolume->SetVisAttributes( m_visAttributes );
-    if( m_sensitiveDetector ) 
+    if( m_sensitiveDetector )
         m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
 }
 

@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 3.16...3.21)
+cmake_minimum_required(VERSION 3.16...3.24)
 project(DSPD)
 
 #----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ endif()
 
 #----------------------------------------------------------------------------
 # Find NEST package
-#
+
 find_package(NEST REQUIRED)
 include_directories(${NEST_INCLUDE_DIRS})
 

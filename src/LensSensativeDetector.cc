@@ -23,21 +23,27 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-// #include "PhotoSensorSD.hh"
+#include "LensSensitiveDetector.hh"
 
-// PhotoSensorSD::PhotoSensorSD(const G4String& name) : G4VSensitiveDetector(name) {}
+LensSensitiveDetector::LensSensitiveDetector( G4String t_name ) 
+    : G4VSensitiveDetector( t_name ) {
+    // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
+}
 
-// PhotoSensorSD::~PhotoSensorSD() {}
+LensSensitiveDetector::~LensSensitiveDetector() {
+}
 
-// void PhotoSensorSD::Initialize(G4HCofThisEvent* hce) {}
+void LensSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
+}
 
-// G4bool PhotoSensorSD::ProcessHits(G4Step* step, G4TouchableHistory* hist) {
-//     // Process hits when energy deposition occurs in the sensitive volume.
-//     // You can access the energy deposition information from the step and store it for further analysis.
-//     // For example:
-//     G4double energyDeposition = step->GetTotalEnergyDeposit();
+G4bool LensSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
+    G4cout << "LensSensitiveDetector::ProcessHits" << G4endl;
+    // G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
+    // G4cout << "HERE" << G4endl;
+    // m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
+    return true;
+}
 
-//     // Your custom implementation to store the energyDeposition or perform other actions.
-
-//     return true;
-// }
+G4String LensSensitiveDetector::get_name() {
+    return m_name;
+}

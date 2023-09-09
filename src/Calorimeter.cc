@@ -38,6 +38,8 @@ Calorimeter::Calorimeter( G4String t_name, G4ThreeVector t_size ) {
     m_calorimeter->set_visAttributes    ( m_constructionMessenger->get_calorimeter_visAttributes                    () );
     m_calorimeter->set_visibility       ( m_constructionMessenger->get_calorimeter_visibility                       () );
     m_calorimeter->make_logicalVolume   (                                                                              );
+    auto temp = m_calorimeter->get_logicalVolume();
+    G4cout << "HERE: " << temp->GetSensitiveDetector()->GetName() << G4endl;
 }
 
 Calorimeter::~Calorimeter() {

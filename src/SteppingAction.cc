@@ -37,11 +37,9 @@
 #include<cmath>
 
 SteppingAction::SteppingAction() {
-
 }
 
 SteppingAction::~SteppingAction() {
-
 }
 
 void SteppingAction::UserSteppingAction( const G4Step* t_step ) {

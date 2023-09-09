@@ -23,15 +23,32 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-// #include "G4VSensitiveDetector.hh"
-// #include "G4HCofThisEvent.hh"
-// #include "G4Step.hh"
+#ifndef LensSensitiveDetector_h
+#define LensSensitiveDetector_h
 
-// class PhotoSensorSD : public G4VSensitiveDetector {
-// public:
-//     PhotoSensorSD(const G4String& name);
-//     virtual ~PhotoSensorSD();
+#include "G4VSensitiveDetector.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4Step.hh"
 
-//     virtual void Initialize(G4HCofThisEvent* hce);
-//     virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* hist);
-// };
+#include "OutputMessenger.hh"
+#include "OutputManager.hh"
+
+class OutputManager;
+
+class LensSensitiveDetector : public G4VSensitiveDetector 
+{
+    public:
+        LensSensitiveDetector( G4String );
+        virtual ~LensSensitiveDetector();
+
+        virtual void Initialize( G4HCofThisEvent* );
+        virtual G4bool ProcessHits( G4Step*, G4TouchableHistory* );
+
+        G4String get_name();
+    
+    protected:
+        OutputManager* m_outputManager{ OutputManager::get_instance() };
+        G4String m_name;
+};
+
+#endif

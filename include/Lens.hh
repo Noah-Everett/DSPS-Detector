@@ -33,6 +33,7 @@
 
 #include "GeometricObject.hh"
 #include "ConstructionMessenger.hh"
+#include "LensSensitiveDetector.hh"
 
 #include <vector>
 #include <iostream>
@@ -49,7 +50,7 @@ using std::stringstream;
 class Lens
 {
     public:
-        Lens( G4int );
+        Lens( G4int, G4String );
        ~Lens();
         
         friend ostream& operator<<( ostream&,       Lens* );
@@ -60,7 +61,8 @@ class Lens
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
     protected:
-        GeometricObjectUnionSolid* m_geometricObject{ new GeometricObjectUnionSolid() };
+        GeometricObjectUnionSolid* m_lens{ new GeometricObjectUnionSolid() };
+        LensSensitiveDetector    * m_lensSensitiveDetector{ nullptr };
         ConstructionMessenger    * m_constructionMessenger{ ConstructionMessenger::get_instance() };
         G4ThreeVector              m_size;
         

@@ -41,7 +41,7 @@ PhotoSensor::PhotoSensor( G4String t_name ) {
     m_body   ->make_logicalVolume();
 
     m_sensitiveDetector = new PhotoSensorSensitiveDetector( t_name );
-    G4SDManager::GetSDMpointer()->AddNewDetector( m_sensitiveDetector );
+    // G4SDManager::GetSDMpointer()->AddNewDetector( m_sensitiveDetector );
     m_surface->set_sensitiveDetector( m_sensitiveDetector );
 }
 

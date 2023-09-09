@@ -17,3 +17,7 @@
 /output/photon/length/save                            true
 /output/photon/process/save                           true
 /output/photon/time/save                              true
+/output/photon/position/save                          true
+/output/photon/direction/save                         true
+/output/photon/energy/save                            true
+/output/photon/volume/save                            true

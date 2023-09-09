@@ -29,7 +29,7 @@
 
 using std::max;
 
-Lens::Lens( G4int t_nLens ) {
+Lens::Lens( G4int t_nLens, G4String t_name ) {
     G4double         surface_1_radius_x = m_constructionMessenger->get_lens_surface_1_radius_x( t_nLens );
     G4double         surface_1_radius_y = m_constructionMessenger->get_lens_surface_1_radius_y( t_nLens );
     G4double         surface_1_yLimits  = m_constructionMessenger->get_lens_surface_1_yLimits ( t_nLens );
@@ -93,19 +93,20 @@ Lens::Lens( G4int t_nLens ) {
         middleTube_subtract = new G4SubtractionSolid( "middleTube_subtract", middleTube_init, box );
     }
 
-    G4String name = "lens_";
+    G4String name = t_name + "_lens_";
     name += std::to_string( t_nLens );
     G4UnionSolid* temp = new G4UnionSolid( name, middleTube_subtract, surface_1_subtract, nullptr, G4ThreeVector( 0, 0, -surface_1_xLimit + middleTube_size/2*surface_1_radius_x_sign ) );
 
-    m_geometricObject->set_solid( new G4UnionSolid( name, temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
-    // m_geometricObject->set_solid( temp );
-    m_geometricObject->set_material( material );
-    m_geometricObject->set_visAttributes( visAttributes );
-    m_geometricObject->make_logicalVolume();
+    m_lens->set_solid( new G4UnionSolid( name, temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
+    m_lens->set_material( material );
+    m_lens->set_visAttributes( visAttributes );
+    m_lens->set_sensitiveDetector( new LensSensitiveDetector( name ) );
+    m_lens->make_logicalVolume();
 }
 
 Lens::~Lens() {
-    if( m_geometricObject ) delete m_geometricObject;
+    if( m_lens                  ) delete m_lens;
+    if( m_lensSensitiveDetector ) delete m_lensSensitiveDetector;
 }
 
 ostream& operator<<( ostream& t_os, Lens* t_lens )
@@ -128,7 +129,7 @@ void Lens::place( G4RotationMatrix * t_rotationMatrix     ,
                   G4ThreeVector      t_translation        ,
                   G4LogicalVolume  * t_motherLogicalVolume,
                   G4bool             t_isMany              ) {
-    m_geometricObject->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
+    m_lens->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
 }
 
 G4double Lens::get_xLimit( G4double t_radius_x, G4double t_radius_y, G4double t_yLimits, G4double t_position ) {
@@ -141,5 +142,5 @@ G4double Lens::get_xLimit( G4double t_radius_x, G4double t_radius_y, G4double t_
 }
 
 GeometricObjectUnionSolid* Lens::get_geometricObject() const {
-    return m_geometricObject;
+    return m_lens;
 }

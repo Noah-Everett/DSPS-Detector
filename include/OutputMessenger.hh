@@ -58,6 +58,10 @@ class OutputMessenger : public G4UImessenger
         G4bool   get_photon_length_save                           () const;
         G4bool   get_photon_process_save                          () const;
         G4bool   get_photon_time_save                             () const;
+        G4bool   get_photon_position_save                         () const;
+        G4bool   get_photon_direction_save                        () const;
+        G4bool   get_photon_energy_save                           () const;
+        G4bool   get_photon_volume_save                           () const;
 
         void set_GDML_save                                    ( G4bool   value );
         void set_GDML_fileName                                ( G4String value );
@@ -75,6 +79,10 @@ class OutputMessenger : public G4UImessenger
         void set_photon_length_save                           ( G4bool   value );
         void set_photon_process_save                          ( G4bool   value );
         void set_photon_time_save                             ( G4bool   value );
+        void set_photon_position_save                         ( G4bool   value );
+        void set_photon_direction_save                        ( G4bool   value );
+        void set_photon_energy_save                           ( G4bool   value );
+        void set_photon_volume_save                           ( G4bool   value );
 
     protected:
                  OutputMessenger();
@@ -96,6 +104,10 @@ class OutputMessenger : public G4UImessenger
         G4UIcmdWithABool    * m_command_photon_length_save;
         G4UIcmdWithABool    * m_command_photon_process_save;
         G4UIcmdWithABool    * m_command_photon_time_save;
+        G4UIcmdWithABool    * m_command_photon_position_save;
+        G4UIcmdWithABool    * m_command_photon_direction_save;
+        G4UIcmdWithABool    * m_command_photon_energy_save;
+        G4UIcmdWithABool    * m_command_photon_volume_save;
 
         G4bool   m_variable_GDML_save;
         G4String m_variable_GDML_fileName;
@@ -113,6 +125,10 @@ class OutputMessenger : public G4UImessenger
         G4bool   m_variable_photon_length_save;
         G4bool   m_variable_photon_process_save;
         G4bool   m_variable_photon_time_save;
+        G4bool   m_variable_photon_position_save;
+        G4bool   m_variable_photon_direction_save;
+        G4bool   m_variable_photon_energy_save;
+        G4bool   m_variable_photon_volume_save;
     
     private:
         static OutputMessenger* m_instance;

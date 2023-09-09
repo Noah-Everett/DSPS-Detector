@@ -32,8 +32,6 @@
 #include "G4ParticleTable.hh"
 #include "G4SystemOfUnits.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 {
     G4int n_particle = 1;
@@ -49,13 +47,11 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+PrimaryGeneratorAction::~PrimaryGeneratorAction() { 
+    if( fParticleGun )
+        delete fParticleGun; 
+}
 
-PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fParticleGun; }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
-{
+void PrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ) {
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }

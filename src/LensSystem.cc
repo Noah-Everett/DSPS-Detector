@@ -30,12 +30,15 @@ LensSystem::LensSystem( G4String t_name, G4bool t_makeLenses ) {
         return;
 
     for( G4int nLens{ 0 }; nLens < m_constructionMessenger->get_lens_amount(); nLens++ )
-        add_lens( new Lens( nLens ) );
+        add_lens( new Lens( nLens, t_name ) );
 }
 
 LensSystem::~LensSystem() {
+    // G4cout << "HERE3" << G4endl;
     for( Lens* lens : m_lenses )
-        delete lens;
+        if( lens ) 
+            delete lens;
+    // G4cout << "HERE4" << G4endl;
 }
 
 void LensSystem::add_lens( Lens* t_lens ) {
