@@ -110,5 +110,12 @@ int main(int argc, char** argv)
     // job termination
     delete visManager;
     delete runManager;
+
+    OutputManager::delete_instance();
+    Materials    ::delete_instance();
+    UIMessenger  ::delete_instance();
+    OutputMessenger::delete_instance();
+    ConstructionMessenger::delete_instance();
+    
     return 0;
 }

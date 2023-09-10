@@ -64,12 +64,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     m_detector_wall  ->place( nullptr, G4ThreeVector(0,0,0), m_world        ->get_logicalVolume() );
     m_detector_medium->place( nullptr, G4ThreeVector(0,0,0), m_detector_wall->get_logicalVolume() );
 
-    place_surface(  m_axis_x );
-    place_surface( -m_axis_x );
-    place_surface(  m_axis_y );
-    place_surface( -m_axis_y );
-    place_surface(  m_axis_z );
-    place_surface( -m_axis_z );
+    G4int countIndex { 0 };
+    place_surface(  m_axis_x, countIndex++ );
+    place_surface( -m_axis_x, countIndex++ );
+    place_surface(  m_axis_y, countIndex++ );
+    place_surface( -m_axis_y, countIndex++ );
+    place_surface(  m_axis_z, countIndex++ );
+    place_surface( -m_axis_z, countIndex++ );
 
     return m_world_physicalVolume;
 }
@@ -155,7 +156,7 @@ DirectionSensitivePhotoDetector* DetectorConstruction::make_directionSensitivePh
     return directionSensitivePhotoDetector;
 }
 
-void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
+void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_countIndex ) {
     t_axis_normal = t_axis_normal.unit();
 
     G4double detector_medium_x  = m_detector_medium->get_solid()->GetXHalfLength();
@@ -180,7 +181,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal ) {
     *rotationMatrixTurn *= *rotationMatrix;
 
     G4int    count { 0   };
-    G4String prefix{ "/" };
+    G4String prefix{ "/" }; prefix += to_string( t_countIndex ) + "/";
 
     // place "horizontal" calorimeters
     count = 0;

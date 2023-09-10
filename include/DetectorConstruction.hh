@@ -49,6 +49,7 @@
 #include "PhotoSensor.hh"
 #include "DirectionSensitivePhotoDetector.hh"
 #include "Calorimeter.hh"
+#include "OutputManager.hh"
 
 #include <vector>
 #include <string>
@@ -85,6 +86,7 @@ protected:
     ConstructionMessenger  * m_constructionMessenger  { ConstructionMessenger::get_instance() };
     Materials              * m_materials              { Materials::get_instance() };    
     G4GDMLParser           * m_GDMLParser             { new G4GDMLParser() };
+    OutputManager          * m_outputManager          { OutputManager::get_instance() };
     
     G4VPhysicalVolume* m_world_physicalVolume{ nullptr };
 
@@ -103,7 +105,7 @@ private:
     Calorimeter                    * make_calorimeter_middle             ( G4String );
     DirectionSensitivePhotoDetector* make_directionSensitivePhotoDetector( G4String );
 
-    void place_surface( G4ThreeVector );
+    void place_surface( G4ThreeVector, G4int );
 };
 
 #endif

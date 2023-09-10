@@ -41,8 +41,9 @@ void RunAction::BeginOfRunAction(const G4Run*) {
     m_analysisManager->SetNtupleMerging( true );
     m_analysisManager->OpenFile();
 
-    m_outputManager->make_histograms();
-    m_outputManager->make_tuples();
+    m_outputManager->make_tuple_photoSensor_hits();
+    m_outputManager->make_tuple_primary();
+    m_outputManager->make_tuple_photon();
 }
 
 void RunAction::EndOfRunAction(const G4Run* run) {

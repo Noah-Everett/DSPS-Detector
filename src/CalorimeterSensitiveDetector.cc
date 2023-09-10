@@ -27,7 +27,6 @@
 
 CalorimeterSensitiveDetector::CalorimeterSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
-    G4cout << "CalorimeterSensitiveDetector::CalorimeterSensitiveDetector" << G4endl;
 }
 
 CalorimeterSensitiveDetector::~CalorimeterSensitiveDetector() {

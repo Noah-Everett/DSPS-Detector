@@ -50,6 +50,8 @@ OutputMessenger::OutputMessenger() {
     m_command_photoSensor_hits_position_save                = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/save"                , this );
     m_command_photoSensor_hits_time_save                    = new G4UIcmdWithABool    ( "/output/photoSensor/hits/time/save"                    , this );
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
+    m_command_photoSensor_hits_photoSensorID_save           = new G4UIcmdWithABool    ( "/output/photoSensor/hits/photoSensorID/save"           , this );
+    m_command_photoSensor_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/photoSensor/hits/energy/save"                  , this );
     m_command_primary_position_save                         = new G4UIcmdWithABool    ( "/output/primary/position/save"                         , this );
     m_command_primary_emission_photon_save                  = new G4UIcmdWithABool    ( "/output/primary/emission/photon/save"                  , this );
     m_command_primary_emission_electron_save                = new G4UIcmdWithABool    ( "/output/primary/emission/electron/save"                , this );
@@ -73,6 +75,8 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photoSensor_hits_position_save                ) delete m_command_photoSensor_hits_position_save;
     if( m_command_photoSensor_hits_time_save                    ) delete m_command_photoSensor_hits_time_save;
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
+    if( m_command_photoSensor_hits_photoSensorID_save           ) delete m_command_photoSensor_hits_photoSensorID_save;
+    if( m_command_photoSensor_hits_energy_save                  ) delete m_command_photoSensor_hits_energy_save;
     if( m_command_primary_position_save                         ) delete m_command_primary_position_save;
     if( m_command_primary_emission_photon_save                  ) delete m_command_primary_emission_photon_save;
     if( m_command_primary_emission_electron_save                ) delete m_command_primary_emission_electron_save;
@@ -112,6 +116,12 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_photoSensor_hits_process_save ) {
         set_photoSensor_hits_process_save( m_command_photoSensor_hits_process_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/process/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photoSensor_hits_photoSensorID_save ) {
+        set_photoSensor_hits_photoSensorID_save( m_command_photoSensor_hits_photoSensorID_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photoSensor/hits/photoSensorID/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photoSensor_hits_energy_save ) {
+        set_photoSensor_hits_energy_save( m_command_photoSensor_hits_energy_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photoSensor/hits/energy/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_primary_position_save ) {
         set_primary_position_save( m_command_primary_position_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/position/save' to " << t_newValue << G4endl;
@@ -177,6 +187,12 @@ G4bool OutputMessenger::get_photoSensor_hits_time_save() const {
 G4bool OutputMessenger::get_photoSensor_hits_process_save() const {
     return m_variable_photoSensor_hits_process_save;
 }
+G4bool OutputMessenger::get_photoSensor_hits_photoSensorID_save() const {
+    return m_variable_photoSensor_hits_photoSensorID_save;
+}
+G4bool OutputMessenger::get_photoSensor_hits_energy_save() const {
+    return m_variable_photoSensor_hits_energy_save;
+}
 G4bool OutputMessenger::get_primary_position_save() const {
     return m_variable_primary_position_save;
 }
@@ -237,6 +253,12 @@ void OutputMessenger::set_photoSensor_hits_time_save( G4bool t_newValue ) {
 }
 void OutputMessenger::set_photoSensor_hits_process_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_process_save = t_newValue;
+}
+void OutputMessenger::set_photoSensor_hits_photoSensorID_save( G4bool t_newValue ) {
+    m_variable_photoSensor_hits_photoSensorID_save = t_newValue;
+}
+void OutputMessenger::set_photoSensor_hits_energy_save( G4bool t_newValue ) {
+    m_variable_photoSensor_hits_energy_save = t_newValue;
 }
 void OutputMessenger::set_primary_position_save( G4bool t_newValue ) {
     m_variable_primary_position_save = t_newValue;

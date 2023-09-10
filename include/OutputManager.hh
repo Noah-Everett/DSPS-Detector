@@ -44,9 +44,6 @@ class OutputManager
         static OutputManager* get_instance   ();
         static void           delete_instance();
 
-        void make_histograms();
-        void make_tuples    ();
-
         void add_histogram_1D( G4String, G4String, G4int, G4double, G4double );
         void add_histogram_2D( G4String, G4String, G4int, G4double, G4double, G4int, G4double, G4double );
         void add_tuple_initialize    ( G4String, G4String );
@@ -63,6 +60,15 @@ class OutputManager
         G4int get_histogram_2D_id( G4String );
         G4int get_tuple_id       ( G4String );
 
+        void make_histogram_photoSensor_hits( G4String );
+        void make_tuple_photoSensor_hits    ();
+        void make_tuple_primary             ();
+        void make_tuple_photon              ();
+        
+        void save_step_photoSensor_hits( const G4Step*, G4String );
+        void save_step_primary         ( const G4Step* );
+        void save_step_photon          ( const G4Step* );
+
     private:
                  OutputManager();
         virtual ~OutputManager();
@@ -77,15 +83,6 @@ class OutputManager
         map< G4String, G4int > m_histogram_1D_id;
         map< G4String, G4int > m_histogram_2D_id;
         map< G4String, G4int > m_tuple_id;
-
-        void make_histogram_photoSensor_hits();
-        void make_tuple_photoSensor_hits    ();
-        void make_tuple_primary             ();
-        void make_tuple_photon              ();
-
-        void save_step_photoSensor_hits( const G4Step* );
-        void save_step_primary         ( const G4Step* );
-        void save_step_photon          ( const G4Step* );
 
     protected:
         static OutputManager* m_instance;
