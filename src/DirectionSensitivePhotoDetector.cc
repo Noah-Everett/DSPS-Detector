@@ -25,9 +25,11 @@
 
 #include "DirectionSensitivePhotoDetector.hh"
 
-DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name ) {
-    m_lensSystem  = new LensSystem ( t_name + "_lensSystem" , true );
-    m_photoSensor = new PhotoSensor( t_name + "_photoSensor"       );
+DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name, G4String t_index ) {
+    t_name = t_name + "/" + t_index;
+
+    m_lensSystem  = new LensSystem ( t_name + "/lensSystem" , true );
+    m_photoSensor = new PhotoSensor( t_name + "/photoSensor"       );
 }
 
 DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {

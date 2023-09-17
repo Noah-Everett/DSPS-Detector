@@ -31,8 +31,8 @@ PhotoSensor::PhotoSensor( G4String t_name ) {
 
     G4ThreeVector surface_size = m_constructionMessenger->get_photoSensor_surface_size();
     G4ThreeVector body_size    = m_constructionMessenger->get_photoSensor_body_size   ();
-    m_surface->set_solid( new G4Box( "surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
-    m_body   ->set_solid( new G4Box( "body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
+    m_surface->set_solid( new G4Box( t_name + "/surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
+    m_body   ->set_solid( new G4Box( t_name + "/body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
 
     m_surface->set_visAttributes( m_constructionMessenger->get_photoSensor_surface_visAttributes() );
     m_body   ->set_visAttributes( m_constructionMessenger->get_photoSensor_body_visAttributes   () );
@@ -40,16 +40,15 @@ PhotoSensor::PhotoSensor( G4String t_name ) {
     m_surface->make_logicalVolume();
     m_body   ->make_logicalVolume();
 
-    m_sensitiveDetector = new PhotoSensorSensitiveDetector( t_name );
-    // G4SDManager::GetSDMpointer()->AddNewDetector( m_sensitiveDetector );
-    m_surface->set_sensitiveDetector( m_sensitiveDetector );
+    m_sensitiveDetector = new PhotoSensorSensitiveDetector( t_name + "/sensitiveDetector" );
+    m_surface->get_logicalVolume()->SetSensitiveDetector( m_sensitiveDetector );
 }
 
 PhotoSensor::~PhotoSensor() {
-    if( m_surface           ) delete m_surface;
-    if( m_body              ) delete m_body;
-    if( m_sensitiveDetector ) delete m_sensitiveDetector;
+    if( m_surface ) delete m_surface;
+    if( m_body    ) delete m_body;
 }
+
 void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     , 
                          G4ThreeVector     t_translation        , 
                          G4LogicalVolume * t_motherLogicalVolume, 

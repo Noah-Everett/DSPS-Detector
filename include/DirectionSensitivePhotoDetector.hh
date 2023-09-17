@@ -37,7 +37,7 @@
 class DirectionSensitivePhotoDetector
 {
     public:
-        DirectionSensitivePhotoDetector( G4String t_name );
+        DirectionSensitivePhotoDetector( G4String, G4String );
        ~DirectionSensitivePhotoDetector();
 
         static G4ThreeVector get_size  ();

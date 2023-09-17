@@ -43,9 +43,17 @@ SteppingAction::~SteppingAction() {
 }
 
 void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
-    if( t_step->GetTrack()->GetParentID() == 0 )
-        m_outputManager->save_step_primary( t_step );
-    else if( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() == 0 ) {
-        m_outputManager->save_step_photon( t_step );
+    if( !t_step->GetPostStepPoint()->GetPhysicalVolume() ) {
+        t_step->GetTrack()->SetTrackStatus( fKillTrackAndSecondaries );
+        return;
     }
+
+    if( abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 0  || 
+        abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 22    ) {
+        m_outputManager->save_step_photon( t_step );
+    } else if( t_step->GetTrack()->GetParentID() == 0 )
+        m_outputManager->save_step_primary( t_step );
+
+    if( t_step->GetTrack()->GetVolume()->GetName() != "detector_medium" )
+        G4cout << t_step->GetTrack()->GetVolume()->GetName() << G4endl;
 }

@@ -36,7 +36,7 @@
 class Calorimeter
 {
     public:
-        Calorimeter( G4String t_name, G4ThreeVector t_size );
+        Calorimeter( G4String, G4String, G4ThreeVector );
        ~Calorimeter();
 
         static G4ThreeVector get_size  ();

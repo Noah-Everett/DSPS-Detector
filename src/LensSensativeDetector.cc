@@ -27,7 +27,8 @@
 
 LensSensitiveDetector::LensSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
-    // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
+    G4SDManager::GetSDMpointer()->AddNewDetector( this );
+    G4cout << "LensSensitiveDetector::LensSensitiveDetector( " << t_name << " )" << G4endl;
 }
 
 LensSensitiveDetector::~LensSensitiveDetector() {

@@ -63,8 +63,10 @@ void GeometricObject< SolidType >::set_material( G4String t_materialName ) {
 template< class SolidType >
 void GeometricObject< SolidType >::set_sensitiveDetector( G4VSensitiveDetector* t_sensitiveDetector ) { 
     m_sensitiveDetector = t_sensitiveDetector; 
-    if( m_logicalVolume ) 
+    if( m_logicalVolume ) {
         m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
+        G4cout << "Sensitive detector set to " << m_sensitiveDetector->GetName() << G4endl;
+    }
 }
 
 template< class SolidType >

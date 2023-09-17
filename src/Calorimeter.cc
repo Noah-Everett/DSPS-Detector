@@ -25,14 +25,16 @@
 
 #include "Calorimeter.hh"
 
-Calorimeter::Calorimeter( G4String t_name, G4ThreeVector t_size ) {
+Calorimeter::Calorimeter( G4String t_name, G4String t_index, G4ThreeVector t_size ) {
+    t_name = t_name + "/" + t_index;
+
     m_calorimeter                  = new GeometricObjectBox();
-    m_calorimeterSensitiveDetector = new CalorimeterSensitiveDetector( t_name );
+    m_calorimeterSensitiveDetector = new CalorimeterSensitiveDetector( t_name + "/sensitiveDetector" );
 
     if( t_size == G4ThreeVector() )
         t_size = G4ThreeVector( get_width()/2, get_height()/2, get_depth()/2 );
 
-    m_calorimeter->set_solid            ( new G4Box( t_name + "_G4Box", t_size.x(), t_size.y(), t_size.z() ) );
+    m_calorimeter->set_solid            ( new G4Box( t_name + "/G4Box", t_size.x(), t_size.y(), t_size.z() ) );
     m_calorimeter->set_material         ( m_constructionMessenger->get_calorimeter_material                         () );
     m_calorimeter->set_sensitiveDetector( m_calorimeterSensitiveDetector                                               );
     m_calorimeter->set_visAttributes    ( m_constructionMessenger->get_calorimeter_visAttributes                    () );
@@ -42,8 +44,7 @@ Calorimeter::Calorimeter( G4String t_name, G4ThreeVector t_size ) {
 }
 
 Calorimeter::~Calorimeter() {
-    if( m_calorimeter                  ) delete m_calorimeter;
-    if( m_calorimeterSensitiveDetector ) delete m_calorimeterSensitiveDetector;
+    if( m_calorimeter ) delete m_calorimeter;
 }
 
 void Calorimeter::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {

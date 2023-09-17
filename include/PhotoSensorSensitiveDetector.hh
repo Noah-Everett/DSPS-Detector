@@ -29,6 +29,7 @@
 #include "G4VSensitiveDetector.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
+#include "G4SDManager.hh"
 
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"

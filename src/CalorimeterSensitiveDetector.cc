@@ -25,8 +25,12 @@
 
 #include "CalorimeterSensitiveDetector.hh"
 
+#include "G4SDManager.hh"
+
 CalorimeterSensitiveDetector::CalorimeterSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
+    G4SDManager::GetSDMpointer()->AddNewDetector( this );
+    G4cout << "CalorimeterSensitiveDetector::CalorimeterSensitiveDetector( " << t_name << " )" << G4endl;
 }
 
 CalorimeterSensitiveDetector::~CalorimeterSensitiveDetector() {

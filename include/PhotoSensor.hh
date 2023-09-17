@@ -28,7 +28,6 @@
 
 #include "globals.hh"
 #include "G4Box.hh"
-#include "G4SDManager.hh"
 
 #include "GeometricObject.hh"
 #include "PhotoSensorSensitiveDetector.hh"
@@ -37,7 +36,7 @@
 class PhotoSensor
 {
     public:
-        PhotoSensor( G4String t_name );
+        PhotoSensor( G4String );
        ~PhotoSensor();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );

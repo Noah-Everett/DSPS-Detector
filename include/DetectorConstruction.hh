@@ -101,9 +101,9 @@ protected:
 private: 
     void make_world   ();
     void make_detector();
-    Calorimeter                    * make_calorimeter_full               ( G4String );
-    Calorimeter                    * make_calorimeter_middle             ( G4String );
-    DirectionSensitivePhotoDetector* make_directionSensitivePhotoDetector( G4String );
+    Calorimeter                    * make_calorimeter_full               ( G4String, G4String );
+    Calorimeter                    * make_calorimeter_middle             ( G4String, G4String );
+    DirectionSensitivePhotoDetector* make_directionSensitivePhotoDetector( G4String, G4String );
 
     void place_surface( G4ThreeVector, G4int );
 };

@@ -28,8 +28,10 @@
 #include <cmath>
 
 using std::max;
+using std::to_string;
 
-Lens::Lens( G4int t_nLens, G4String t_name ) {
+Lens::Lens( G4String t_name, G4int t_nLens ) {
+    t_name = t_name + "/lens/" + to_string( t_nLens);
     G4double         surface_1_radius_x = m_constructionMessenger->get_lens_surface_1_radius_x( t_nLens );
     G4double         surface_1_radius_y = m_constructionMessenger->get_lens_surface_1_radius_y( t_nLens );
     G4double         surface_1_yLimits  = m_constructionMessenger->get_lens_surface_1_yLimits ( t_nLens );
@@ -54,20 +56,20 @@ Lens::Lens( G4int t_nLens, G4String t_name ) {
     G4int    surface_1_radius_x_sign = surface_1_radius_x > 0 ? 1 : -1;
     G4int    surface_2_radius_x_sign = surface_2_radius_x > 0 ? 1 : -1;
 
-    G4Ellipsoid     * surface_1_init  = new G4Ellipsoid     ( "surface_1_init" , surface_1_radius_y, surface_1_radius_y, abs( surface_1_radius_x ) );
-    G4Ellipsoid     * surface_2_init  = new G4Ellipsoid     ( "surface_2_init" , surface_2_radius_y, surface_2_radius_y, abs( surface_2_radius_x ) );
-    G4EllipticalTube* middleTube_init = new G4EllipticalTube( "middleTube_init", surface_1_radius_y, surface_1_radius_y, middleTube_size / 2       );
+    G4Ellipsoid     * surface_1_init  = new G4Ellipsoid     ( t_name + "/surface/1/init" , surface_1_radius_y, surface_1_radius_y, abs( surface_1_radius_x ) );
+    G4Ellipsoid     * surface_2_init  = new G4Ellipsoid     ( t_name + "/surface/2/init" , surface_2_radius_y, surface_2_radius_y, abs( surface_2_radius_x ) );
+    G4EllipticalTube* middleTube_init = new G4EllipticalTube( t_name + "/middleTube/init", surface_1_radius_y, surface_1_radius_y, middleTube_size / 2       );
 
-    G4Box* surface_1_boxOriginCut = new G4Box( "surface_1_boxOriginCut", surface_1_radius_y, surface_1_radius_y, abs( surface_1_radius_x ) );
-    G4Box* surface_2_boxOriginCut = new G4Box( "surface_2_boxOriginCut", surface_2_radius_y, surface_2_radius_y, abs( surface_2_radius_x ) );
-    G4SubtractionSolid* surface_1_originCut = new G4SubtractionSolid( "surface_1_originCut", surface_1_init, surface_1_boxOriginCut, nullptr, G4ThreeVector( 0, 0, -surface_1_radius_x ) );
-    G4SubtractionSolid* surface_2_originCut = new G4SubtractionSolid( "surface_2_originCut", surface_2_init, surface_2_boxOriginCut, nullptr, G4ThreeVector( 0, 0, -surface_2_radius_x ) );
+    G4Box* surface_1_boxOriginCut = new G4Box( t_name + "/surface/1/boxOriginCut", surface_1_radius_y, surface_1_radius_y, abs( surface_1_radius_x ) );
+    G4Box* surface_2_boxOriginCut = new G4Box( t_name + "/surface/2/boxOriginCut", surface_2_radius_y, surface_2_radius_y, abs( surface_2_radius_x ) );
+    G4SubtractionSolid* surface_1_originCut = new G4SubtractionSolid( t_name + "/surface/1/originCut", surface_1_init, surface_1_boxOriginCut, nullptr, G4ThreeVector( 0, 0, -surface_1_radius_x ) );
+    G4SubtractionSolid* surface_2_originCut = new G4SubtractionSolid( t_name + "/surface/2/originCut", surface_2_init, surface_2_boxOriginCut, nullptr, G4ThreeVector( 0, 0, -surface_2_radius_x ) );
 
-    G4Box* surface_1_box  = new G4Box( "surface_1_box" , surface_1_radius_y, surface_1_radius_y, abs( surface_1_xLimit ) );
-    G4Box* surface_2_box  = new G4Box( "surface_2_box" , surface_2_radius_y, surface_2_radius_y, abs( surface_2_xLimit ) );
-    G4Box* middleTube_box = new G4Box( "middleTube_box", 1e-5              , 1e-5              , 1e-5                    );
-    G4SubtractionSolid* surface_1_trim  = new G4SubtractionSolid( "surface_1_originCut", surface_1_originCut, surface_1_box  );
-    G4SubtractionSolid* surface_2_trim  = new G4SubtractionSolid( "surface_2_originCut", surface_2_originCut, surface_2_box  );
+    G4Box* surface_1_box  = new G4Box( t_name + "/surface/1/box" , surface_1_radius_y, surface_1_radius_y, abs( surface_1_xLimit ) );
+    G4Box* surface_2_box  = new G4Box( t_name + "/surface/2/box" , surface_2_radius_y, surface_2_radius_y, abs( surface_2_xLimit ) );
+    G4Box* middleTube_box = new G4Box( t_name + "/middleTube/box", 1e-5              , 1e-5              , 1e-5                    );
+    G4SubtractionSolid* surface_1_trim  = new G4SubtractionSolid( t_name + "/surface/1/originCut", surface_1_originCut, surface_1_box  );
+    G4SubtractionSolid* surface_2_trim  = new G4SubtractionSolid( t_name + "/surface/2/originCut", surface_2_originCut, surface_2_box  );
 
     G4SubtractionSolid* surface_1_subtract  = nullptr;
     G4SubtractionSolid* surface_2_subtract  = nullptr;
@@ -76,37 +78,34 @@ Lens::Lens( G4int t_nLens, G4String t_name ) {
     G4double max_width    = max( surface_1_radius_y, surface_2_radius_y                    );
     G4double max_distance = max( max( surface_1_radius_x, surface_2_radius_x ), distance/2 );
     if( circular ) {
-        G4EllipticalTube* tube_inner = new G4EllipticalTube( "tube_inner", surface_1_yLimits, surface_1_yLimits, max_distance*4 );
-        G4EllipticalTube* tube_outer = new G4EllipticalTube( "tube_outer", max_width        , max_width        , max_distance*4 );
-        G4SubtractionSolid* tube = new G4SubtractionSolid( "tube", tube_outer, tube_inner );
+        G4EllipticalTube* tube_inner = new G4EllipticalTube( t_name + "/tube_inner", surface_1_yLimits, surface_1_yLimits, max_distance*4 );
+        G4EllipticalTube* tube_outer = new G4EllipticalTube( t_name + "/tube_outer", max_width        , max_width        , max_distance*4 );
+        G4SubtractionSolid* tube = new G4SubtractionSolid( t_name + "/tube", tube_outer, tube_inner );
 
-        surface_1_subtract  = new G4SubtractionSolid( "surface_1_subtract" , surface_1_trim , tube );
-        surface_2_subtract  = new G4SubtractionSolid( "surface_2_subtract" , surface_2_trim , tube );
-        middleTube_subtract = new G4SubtractionSolid( "middleTube_subtract", middleTube_init, tube );
+        surface_1_subtract  = new G4SubtractionSolid( t_name + "surface/1/subtract" , surface_1_trim , tube );
+        surface_2_subtract  = new G4SubtractionSolid( t_name + "surface/2/subtract" , surface_2_trim , tube );
+        middleTube_subtract = new G4SubtractionSolid( t_name + "middleTube/subtract", middleTube_init, tube );
     } else {
-        G4Box* box_inner = new G4Box( "box_inner", width/2  , width/2  , max_distance*4 );
-        G4Box* box_outer = new G4Box( "box_outer", max_width, max_width, max_distance*4 );
-        G4SubtractionSolid* box = new G4SubtractionSolid( "surface_1", box_outer, box_inner );
+        G4Box* box_inner = new G4Box( t_name + "box/inner", width/2  , width/2  , max_distance*4 );
+        G4Box* box_outer = new G4Box( t_name + "box/outer", max_width, max_width, max_distance*4 );
+        G4SubtractionSolid* box = new G4SubtractionSolid( t_name + "surface/1", box_outer, box_inner );
 
-        surface_1_subtract  = new G4SubtractionSolid( "surface_1_subtract" , surface_1_trim , box );
-        surface_2_subtract  = new G4SubtractionSolid( "surface_2_subtract" , surface_2_trim , box );
-        middleTube_subtract = new G4SubtractionSolid( "middleTube_subtract", middleTube_init, box );
+        surface_1_subtract  = new G4SubtractionSolid( t_name + "surface/1/subtract" , surface_1_trim , box );
+        surface_2_subtract  = new G4SubtractionSolid( t_name + "surface/2/subtract" , surface_2_trim , box );
+        middleTube_subtract = new G4SubtractionSolid( t_name + "middleTube/subtract", middleTube_init, box );
     }
 
-    G4String name = t_name + "_lens_";
-    name += std::to_string( t_nLens );
-    G4UnionSolid* temp = new G4UnionSolid( name, middleTube_subtract, surface_1_subtract, nullptr, G4ThreeVector( 0, 0, -surface_1_xLimit + middleTube_size/2*surface_1_radius_x_sign ) );
+    G4UnionSolid* temp = new G4UnionSolid( t_name + "/temp", middleTube_subtract, surface_1_subtract, nullptr, G4ThreeVector( 0, 0, -surface_1_xLimit + middleTube_size/2*surface_1_radius_x_sign ) );
 
-    m_lens->set_solid( new G4UnionSolid( name, temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
+    m_lens->set_solid( new G4UnionSolid( t_name + "/solid", temp, surface_2_subtract, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit + middleTube_size/2*surface_2_radius_x_sign ) ) );
     m_lens->set_material( material );
     m_lens->set_visAttributes( visAttributes );
-    m_lens->set_sensitiveDetector( new LensSensitiveDetector( name ) );
+    m_lens->set_sensitiveDetector( new LensSensitiveDetector( t_name + "/sensitiveDetector" ) );
     m_lens->make_logicalVolume();
 }
 
 Lens::~Lens() {
-    if( m_lens                  ) delete m_lens;
-    if( m_lensSensitiveDetector ) delete m_lensSensitiveDetector;
+    if( m_lens ) delete m_lens;
 }
 
 ostream& operator<<( ostream& t_os, Lens* t_lens )

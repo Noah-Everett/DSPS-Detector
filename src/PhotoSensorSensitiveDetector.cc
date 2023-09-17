@@ -28,6 +28,7 @@
 PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
     // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
+    // if( t_name == "/0/0_photoSensor" )
     m_outputManager->make_histogram_photoSensor_hits( t_name );
 }
 

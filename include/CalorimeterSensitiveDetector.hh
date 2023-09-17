@@ -29,6 +29,7 @@
 #include "G4VSensitiveDetector.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
+#include "G4SDManager.hh"
 
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
@@ -41,8 +42,8 @@ class CalorimeterSensitiveDetector : public G4VSensitiveDetector
         CalorimeterSensitiveDetector( G4String );
         virtual ~CalorimeterSensitiveDetector();
 
-        virtual void Initialize( G4HCofThisEvent* );
-        virtual G4bool ProcessHits( G4Step*, G4TouchableHistory* );
+        void Initialize( G4HCofThisEvent* );
+        G4bool ProcessHits( G4Step*, G4TouchableHistory* );
 
         G4String get_name();
     

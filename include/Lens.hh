@@ -50,7 +50,7 @@ using std::stringstream;
 class Lens
 {
     public:
-        Lens( G4int, G4String );
+        Lens( G4String, G4int );
        ~Lens();
         
         friend ostream& operator<<( ostream&,       Lens* );
