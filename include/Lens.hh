@@ -60,11 +60,15 @@ class Lens
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
+        G4String         get_name         ();
+        G4LogicalVolume* get_logicalVolume();
+
     protected:
         GeometricObjectUnionSolid* m_lens{ new GeometricObjectUnionSolid() };
         LensSensitiveDetector    * m_lensSensitiveDetector{ nullptr };
         ConstructionMessenger    * m_constructionMessenger{ ConstructionMessenger::get_instance() };
         G4ThreeVector              m_size;
+        G4String                   m_name;
         
         G4ThreeVector m_axis_y{ 0, 1, 0 };
         G4double m_pi_2 = 0.5 * pi;

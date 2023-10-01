@@ -43,6 +43,9 @@ class Calorimeter
         static G4double      get_width ();
         static G4double      get_height();
         static G4double      get_depth ();
+        
+        G4String         get_name         ();
+        G4LogicalVolume* get_logicalVolume();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
 
@@ -51,6 +54,8 @@ class Calorimeter
 
         GeometricObjectBox* m_calorimeter{ nullptr };
         CalorimeterSensitiveDetector* m_calorimeterSensitiveDetector{ nullptr };
+
+        G4String m_name;
 };
 
 #endif

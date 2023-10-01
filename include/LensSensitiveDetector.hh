@@ -40,10 +40,10 @@ class LensSensitiveDetector : public G4VSensitiveDetector
 {
     public:
         LensSensitiveDetector( G4String );
-        virtual ~LensSensitiveDetector();
+       ~LensSensitiveDetector() override = default;
 
-        virtual void Initialize( G4HCofThisEvent* );
-        virtual G4bool ProcessHits( G4Step*, G4TouchableHistory* );
+        void Initialize( G4HCofThisEvent* ) override;
+        G4bool ProcessHits( G4Step*, G4TouchableHistory* ) override;
 
         G4String get_name();
     

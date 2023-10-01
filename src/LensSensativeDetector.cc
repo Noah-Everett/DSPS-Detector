@@ -27,21 +27,14 @@
 
 LensSensitiveDetector::LensSensitiveDetector( G4String t_name ) 
     : G4VSensitiveDetector( t_name ) {
-    G4SDManager::GetSDMpointer()->AddNewDetector( this );
-    G4cout << "LensSensitiveDetector::LensSensitiveDetector( " << t_name << " )" << G4endl;
-}
-
-LensSensitiveDetector::~LensSensitiveDetector() {
+    G4cout << G4endl;
+    collectionName.insert( "LensSensitiveDetector" );
 }
 
 void LensSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
 }
 
 G4bool LensSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    G4cout << "LensSensitiveDetector::ProcessHits" << G4endl;
-    // G4int sensorHistogramID = m_outputManager->get_histogram_id( m_name );
-    // G4cout << "HERE" << G4endl;
-    // m_analysisManager->FillH2( sensorHistogramID, t_step->GetPreStepPoint()->GetPosition().x(), t_step->GetPreStepPoint()->GetPosition().y() );
     return true;
 }
 

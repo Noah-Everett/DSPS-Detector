@@ -202,3 +202,8 @@ G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotation
                               t_isMany             , 
                               copyNumber            );
 }
+
+template< class SolidType >
+G4String GeometricObject< SolidType >::get_name() const { 
+    return m_name; 
+}

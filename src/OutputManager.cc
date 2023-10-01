@@ -50,7 +50,7 @@ OutputManager::~OutputManager() {
 void OutputManager::make_histogram_photoSensor_hits( G4String t_photoSensorID ) {
     G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
     G4double width = m_constructionMessenger->get_photoSensor_body_size_width();
-    G4int nBins = width / m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
+    G4int nBins = m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
     add_histogram_2D( t_photoSensorID,
                       t_photoSensorID,
                       nBins, -width/2, width/2, 
@@ -132,7 +132,7 @@ void OutputManager::add_histogram_1D( G4String t_name, G4String t_title, G4int t
 void OutputManager::add_histogram_2D( G4String t_name, G4String t_title, G4int t_nbinsx, G4double t_xmin, G4double t_xmax, G4int t_nbinsy, G4double t_ymin, G4double t_ymax ) {
     G4cout << "OutputManager::add_histogram_2D: " << t_name << G4endl;
     m_analysisManager = G4AnalysisManager::Instance();
-    // m_analysisManager->CreateH2( t_name, t_title, t_nbinsx, t_xmin, t_xmax, t_nbinsy, t_ymin, t_ymax );
+    m_analysisManager->CreateH2( t_name, t_title, t_nbinsx, t_xmin, t_xmax, t_nbinsy, t_ymin, t_ymax );
 }
 
 void OutputManager::add_tuple_initialize( G4String t_name, G4String t_title ) {
@@ -195,13 +195,27 @@ G4int OutputManager::get_tuple_id( G4String t_name ) {
     return m_tuple_id[ t_name ];
 }
 
-void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t_photoSensorID ) {
+void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t_photoSensorID, G4ThreeVector t_position, G4RotationMatrix t_rotation ) {
     G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << G4endl;
     m_index_histogram = get_histogram_2D_id( t_photoSensorID );
+    m_index_histogram = m_analysisManager->GetH2Id( t_photoSensorID );
+    G4cout << "m_outputMessenger->get_photoSensor_hits_position_binned_save(): " << m_outputMessenger->get_photoSensor_hits_position_binned_save() << G4endl;
+    G4ThreeVector relativePosition = t_step->GetPostStepPoint()->GetPosition() - t_position;
+    G4cout << "Before rotation:" << G4endl;
+    G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
+    G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
+    G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
+    relativePosition = t_rotation * relativePosition;
+    G4cout << "After rotation:" << G4endl;
+    G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
+    G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
+    G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
     if( m_outputMessenger->get_photoSensor_hits_position_binned_save() ) {
+        G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << " binned" << G4endl;
+        G4cout << "m_index_histogram: " << m_index_histogram << G4endl;
         m_analysisManager->FillH2( m_index_histogram, 
-                                   t_step->GetPostStepPoint()->GetPosition().x(), 
-                                   t_step->GetPostStepPoint()->GetPosition().y() );
+                                   relativePosition.x(), 
+                                   relativePosition.y() );
     }
 
     m_index_tuple  = get_tuple_id( "photoSensor_hits" );

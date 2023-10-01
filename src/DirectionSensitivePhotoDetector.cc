@@ -26,10 +26,10 @@
 #include "DirectionSensitivePhotoDetector.hh"
 
 DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name, G4String t_index ) {
-    t_name = t_name + "/" + t_index;
+    t_name = t_name + "_" + t_index;
 
-    m_lensSystem  = new LensSystem ( t_name + "/lensSystem" , true );
-    m_photoSensor = new PhotoSensor( t_name + "/photoSensor"       );
+    m_lensSystem  = new LensSystem ( t_name + "_lensSystem" , true );
+    m_photoSensor = new PhotoSensor( t_name + "_photoSensor" );
 }
 
 DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
@@ -57,4 +57,12 @@ G4double DirectionSensitivePhotoDetector::get_height() {
 G4double DirectionSensitivePhotoDetector::get_depth() {
     return ConstructionMessenger::get_instance()->get_photoSensor_surface_size_depth()
          + ConstructionMessenger::get_instance()->get_photoSensor_body_size_depth();
+}
+
+LensSystem * DirectionSensitivePhotoDetector::get_lensSystem() {
+    return m_lensSystem;
+}
+
+PhotoSensor* DirectionSensitivePhotoDetector::get_photoSensor() {
+    return m_photoSensor;
 }

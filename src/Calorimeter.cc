@@ -26,21 +26,18 @@
 #include "Calorimeter.hh"
 
 Calorimeter::Calorimeter( G4String t_name, G4String t_index, G4ThreeVector t_size ) {
-    t_name = t_name + "/" + t_index;
+    m_name = t_name + "_" + t_index;
 
-    m_calorimeter                  = new GeometricObjectBox();
-    m_calorimeterSensitiveDetector = new CalorimeterSensitiveDetector( t_name + "/sensitiveDetector" );
+    m_calorimeter = new GeometricObjectBox();
 
     if( t_size == G4ThreeVector() )
         t_size = G4ThreeVector( get_width()/2, get_height()/2, get_depth()/2 );
 
-    m_calorimeter->set_solid            ( new G4Box( t_name + "/G4Box", t_size.x(), t_size.y(), t_size.z() ) );
+    m_calorimeter->set_solid            ( new G4Box( t_name + "_G4Box", t_size.x(), t_size.y(), t_size.z() ) );
     m_calorimeter->set_material         ( m_constructionMessenger->get_calorimeter_material                         () );
-    m_calorimeter->set_sensitiveDetector( m_calorimeterSensitiveDetector                                               );
     m_calorimeter->set_visAttributes    ( m_constructionMessenger->get_calorimeter_visAttributes                    () );
     m_calorimeter->set_visibility       ( m_constructionMessenger->get_calorimeter_visibility                       () );
     m_calorimeter->make_logicalVolume   (                                                                              );
-    auto temp = m_calorimeter->get_logicalVolume();
 }
 
 Calorimeter::~Calorimeter() {
@@ -65,4 +62,12 @@ G4double Calorimeter::get_height() {
 
 G4double Calorimeter::get_depth() {
     return ConstructionMessenger::get_instance()->get_calorimeter_size_depth();
+}
+
+G4String Calorimeter::get_name() {
+    return m_name;
+}
+
+G4LogicalVolume* Calorimeter::get_logicalVolume() {
+    return m_calorimeter->get_logicalVolume();
 }

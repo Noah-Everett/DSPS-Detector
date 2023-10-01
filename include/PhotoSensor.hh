@@ -41,11 +41,18 @@ class PhotoSensor
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
+        G4String                      get_name             ();
+        GeometricObjectBox          * get_surface          ();
+        GeometricObjectBox          * get_body             ();
+        PhotoSensorSensitiveDetector* get_sensitiveDetector();
+
     protected:
         GeometricObjectBox          * m_surface          { new GeometricObjectBox() };
         GeometricObjectBox          * m_body             { new GeometricObjectBox() };
         PhotoSensorSensitiveDetector* m_sensitiveDetector{                          };
         ConstructionMessenger       * m_constructionMessenger{ ConstructionMessenger::get_instance() };
+
+        G4String m_name;
 };
 
 #endif

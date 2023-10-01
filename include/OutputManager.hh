@@ -65,7 +65,7 @@ class OutputManager
         void make_tuple_primary             ();
         void make_tuple_photon              ();
         
-        void save_step_photoSensor_hits( const G4Step*, G4String );
+        void save_step_photoSensor_hits( const G4Step*, G4String, G4ThreeVector, G4RotationMatrix );
         void save_step_primary         ( const G4Step* );
         void save_step_photon          ( const G4Step* );
 

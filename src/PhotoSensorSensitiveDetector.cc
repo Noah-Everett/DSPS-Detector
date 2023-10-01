@@ -25,27 +25,38 @@
 
 #include "PhotoSensorSensitiveDetector.hh"
 
-PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name ) 
+PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name )
     : G4VSensitiveDetector( t_name ) {
-    // m_outputManager->add_histogram_2D( t_name, t_name, 100, 0, 100, 100, 0, 100 );
-    // if( t_name == "/0/0_photoSensor" )
+    m_name = t_name;
+    collectionName.insert( "PhotoSensorSensitiveDetector" );
     m_outputManager->make_histogram_photoSensor_hits( t_name );
-}
-
-PhotoSensorSensitiveDetector::~PhotoSensorSensitiveDetector() {
 }
 
 void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
 }
 
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    G4cout << "PhotoSensorSensitiveDetector::ProcessHits" << G4endl;
-
-    m_outputManager->save_step_photoSensor_hits( t_step, m_name );
+    m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix );
 
     return true;
 }
 
 G4String PhotoSensorSensitiveDetector::get_name() {
     return m_name;
+}
+
+void PhotoSensorSensitiveDetector::set_position( G4ThreeVector t_position ) {
+    m_position = t_position;
+}
+
+void PhotoSensorSensitiveDetector::set_rotationMatrix( G4RotationMatrix t_rotationMatrix ) {
+    m_rotationMatrix = t_rotationMatrix;
+}
+
+G4ThreeVector PhotoSensorSensitiveDetector::get_position() {
+    return m_position;
+}
+
+G4RotationMatrix PhotoSensorSensitiveDetector::get_rotationMatrix() {
+    return m_rotationMatrix;
 }

@@ -26,22 +26,21 @@
 #include "PhotoSensor.hh"
 
 PhotoSensor::PhotoSensor( G4String t_name ) {
+    m_name = t_name;
+
     m_surface->set_material( m_constructionMessenger->get_photoSensor_surface_material() );
     m_body   ->set_material( m_constructionMessenger->get_photoSensor_body_material   () );
 
     G4ThreeVector surface_size = m_constructionMessenger->get_photoSensor_surface_size();
     G4ThreeVector body_size    = m_constructionMessenger->get_photoSensor_body_size   ();
-    m_surface->set_solid( new G4Box( t_name + "/surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
-    m_body   ->set_solid( new G4Box( t_name + "/body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
+    m_surface->set_solid( new G4Box( t_name + "_surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
+    m_body   ->set_solid( new G4Box( t_name + "_body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
 
     m_surface->set_visAttributes( m_constructionMessenger->get_photoSensor_surface_visAttributes() );
     m_body   ->set_visAttributes( m_constructionMessenger->get_photoSensor_body_visAttributes   () );
 
     m_surface->make_logicalVolume();
     m_body   ->make_logicalVolume();
-
-    m_sensitiveDetector = new PhotoSensorSensitiveDetector( t_name + "/sensitiveDetector" );
-    m_surface->get_logicalVolume()->SetSensitiveDetector( m_sensitiveDetector );
 }
 
 PhotoSensor::~PhotoSensor() {
@@ -64,4 +63,20 @@ void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     ,
     translation_body    += t_translation;
     m_surface->place( t_rotationMatrix, translation_surface, t_motherLogicalVolume, t_isMany );
     m_body   ->place( t_rotationMatrix, translation_body   , t_motherLogicalVolume, t_isMany );
+}
+
+G4String PhotoSensor::get_name() {
+    return m_name;
+}
+
+GeometricObjectBox* PhotoSensor::get_surface() {
+    return m_surface;
+}
+
+GeometricObjectBox* PhotoSensor::get_body() {
+    return m_body;
+}
+
+PhotoSensorSensitiveDetector* PhotoSensor::get_sensitiveDetector() {
+    return m_sensitiveDetector;
 }

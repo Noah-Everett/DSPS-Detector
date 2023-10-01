@@ -34,11 +34,9 @@ LensSystem::LensSystem( G4String t_name, G4bool t_makeLenses ) {
 }
 
 LensSystem::~LensSystem() {
-    // G4cout << "HERE3" << G4endl;
     for( Lens* lens : m_lenses )
         if( lens ) 
             delete lens;
-    // G4cout << "HERE4" << G4endl;
 }
 
 void LensSystem::add_lens( Lens* t_lens ) {

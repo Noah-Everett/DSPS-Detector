@@ -47,6 +47,9 @@ class DirectionSensitivePhotoDetector
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
 
+        LensSystem * get_lensSystem ();
+        PhotoSensor* get_photoSensor();
+
     protected:
         LensSystem * m_lensSystem { nullptr };
         PhotoSensor* m_photoSensor{ nullptr };

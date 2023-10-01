@@ -41,6 +41,7 @@
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
+#include "G4SDManager.hh"
 
 int main(int argc, char** argv)
 {
@@ -64,9 +65,14 @@ int main(int argc, char** argv)
 
     auto runManager = G4RunManagerFactory::CreateRunManager();
 
+    G4SDManager::GetSDMpointer()->SetVerboseLevel( 1 );
     Materials* materials = Materials::get_instance();
     DetectorConstruction* det = new DetectorConstruction();
     runManager->SetUserInitialization( det );
+    // G4SDManager::GetSDMpointer()->Activate( "/DSPD/+x/67/photoSensor/sensitiveDetector", true );
+    // auto i = G4SDManager::GetSDMpointer()->GetCollectionID(0);
+    // G4cout << G4SDManager::GetSDMpointer()->GetCollectionName(i) << G4endl;
+    // G4cout << G4SDManager::GetSDMpointer()->FindSensitiveDetector( "/DSPD_+x_21_lensSystem_lens_1_solid" )->GetName() << G4endl;
 
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
@@ -86,7 +92,7 @@ int main(int argc, char** argv)
     runManager->SetUserInitialization(physicsList);
 
     runManager->SetUserInitialization(new ActionInitialization() );
-
+    
     // initialize visualization
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();

@@ -75,6 +75,7 @@ class GeometricObject
         G4LogicalVolume     * get_logicalVolume    () const;
         G4bool                get_visibility       () const;
         G4VisAttributes     * get_visAttributes    () const;
+        G4String              get_name             () const;
 
     private:
         G4String              m_name             { ""      };

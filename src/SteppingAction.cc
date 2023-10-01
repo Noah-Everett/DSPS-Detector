@@ -53,7 +53,4 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
         m_outputManager->save_step_photon( t_step );
     } else if( t_step->GetTrack()->GetParentID() == 0 )
         m_outputManager->save_step_primary( t_step );
-
-    if( t_step->GetTrack()->GetVolume()->GetName() != "detector_medium" )
-        G4cout << t_step->GetTrack()->GetVolume()->GetName() << G4endl;
 }

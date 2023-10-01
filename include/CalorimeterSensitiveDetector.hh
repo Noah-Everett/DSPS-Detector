@@ -40,10 +40,10 @@ class CalorimeterSensitiveDetector : public G4VSensitiveDetector
 {
     public:
         CalorimeterSensitiveDetector( G4String );
-        virtual ~CalorimeterSensitiveDetector();
+       ~CalorimeterSensitiveDetector() override = default;
 
-        void Initialize( G4HCofThisEvent* );
-        G4bool ProcessHits( G4Step*, G4TouchableHistory* );
+        void Initialize( G4HCofThisEvent* ) override;
+        G4bool ProcessHits( G4Step*, G4TouchableHistory* ) override;
 
         G4String get_name();
     

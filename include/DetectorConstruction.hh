@@ -68,6 +68,7 @@ public:
    ~DetectorConstruction();
 
     G4VPhysicalVolume* Construct() override;
+    void ConstructSDandField() override;
 
     void print_parameters();
     
@@ -97,6 +98,8 @@ protected:
     vector< Calorimeter                    * > m_calorimeters_full;
     vector< Calorimeter                    * > m_calorimeters_middle;
     vector< DirectionSensitivePhotoDetector* > m_directionSensitivePhotoDetectors;
+    vector< G4ThreeVector                    > m_directionSensitivePhotoDetectors_positions;
+    vector< G4RotationMatrix                 > m_directionSensitivePhotoDetectors_rotationMatrices;
 
 private: 
     void make_world   ();
