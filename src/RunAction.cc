@@ -26,6 +26,16 @@
 #include "RunAction.hh"
 
 RunAction::RunAction() {
+    m_analysisManager = G4AnalysisManager::Instance();
+    m_analysisManager->SetDefaultFileType( "root" );
+    m_analysisManager->SetFileName( "output" );
+    m_analysisManager->SetVerboseLevel( 1 );
+    // m_analysisManager->SetActivation( true );
+    m_analysisManager->SetNtupleMerging( true );
+    
+    m_outputManager->make_tuple_photoSensor_hits();
+    m_outputManager->make_tuple_primary();
+    m_outputManager->make_tuple_photon();
 }
 
 RunAction::~RunAction() {
@@ -34,20 +44,12 @@ RunAction::~RunAction() {
 
 void RunAction::BeginOfRunAction(const G4Run*) {
     m_analysisManager = G4AnalysisManager::Instance();
-    m_analysisManager->SetDefaultFileType( "root" );
-    m_analysisManager->SetFileName( m_outputMessenger->get_fileName() );
-    m_analysisManager->SetVerboseLevel( 1 );
-    m_analysisManager->SetActivation( true );
-    m_analysisManager->SetNtupleMerging( true );
+    m_analysisManager->Reset();
     m_analysisManager->OpenFile();
-
-    m_outputManager->make_tuple_photoSensor_hits();
-    m_outputManager->make_tuple_primary();
-    m_outputManager->make_tuple_photon();
 }
 
 void RunAction::EndOfRunAction(const G4Run* run) {
     m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->Write();
-    m_analysisManager->CloseFile();
+    m_analysisManager->CloseFile( false );
 }

@@ -65,13 +65,16 @@ class OutputManager
         void make_tuple_primary             ();
         void make_tuple_photon              ();
         
-        void save_step_photoSensor_hits( const G4Step*, G4String, G4ThreeVector, G4RotationMatrix );
+        void save_step_photoSensor_hits( const G4Step*, G4String, G4ThreeVector, G4RotationMatrix, G4bool );
         void save_step_primary         ( const G4Step* );
         void save_step_photon          ( const G4Step* );
+
+        void reset();
 
     private:
                  OutputManager();
         virtual ~OutputManager();
+
         OutputMessenger      * m_outputMessenger{ OutputMessenger  ::get_instance() };
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
         G4AnalysisManager    * m_analysisManager{ G4AnalysisManager::Instance    () };

@@ -1,0 +1,21 @@
+/run/initialize
+
+/control/verbose 0 #2
+/run/verbose 0 #2
+/event/verbose 0
+/tracking/verbose 0 #1
+#/process/verbose 1
+
+/gun/particle e-
+/gun/energy 3 MeV #1200 keV
+/gun/position 0 0 0
+/gun/direction 1 0 0
+/analysis/setFileName calibration_1_0_0.root
+/run/beamOn 1
+
+/gun/particle PhotonCreator
+/gun/energy 3 MeV #1200 keV
+/gun/position 0 0 0
+/gun/direction 0 1 0
+/analysis/setFileName calibration_0_1_0.root
+/run/beamOn 10000

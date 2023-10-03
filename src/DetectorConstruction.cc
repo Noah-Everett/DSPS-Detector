@@ -143,7 +143,7 @@ Calorimeter* DetectorConstruction::make_calorimeter_full( G4String t_name, G4Str
 }
 
 Calorimeter* DetectorConstruction::make_calorimeter_middle( G4String t_name, G4String t_index ) {
-    Calorimeter* calorimeter = new Calorimeter( t_name, t_index, G4ThreeVector( Calorimeter::get_height()/2, Calorimeter::get_height()/2, Calorimeter::get_depth()/2 ) );
+    Calorimeter* calorimeter = new Calorimeter( t_name, t_index, G4ThreeVector( Calorimeter::get_height(), Calorimeter::get_height(), Calorimeter::get_depth() ) );
 
     m_calorimeters_middle.push_back( calorimeter );
     return calorimeter;

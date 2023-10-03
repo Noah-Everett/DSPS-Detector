@@ -36,14 +36,12 @@ ActionInitialization::ActionInitialization() {
 ActionInitialization::~ActionInitialization() {
 }
 
-void ActionInitialization::BuildForMaster() const
-{
-  RunAction* runAction = new RunAction();
-  SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
+void ActionInitialization::BuildForMaster() const {
+    RunAction* runAction = new RunAction();
+    SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 }
 
-void ActionInitialization::Build() const
-{
+void ActionInitialization::Build() const {
     PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
     SetUserAction( primaryGeneratorAction );
 

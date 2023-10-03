@@ -1,17 +1,17 @@
 /GDML/save                                            false
 /GDML/fileName                                        geometry.gdml
 
-/output/fileName                                      output.root
-
 /output/photoSensor/hits/position/binned/save         true
 /output/photoSensor/hits/position/binned/nBinsPerSide 100
-/output/photoSensor/hits/position/save                true
+/output/photoSensor/hits/position/absolute/save       true
+/output/photoSensor/hits/position/relative/save       true
 /output/photoSensor/hits/time/save                    true
 /output/photoSensor/hits/process/save                 true
 /output/photoSensor/hits/photoSensorID/save           true
 /output/photoSensor/hits/energy/save                  true
 
 /output/primary/position/save                         true
+/output/primary/direction/save                        true
 /output/primary/emission/photon/save                  true
 /output/primary/emission/electron/save                true
 /output/primary/process/save                          true

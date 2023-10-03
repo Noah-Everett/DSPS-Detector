@@ -36,7 +36,7 @@ void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
 }
 
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix );
+    m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix, false );
 
     return true;
 }

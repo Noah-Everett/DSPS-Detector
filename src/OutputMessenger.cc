@@ -44,15 +44,16 @@ void OutputMessenger::delete_instance() {
 OutputMessenger::OutputMessenger() {
     m_command_GDML_save                                     = new G4UIcmdWithABool    ( "/GDML/save"                                            , this );
     m_command_GDML_fileName                                 = new G4UIcmdWithAString  ( "/GDML/fileName"                                        , this );
-    m_command_fileName                                      = new G4UIcmdWithAString  ( "/output/fileName"                                      , this );
     m_command_photoSensor_hits_position_binned_save         = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/binned/save"         , this );
     m_command_photoSensor_hits_position_binned_nBinsPerSide = new G4UIcmdWithAnInteger( "/output/photoSensor/hits/position/binned/nBinsPerSide" , this );
-    m_command_photoSensor_hits_position_save                = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/save"                , this );
+    m_command_photoSensor_hits_position_absolute_save       = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/absolute/save"       , this );
+    m_command_photoSensor_hits_position_relative_save       = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/relative/save"       , this );
     m_command_photoSensor_hits_time_save                    = new G4UIcmdWithABool    ( "/output/photoSensor/hits/time/save"                    , this );
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
     m_command_photoSensor_hits_photoSensorID_save           = new G4UIcmdWithABool    ( "/output/photoSensor/hits/photoSensorID/save"           , this );
     m_command_photoSensor_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/photoSensor/hits/energy/save"                  , this );
     m_command_primary_position_save                         = new G4UIcmdWithABool    ( "/output/primary/position/save"                         , this );
+    m_command_primary_direction_save                        = new G4UIcmdWithABool    ( "/output/primary/direction/save"                        , this );
     m_command_primary_emission_photon_save                  = new G4UIcmdWithABool    ( "/output/primary/emission/photon/save"                  , this );
     m_command_primary_emission_electron_save                = new G4UIcmdWithABool    ( "/output/primary/emission/electron/save"                , this );
     m_command_primary_process_save                          = new G4UIcmdWithABool    ( "/output/primary/process/save"                          , this );
@@ -69,15 +70,16 @@ OutputMessenger::OutputMessenger() {
 OutputMessenger::~OutputMessenger() {
     if( m_command_GDML_save                                     ) delete m_command_GDML_save;
     if( m_command_GDML_fileName                                 ) delete m_command_GDML_fileName;
-    if( m_command_fileName                                      ) delete m_command_fileName;
     if( m_command_photoSensor_hits_position_binned_save         ) delete m_command_photoSensor_hits_position_binned_save;
     if( m_command_photoSensor_hits_position_binned_nBinsPerSide ) delete m_command_photoSensor_hits_position_binned_nBinsPerSide;
-    if( m_command_photoSensor_hits_position_save                ) delete m_command_photoSensor_hits_position_save;
+    if( m_command_photoSensor_hits_position_absolute_save       ) delete m_command_photoSensor_hits_position_absolute_save;
+    if( m_command_photoSensor_hits_position_relative_save       ) delete m_command_photoSensor_hits_position_relative_save;
     if( m_command_photoSensor_hits_time_save                    ) delete m_command_photoSensor_hits_time_save;
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
     if( m_command_photoSensor_hits_photoSensorID_save           ) delete m_command_photoSensor_hits_photoSensorID_save;
     if( m_command_photoSensor_hits_energy_save                  ) delete m_command_photoSensor_hits_energy_save;
     if( m_command_primary_position_save                         ) delete m_command_primary_position_save;
+    if( m_command_primary_direction_save                        ) delete m_command_primary_direction_save;
     if( m_command_primary_emission_photon_save                  ) delete m_command_primary_emission_photon_save;
     if( m_command_primary_emission_electron_save                ) delete m_command_primary_emission_electron_save;
     if( m_command_primary_process_save                          ) delete m_command_primary_process_save;
@@ -98,18 +100,18 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_GDML_fileName ) {
         set_GDML_fileName( t_newValue );
         G4cout << "Setting `/GDML/fileName' to " << t_newValue << G4endl;
-    } else if( t_command == m_command_fileName ) {
-        set_fileName( t_newValue );
-        G4cout << "Setting `/output/fileName' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photoSensor_hits_position_binned_save ) {
         set_photoSensor_hits_position_binned_save( m_command_photoSensor_hits_position_binned_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/position/binned/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photoSensor_hits_position_binned_nBinsPerSide ) {
         set_photoSensor_hits_position_binned_nBinsPerSide( m_command_photoSensor_hits_position_binned_nBinsPerSide->GetNewIntValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/position/binned/nBinsPerSide' to " << t_newValue << G4endl;
-    } else if( t_command == m_command_photoSensor_hits_position_save ) {
-        set_photoSensor_hits_position_save( m_command_photoSensor_hits_position_save->GetNewBoolValue( t_newValue ) );
-        G4cout << "Setting `/output/photoSensor/hits/position/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photoSensor_hits_position_absolute_save ) {
+        set_photoSensor_hits_position_absolute_save( m_command_photoSensor_hits_position_absolute_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photoSensor/hits/position/absolute/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photoSensor_hits_position_relative_save ) {
+        set_photoSensor_hits_position_relative_save( m_command_photoSensor_hits_position_relative_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photoSensor/hits/position/relative/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photoSensor_hits_time_save ) {
         set_photoSensor_hits_time_save( m_command_photoSensor_hits_time_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/time/save' to " << t_newValue << G4endl;
@@ -125,6 +127,9 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_primary_position_save ) {
         set_primary_position_save( m_command_primary_position_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/position/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_primary_direction_save ) {
+        set_primary_direction_save( m_command_primary_direction_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/primary/direction/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_primary_emission_photon_save ) {
         set_primary_emission_photon_save( m_command_primary_emission_photon_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/emission/photon/save' to " << t_newValue << G4endl;
@@ -169,17 +174,17 @@ G4bool OutputMessenger::get_GDML_save() const {
 G4String OutputMessenger::get_GDML_fileName() const {
     return m_variable_GDML_fileName;
 }
-G4String OutputMessenger::get_fileName() const {
-    return m_variable_fileName;
-}
 G4bool OutputMessenger::get_photoSensor_hits_position_binned_save() const {
     return m_variable_photoSensor_hits_position_binned_save;
 }
 G4int OutputMessenger::get_photoSensor_hits_position_binned_nBinsPerSide() const {
     return m_variable_photoSensor_hits_position_binned_nBinsPerSide;
 }
-G4bool OutputMessenger::get_photoSensor_hits_position_save() const {
-    return m_variable_photoSensor_hits_position_save;
+G4bool OutputMessenger::get_photoSensor_hits_position_absolute_save() const {
+    return m_variable_photoSensor_hits_position_absolute_save;
+}
+G4bool OutputMessenger::get_photoSensor_hits_position_relative_save() const {
+    return m_variable_photoSensor_hits_position_relative_save;
 }
 G4bool OutputMessenger::get_photoSensor_hits_time_save() const {
     return m_variable_photoSensor_hits_time_save;
@@ -195,6 +200,9 @@ G4bool OutputMessenger::get_photoSensor_hits_energy_save() const {
 }
 G4bool OutputMessenger::get_primary_position_save() const {
     return m_variable_primary_position_save;
+}
+G4bool OutputMessenger::get_primary_direction_save() const {
+    return m_variable_primary_direction_save;
 }
 G4bool OutputMessenger::get_primary_emission_photon_save() const {
     return m_variable_primary_emission_photon_save;
@@ -236,17 +244,17 @@ void OutputMessenger::set_GDML_save( G4bool t_newValue ) {
 void OutputMessenger::set_GDML_fileName( G4String t_newValue ) {
     m_variable_GDML_fileName = t_newValue;
 }
-void OutputMessenger::set_fileName( G4String t_newValue ) {
-    m_variable_fileName = t_newValue;
-}
 void OutputMessenger::set_photoSensor_hits_position_binned_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_position_binned_save = t_newValue;
 }
 void OutputMessenger::set_photoSensor_hits_position_binned_nBinsPerSide( G4int t_newValue ) {
     m_variable_photoSensor_hits_position_binned_nBinsPerSide = t_newValue;
 }
-void OutputMessenger::set_photoSensor_hits_position_save( G4bool t_newValue ) {
-    m_variable_photoSensor_hits_position_save = t_newValue;
+void OutputMessenger::set_photoSensor_hits_position_absolute_save( G4bool t_newValue ) {
+    m_variable_photoSensor_hits_position_absolute_save = t_newValue;
+}
+void OutputMessenger::set_photoSensor_hits_position_relative_save( G4bool t_newValue ) {
+    m_variable_photoSensor_hits_position_relative_save = t_newValue;
 }
 void OutputMessenger::set_photoSensor_hits_time_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_time_save = t_newValue;
@@ -262,6 +270,9 @@ void OutputMessenger::set_photoSensor_hits_energy_save( G4bool t_newValue ) {
 }
 void OutputMessenger::set_primary_position_save( G4bool t_newValue ) {
     m_variable_primary_position_save = t_newValue;
+}
+void OutputMessenger::set_primary_direction_save( G4bool t_newValue ) {
+    m_variable_primary_direction_save = t_newValue;
 }
 void OutputMessenger::set_primary_emission_photon_save( G4bool t_newValue ) {
     m_variable_primary_emission_photon_save = t_newValue;

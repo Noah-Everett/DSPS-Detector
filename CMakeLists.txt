@@ -51,6 +51,7 @@ set(DSPD_SCRIPTS
     macros/parameters_lens.mac
     macros/parameters_output.mac
     macros/event.mac
+    macros/calibration.mac
     macros/gui.mac
     macros/vis.mac
    )

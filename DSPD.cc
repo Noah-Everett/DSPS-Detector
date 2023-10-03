@@ -30,6 +30,7 @@
 #include "Materials.hh"
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
+#include "PhotonCreator.inl"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -63,16 +64,12 @@ int main(int argc, char** argv)
     if( UImessenger->get_showGUI() || argc == 1 )
         ui = new G4UIExecutive(argc, argv);
 
-    auto runManager = G4RunManagerFactory::CreateRunManager();
+    auto runManager = G4RunManagerFactory::CreateRunManager( G4RunManagerType::Default );
 
     G4SDManager::GetSDMpointer()->SetVerboseLevel( 1 );
     Materials* materials = Materials::get_instance();
     DetectorConstruction* det = new DetectorConstruction();
     runManager->SetUserInitialization( det );
-    // G4SDManager::GetSDMpointer()->Activate( "/DSPD/+x/67/photoSensor/sensitiveDetector", true );
-    // auto i = G4SDManager::GetSDMpointer()->GetCollectionID(0);
-    // G4cout << G4SDManager::GetSDMpointer()->GetCollectionName(i) << G4endl;
-    // G4cout << G4SDManager::GetSDMpointer()->FindSensitiveDetector( "/DSPD_+x_21_lensSystem_lens_1_solid" )->GetName() << G4endl;
 
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
@@ -90,6 +87,8 @@ int main(int argc, char** argv)
 
     physicsList->RegisterPhysics(opticalPhysics);
     runManager->SetUserInitialization(physicsList);
+
+    make_photonCreator();
 
     runManager->SetUserInitialization(new ActionInitialization() );
     

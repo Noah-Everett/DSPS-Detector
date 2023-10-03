@@ -59,8 +59,11 @@ void OutputManager::make_histogram_photoSensor_hits( G4String t_photoSensorID ) 
 
 void OutputManager::make_tuple_photoSensor_hits() {
     add_tuple_initialize( "photoSensor_hits", "photoSensor_hits" );
-    if( m_outputMessenger->get_photoSensor_hits_position_save() ) {
-        add_tuple_column_3vector( "photoSensor_hits_position" );
+    if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() ) {
+        add_tuple_column_3vector( "photoSensor_hits_position_absolute" );
+    }
+    if( m_outputMessenger->get_photoSensor_hits_position_relative_save() ) {
+        add_tuple_column_3vector( "photoSensor_hits_position_relative" );
     }
     if( m_outputMessenger->get_photoSensor_hits_time_save() ) {
         add_tuple_column_double( "photoSensor_hits_time" );
@@ -81,6 +84,9 @@ void OutputManager::make_tuple_primary() {
     add_tuple_initialize( "primary", "primary" );
     if( m_outputMessenger->get_primary_position_save() ) {
         add_tuple_column_3vector( "primary_position" );
+    }
+    if( m_outputMessenger->get_primary_direction_save() ) {
+        add_tuple_column_3vector( "primary_direction" );
     }
     if( m_outputMessenger->get_primary_emission_photon_save() ) {
         add_tuple_column_boolean( "primary_emission_photon" );
@@ -195,24 +201,31 @@ G4int OutputManager::get_tuple_id( G4String t_name ) {
     return m_tuple_id[ t_name ];
 }
 
-void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t_photoSensorID, G4ThreeVector t_position, G4RotationMatrix t_rotation ) {
+void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t_photoSensorID, G4ThreeVector t_position, G4RotationMatrix t_rotation, G4bool t_verbose = false ) {
     G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << G4endl;
     m_index_histogram = get_histogram_2D_id( t_photoSensorID );
     m_index_histogram = m_analysisManager->GetH2Id( t_photoSensorID );
-    G4cout << "m_outputMessenger->get_photoSensor_hits_position_binned_save(): " << m_outputMessenger->get_photoSensor_hits_position_binned_save() << G4endl;
+    if( t_verbose )
+        G4cout << "m_outputMessenger->get_photoSensor_hits_position_binned_save(): " << m_outputMessenger->get_photoSensor_hits_position_binned_save() << G4endl;
     G4ThreeVector relativePosition = t_step->GetPostStepPoint()->GetPosition() - t_position;
-    G4cout << "Before rotation:" << G4endl;
-    G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
-    G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
-    G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
+    if( t_verbose ) {
+        G4cout << "Before rotation:" << G4endl;
+        G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
+        G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
+        G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
+    }
     relativePosition = t_rotation * relativePosition;
-    G4cout << "After rotation:" << G4endl;
-    G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
-    G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
-    G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
+    if( t_verbose ) {
+        G4cout << "After rotation:" << G4endl;
+        G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
+        G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
+        G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
+    }
     if( m_outputMessenger->get_photoSensor_hits_position_binned_save() ) {
-        G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << " binned" << G4endl;
-        G4cout << "m_index_histogram: " << m_index_histogram << G4endl;
+        if( t_verbose ) {
+            G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << " binned" << G4endl;
+            G4cout << "m_index_histogram: " << m_index_histogram << G4endl;
+        }
         m_analysisManager->FillH2( m_index_histogram, 
                                    relativePosition.x(), 
                                    relativePosition.y() );
@@ -220,10 +233,15 @@ void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t
 
     m_index_tuple  = get_tuple_id( "photoSensor_hits" );
     m_index_column = 0;
-    if( m_outputMessenger->get_photoSensor_hits_position_save() ) {
+    if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() ) {
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().x() );
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().y() );
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().z() );
+    }
+    if( m_outputMessenger->get_photoSensor_hits_position_relative_save() ) {
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.x() );
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.y() );
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.z() );
     }
     if( m_outputMessenger->get_photoSensor_hits_time_save() ) {
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetGlobalTime() );
@@ -247,6 +265,11 @@ void OutputManager::save_step_primary( const G4Step* t_step ) {
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().x() );
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().y() );
         m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().z() );
+    }
+    if( m_outputMessenger->get_primary_direction_save() ) {
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().x() );
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().y() );
+        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().z() );
     }
     if( m_outputMessenger->get_primary_emission_photon_save() ) {
         m_analysisManager->FillNtupleIColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetTrackID() ); // clearly wrong
@@ -292,4 +315,10 @@ void OutputManager::save_step_photon( const G4Step* t_step ) {
         m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPhysicalVolume()->GetName() );
     }
     m_analysisManager->AddNtupleRow( m_index_tuple );
+}
+
+void OutputManager::reset() {
+    m_histogram_1D_id.clear();
+    m_histogram_2D_id.clear();
+    m_tuple_id       .clear();
 }
