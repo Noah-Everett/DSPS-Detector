@@ -38,6 +38,7 @@ ActionInitialization::~ActionInitialization() {
 
 void ActionInitialization::BuildForMaster() const {
     RunAction* runAction = new RunAction();
+    G4cout << "HERE0" << G4endl;
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 }
 
@@ -46,16 +47,21 @@ void ActionInitialization::Build() const {
     SetUserAction( primaryGeneratorAction );
 
     RunAction* runAction = new RunAction();
+    G4cout << "HERE1" << G4endl;
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
+    G4cout << "HERE2" << G4endl;
 
     EventAction* eventAction = new EventAction( runAction );
     SetUserAction( eventAction );
+    G4cout << "HERE3" << G4endl;
 
     SteppingAction* steppingAction = new SteppingAction();
     SetUserAction( steppingAction );
+    G4cout << "HERE4" << G4endl;
 
     StackingAction* stackingAction = new StackingAction();
     SetUserAction( stackingAction );
+    G4cout << "HERE5" << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

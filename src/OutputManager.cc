@@ -27,10 +27,16 @@
 
 OutputManager* OutputManager::m_instance{ nullptr };
 
-OutputManager* OutputManager::get_instance() {
-    if ( !m_instance ) {
+OutputManager* OutputManager::get_instance( G4bool t_new, G4AnalysisManger* t_analysisManager ) {
+    m_analysisManager = t_analysisManager;
+    if ( t_new || !m_instance ) {
         m_instance = new OutputManager();
     }
+    return m_instance;
+}
+
+void OutputManager::set_instance( OutputManager* t_instance ) {
+    m_instance = t_instance;
     return m_instance;
 }
 
@@ -131,44 +137,38 @@ void OutputManager::make_tuple_photon() {
 
 void OutputManager::add_histogram_1D( G4String t_name, G4String t_title, G4int t_nbins, G4double t_xmin, G4double t_xmax ) {
     G4cout << "OutputManager::add_histogram_1D: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateH1( t_name, t_title, t_nbins, t_xmin, t_xmax );
 }
 
 void OutputManager::add_histogram_2D( G4String t_name, G4String t_title, G4int t_nbinsx, G4double t_xmin, G4double t_xmax, G4int t_nbinsy, G4double t_ymin, G4double t_ymax ) {
     G4cout << "OutputManager::add_histogram_2D: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateH2( t_name, t_title, t_nbinsx, t_xmin, t_xmax, t_nbinsy, t_ymin, t_ymax );
 }
 
 void OutputManager::add_tuple_initialize( G4String t_name, G4String t_title ) {
     G4cout << "OutputManager::add_tuple_initialize: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtuple( t_name, t_title );
-    m_tuple_id.insert( std::pair<G4String,G4int>( t_name, m_tuple_id.size() ) );
+    if( m_tuple_id.find( t_name ) == m_tuple_id.end() )
+        m_tuple_id.insert( std::pair<G4String,G4int>( t_name, m_tuple_id.size() ) );
 }
 
 void OutputManager::add_tuple_finalize() {
     G4cout << "OutputManager::add_tuple_finalize" << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->FinishNtuple();
 }
 
 void OutputManager::add_tuple_column_intiger( G4String t_name ) {
     G4cout << "OutputManager::add_tuple_column_intiger: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtupleIColumn( t_name );
 }
 
 void OutputManager::add_tuple_column_double( G4String t_name ) {
     G4cout << "OutputManager::add_tuple_column_double: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtupleDColumn( t_name );
 }
 
 void OutputManager::add_tuple_column_3vector( G4String t_name ) {
     G4cout << "OutputManager::add_tuple_column_3vector: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtupleDColumn( t_name + "_x" );
     m_analysisManager->CreateNtupleDColumn( t_name + "_y" );
     m_analysisManager->CreateNtupleDColumn( t_name + "_z" );
@@ -176,28 +176,23 @@ void OutputManager::add_tuple_column_3vector( G4String t_name ) {
 
 void OutputManager::add_tuple_column_string( G4String t_name ) {
     G4cout << "OutputManager::add_tuple_column_string: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtupleSColumn( t_name );
 }
 
 void OutputManager::add_tuple_column_boolean( G4String t_name ) {
     G4cout << "OutputManager::add_tuple_column_boolean: " << t_name << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->CreateNtupleIColumn( t_name );
 }
 
 G4int OutputManager::get_histogram_1D_id( G4String t_name ) {
-    m_analysisManager = G4AnalysisManager::Instance();
     return m_analysisManager->GetH1Id( t_name );
 }
 
 G4int OutputManager::get_histogram_2D_id( G4String t_name ) {
-    m_analysisManager = G4AnalysisManager::Instance();
     return m_analysisManager->GetH2Id( t_name );
 }
 
 G4int OutputManager::get_tuple_id( G4String t_name ) {
-    m_analysisManager = G4AnalysisManager::Instance();
     return m_tuple_id[ t_name ];
 }
 

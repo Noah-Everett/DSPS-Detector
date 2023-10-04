@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 
     make_photonCreator();
 
-    runManager->SetUserInitialization(new ActionInitialization() );
+    runManager->SetUserInitialization( new ActionInitialization() );
     
     // initialize visualization
     G4VisManager* visManager = new G4VisExecutive;

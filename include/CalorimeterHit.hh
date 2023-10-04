@@ -23,33 +23,22 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef RunAction_h
-#define RunAction_h
+#ifndef CalorimeterHit_h
+#define CalorimeterHit_h
 
-#include "G4UserRunAction.hh"
-#include "G4Accumulable.hh"
-#include "globals.hh"
-#include "G4AnalysisManager.hh"
+#include "G4VHit.hh"
+#include "G4THitsCollection.hh"
+#include "G4Allocator.hh"
+#include "G4ThreeVector.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Transform3D.hh"
+#include "G4RotationMatrix.hh"
 
-#include "OutputMessenger.hh"
-#include "OutputManager.hh"
+#define CalorimeterHitsCollection = G4THitsCollection< CalorimeterHit >;
 
-class RunAction : public G4UserRunAction
+class CalorimeterHit : public G4VHit
 {
-    public:
-        RunAction();
-       ~RunAction() override;
 
-        void BeginOfRunAction(const G4Run*) override;
-        void   EndOfRunAction(const G4Run*) override;
-
-    private:
-        G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance    () };
-        OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
-        OutputManager    * m_outputManager  { OutputManager    ::get_instance() };
-
-    protected:
-        static vector< OutputManager* > m_outputManagers;
 };
 
 #endif

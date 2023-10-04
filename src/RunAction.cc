@@ -33,13 +33,17 @@ RunAction::RunAction() {
     // m_analysisManager->SetActivation( true );
     m_analysisManager->SetNtupleMerging( true );
     
-    m_outputManager->make_tuple_photoSensor_hits();
-    m_outputManager->make_tuple_primary();
-    m_outputManager->make_tuple_photon();
+    // m_outputManager->reset();
+    m_outputManager = OutputManager::get_instance( true, m_analysisManager );
+    m_outputManagers.push_back( m_outputManager );
+    m_outputManager->make_tuple_photoSensor_hits( m_analysisManager );
+    m_outputManager->make_tuple_primary         ( m_analysisManager );
+    m_outputManager->make_tuple_photon          ( m_analysisManager );
 }
 
 RunAction::~RunAction() {
-    m_outputManager->delete_instance();
+    for( auto& outputManager : m_outputManagers )
+        outputManager->delete_instance();
 }
 
 void RunAction::BeginOfRunAction(const G4Run*) {

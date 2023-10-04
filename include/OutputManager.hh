@@ -41,18 +41,19 @@ using std::map;
 class OutputManager
 {
     public:
-        static OutputManager* get_instance   ();
-        static void           delete_instance();
+        static OutputManager* get_instance   ( G4bool = false, G4AnalysisManager* = nullptr );
+        static void           set_instance   (                 G4AnalysisManager* = nullptr );
+        static void           delete_instance(                                              );
 
         void add_histogram_1D( G4String, G4String, G4int, G4double, G4double );
         void add_histogram_2D( G4String, G4String, G4int, G4double, G4double, G4int, G4double, G4double );
         void add_tuple_initialize    ( G4String, G4String );
-        void add_tuple_finalize      ();
-        void add_tuple_column_intiger( G4String );
-        void add_tuple_column_double ( G4String );
-        void add_tuple_column_3vector( G4String );
-        void add_tuple_column_string ( G4String );
-        void add_tuple_column_boolean( G4String );
+        void add_tuple_finalize      (                    );
+        void add_tuple_column_intiger( G4String           );
+        void add_tuple_column_double ( G4String           );
+        void add_tuple_column_3vector( G4String           );
+        void add_tuple_column_string ( G4String           );
+        void add_tuple_column_boolean( G4String           );
         
         void save_step( const G4Step* );
 
@@ -75,9 +76,9 @@ class OutputManager
                  OutputManager();
         virtual ~OutputManager();
 
-        OutputMessenger      * m_outputMessenger{ OutputMessenger  ::get_instance() };
+        OutputMessenger      * m_outputMessenger      { OutputMessenger      ::get_instance() };
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
-        G4AnalysisManager    * m_analysisManager{ G4AnalysisManager::Instance    () };
+        G4AnalysisManager    * m_analysisManager      { nullptr                               };
 
         G4int m_index_histogram{ 0 };
         G4int m_index_tuple    { 0 };
