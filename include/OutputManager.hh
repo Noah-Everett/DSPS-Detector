@@ -41,9 +41,9 @@ using std::map;
 class OutputManager
 {
     public:
-        static OutputManager* get_instance   ( G4bool = false, G4AnalysisManager* = nullptr );
-        static void           set_instance   (                 G4AnalysisManager* = nullptr );
-        static void           delete_instance(                                              );
+        static OutputManager* get_instance   ( G4bool = false );
+        static void           set_instance   (                );
+        static void           delete_instance(                );
 
         void add_histogram_1D( G4String, G4String, G4int, G4double, G4double );
         void add_histogram_2D( G4String, G4String, G4int, G4double, G4double, G4int, G4double, G4double );

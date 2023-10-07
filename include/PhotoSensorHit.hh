@@ -26,8 +26,6 @@
 #ifndef PhotoSensorHit_h
 #define PhotoSensorHit_h
 
-#include "PhotoSensorHit.inl"
-
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
 #include "G4Allocator.hh"
@@ -96,7 +94,5 @@ class PhotoSensorHit : public G4VHit
 using PhotoSensorHitsCollection = G4THitsCollection< PhotoSensorHit >;
 
 extern G4ThreadLocal G4Allocator< PhotoSensorHit >* PhotoSensorHitAllocator;
-
-#include "PhotoSensorHit.inl"
 
 #endif

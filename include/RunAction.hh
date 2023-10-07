@@ -47,9 +47,6 @@ class RunAction : public G4UserRunAction
         G4AnalysisManager* m_analysisManager{ G4AnalysisManager::Instance    () };
         OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
         OutputManager    * m_outputManager  { OutputManager    ::get_instance() };
-
-    protected:
-        static vector< OutputManager* > m_outputManagers;
 };
 
 #endif

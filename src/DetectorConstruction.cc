@@ -254,7 +254,9 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
 }
 
 void DetectorConstruction::ConstructSDandField() {
+    G4cout << "DetectorConstruction::ConstructSDandField()" << G4endl;
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
+    G4cout << "  SDManager: " << SDManager << G4endl;
     G4VSensitiveDetector* sensitiveDetector = nullptr;
 
     for( auto& calorimeter : m_calorimeters_full ) {

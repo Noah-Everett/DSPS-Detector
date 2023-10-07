@@ -27,16 +27,10 @@
 
 OutputManager* OutputManager::m_instance{ nullptr };
 
-OutputManager* OutputManager::get_instance( G4bool t_new, G4AnalysisManger* t_analysisManager ) {
-    m_analysisManager = t_analysisManager;
+OutputManager* OutputManager::get_instance( G4bool t_new ) {
     if ( t_new || !m_instance ) {
         m_instance = new OutputManager();
     }
-    return m_instance;
-}
-
-void OutputManager::set_instance( OutputManager* t_instance ) {
-    m_instance = t_instance;
     return m_instance;
 }
 
@@ -54,6 +48,7 @@ OutputManager::~OutputManager() {
 }
 
 void OutputManager::make_histogram_photoSensor_hits( G4String t_photoSensorID ) {
+    m_analysisManager = G4AnalysisManager::Instance();
     G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
     G4double width = m_constructionMessenger->get_photoSensor_body_size_width();
     G4int nBins = m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
@@ -64,6 +59,7 @@ void OutputManager::make_histogram_photoSensor_hits( G4String t_photoSensorID ) 
 }
 
 void OutputManager::make_tuple_photoSensor_hits() {
+    m_analysisManager = G4AnalysisManager::Instance();
     add_tuple_initialize( "photoSensor_hits", "photoSensor_hits" );
     if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() ) {
         add_tuple_column_3vector( "photoSensor_hits_position_absolute" );
@@ -87,6 +83,7 @@ void OutputManager::make_tuple_photoSensor_hits() {
 }
 
 void OutputManager::make_tuple_primary() {
+    m_analysisManager = G4AnalysisManager::Instance();
     add_tuple_initialize( "primary", "primary" );
     if( m_outputMessenger->get_primary_position_save() ) {
         add_tuple_column_3vector( "primary_position" );
@@ -110,6 +107,7 @@ void OutputManager::make_tuple_primary() {
 }
 
 void OutputManager::make_tuple_photon() {
+    m_analysisManager = G4AnalysisManager::Instance();
     add_tuple_initialize( "photon", "photon" );
     if( m_outputMessenger->get_photon_length_save() ) {
         add_tuple_column_double( "photon_length" );
