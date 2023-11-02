@@ -33,6 +33,7 @@
 
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
+#include "PhotoSensorHit.hh"
 
 class OutputManager;
 
@@ -58,6 +59,9 @@ class PhotoSensorSensitiveDetector : public G4VSensitiveDetector
         G4String         m_name;
         G4ThreeVector    m_position;
         G4RotationMatrix m_rotationMatrix;
+
+        PhotoSensorHitsCollection* m_photoSensorHitsCollection  ;
+        G4int                      m_photoSensorHitsCollectionID;
 };
 
 #endif

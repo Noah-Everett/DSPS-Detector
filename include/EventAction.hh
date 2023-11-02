@@ -29,6 +29,8 @@
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 
+#include "OutputMessenger.hh"
+
 class RunAction;
 
 class EventAction : public G4UserEventAction
@@ -41,7 +43,8 @@ class EventAction : public G4UserEventAction
     void EndOfEventAction(const G4Event* event) override;
 
   private:
-    RunAction* fRunAction = nullptr;
+    RunAction      * m_runAction      { nullptr };
+    OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
 };
 
 #endif

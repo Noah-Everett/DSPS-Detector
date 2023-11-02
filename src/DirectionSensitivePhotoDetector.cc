@@ -38,6 +38,11 @@ DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
 }
 
 void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {
+    m_rotationMatrix      = t_rotationMatrix     ;
+    m_position            = t_translationVector  ;
+    m_parentLogicalVolume = t_parentLogicalVolume;
+    m_isMany              = t_isMany             ;
+
     m_photoSensor->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
     m_lensSystem ->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
 }

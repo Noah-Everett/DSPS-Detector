@@ -74,6 +74,12 @@ public:
     
     void make_GDMLFile( G4String );
 
+    vector< Calorimeter* > get_calorimeters_full() const;
+    vector< Calorimeter* > get_calorimeters_middle() const;
+    vector< G4String > get_directionSensitivePhotoDetector_names() const;
+    vector< G4ThreeVector > get_directionSensitivePhotoDetector_positions() const;
+    vector< G4RotationMatrix > get_directionSensitivePhotoDetector_positions() const;
+
 protected:
     G4bool m_checkOverlaps{ true };
 
@@ -98,6 +104,7 @@ protected:
     vector< Calorimeter                    * > m_calorimeters_full;
     vector< Calorimeter                    * > m_calorimeters_middle;
     vector< DirectionSensitivePhotoDetector* > m_directionSensitivePhotoDetectors;
+    vector< G4String                         > m_directionSensitivePhotoDetectors_names;
     vector< G4ThreeVector                    > m_directionSensitivePhotoDetectors_positions;
     vector< G4RotationMatrix                 > m_directionSensitivePhotoDetectors_rotationMatrices;
 

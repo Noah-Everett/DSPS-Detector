@@ -246,7 +246,8 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            make_directionSensitivePhotoDetector( name, index + "_" + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            make_directionSensitivePhotoDetector( name, index + "_" + to_string( count ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
+            m_directionSensitivePhotoDetectors_names.push_back( index + "_" + to_string( count++ ) );
             m_directionSensitivePhotoDetectors_positions.push_back( *rotationMatrix * (translation_initial_DSPD + translation_delta) );
             m_directionSensitivePhotoDetectors_rotationMatrices.push_back( *rotationMatrix );
         }
@@ -254,9 +255,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
 }
 
 void DetectorConstruction::ConstructSDandField() {
-    G4cout << "DetectorConstruction::ConstructSDandField()" << G4endl;
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
-    G4cout << "  SDManager: " << SDManager << G4endl;
     G4VSensitiveDetector* sensitiveDetector = nullptr;
 
     for( auto& calorimeter : m_calorimeters_full ) {
@@ -271,7 +270,7 @@ void DetectorConstruction::ConstructSDandField() {
     }
     for( int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
         auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
-        auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem ();
+        auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
         for( auto& lens : lensSystem->get_lenses() ) {
             sensitiveDetector = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector" );
             SDManager->AddNewDetector( sensitiveDetector );
@@ -289,4 +288,8 @@ void DetectorConstruction::ConstructSDandField() {
 
 void DetectorConstruction::make_GDMLFile( G4String t_fileName ) {
     m_GDMLParser->Write( t_fileName, m_world_physicalVolume, true );
+}
+
+vector< G4String > get_directionSensitivePhotoDetector_names() const {
+    return m_directionSensitivePhotoDetectors_names;
 }

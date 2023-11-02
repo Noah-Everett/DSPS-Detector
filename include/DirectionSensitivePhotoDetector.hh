@@ -51,8 +51,12 @@ class DirectionSensitivePhotoDetector
         PhotoSensor* get_photoSensor();
 
     protected:
-        LensSystem * m_lensSystem { nullptr };
-        PhotoSensor* m_photoSensor{ nullptr };
+        LensSystem      * m_lensSystem         { nullptr };
+        PhotoSensor     * m_photoSensor        { nullptr };
+        G4RotationMatrix* m_rotationMatrix     { nullptr };
+        G4ThreeVector     m_position                      ;
+        G4LogicalVolume * m_parentLogicalVolume{ nullptr };
+        G4bool            m_isMany                        ;
 };
 
 #endif

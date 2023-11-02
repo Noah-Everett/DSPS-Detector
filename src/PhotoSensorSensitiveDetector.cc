@@ -32,11 +32,27 @@ PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name )
     m_outputManager->make_histogram_photoSensor_hits( t_name );
 }
 
-void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* hce ) {
+void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* t_hitCollectionOfThisEvent ) {
+    m_photoSensorHitsCollection = new PhotoSensorHitsCollection( SensitiveDetectorName, collectionName[ 0 ] );
+    m_photoSensorHitsCollectionID = G4SDManager::GetSDMpointer()->GetCollectionID( collectionName[ 0 ] );
+    t_hitCollectionOfThisEvent->AddHitsCollection( m_photoSensorHitsCollectionID, m_photoSensorHitsCollection );
 }
 
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
-    m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix, false );
+    // m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix, false );
+    PhotoSensorHit* hit = new PhotoSensorHit();
+
+    hit->set_photoSensor_position      ( m_position                                     );
+    hit->set_photoSensor_rotationMatrix( &m_rotationMatrix                              );
+    hit->set_photoSensor_name          ( m_name                                         );
+    hit->set_hit_position              ( t_step->GetPostStepPoint()->GetPosition     () );
+    hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   () );
+    hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy() );
+    hit->set_hit_momentum              ( t_step->GetPostStepPoint()->GetMomentum     () );
+    hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy() );
+    hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum     () );
+
+    m_photoSensorHitsCollection->insert( hit );
 
     return true;
 }
@@ -44,6 +60,7 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
 G4String PhotoSensorSensitiveDetector::get_name() {
     return m_name;
 }
+
 
 void PhotoSensorSensitiveDetector::set_position( G4ThreeVector t_position ) {
     m_position = t_position;
