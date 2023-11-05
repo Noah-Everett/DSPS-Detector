@@ -35,16 +35,16 @@ class RunAction;
 
 class EventAction : public G4UserEventAction
 {
-  public:
-    EventAction(RunAction* runAction);
-    ~EventAction() override;
+    public:
+        EventAction( RunAction* )         ;
+       ~EventAction(            ) override;
 
-    void BeginOfEventAction(const G4Event* event) override;
-    void EndOfEventAction(const G4Event* event) override;
+        void BeginOfEventAction(const G4Event* ) override;
+        void EndOfEventAction  (const G4Event* ) override;
 
-  private:
-    RunAction      * m_runAction      { nullptr };
-    OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
+    private:
+        RunAction      * m_runAction      { nullptr                         };
+        OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
 };
 
 #endif

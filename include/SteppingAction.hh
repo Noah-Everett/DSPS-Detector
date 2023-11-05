@@ -31,6 +31,7 @@
 #include "globals.hh"
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "G4AnalysisManager.hh"
 
 #include "OutputManager.hh"
 #include "OutputMessenger.hh"
@@ -42,14 +43,37 @@ class EventAction;
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-    SteppingAction();
-   ~SteppingAction() override;
+    SteppingAction( RunAction* )         ;
+   ~SteppingAction(            ) override;
 
     void UserSteppingAction( const G4Step* ) override;
     
 private:
-    OutputManager  * m_outputManager  { OutputManager  ::get_instance() };
-    OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
+    RunAction        * m_runAction      { nullptr                           };
+    OutputManager    * m_outputManager  { nullptr                           };
+    OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
+    G4AnalysisManager* m_analysisManager{ nullptr                           };
+        
+    pair< G4int, G4int > photon_length_ID      ;
+    pair< G4int, G4int > photon_process_ID     ;
+    pair< G4int, G4int > photon_time_ID        ;
+    pair< G4int, G4int > photon_position_x_ID  ;
+    pair< G4int, G4int > photon_position_y_ID  ;
+    pair< G4int, G4int > photon_position_z_ID  ;
+    pair< G4int, G4int > photon_direction_x_ID ;
+    pair< G4int, G4int > photon_direction_y_ID ;
+    pair< G4int, G4int > photon_direction_z_ID ;
+    pair< G4int, G4int > photon_energy_ID      ;
+    pair< G4int, G4int > photon_volume_ID      ;
+
+    pair< G4int, G4int > primary_position_x_ID ;
+    pair< G4int, G4int > primary_position_y_ID ;
+    pair< G4int, G4int > primary_position_z_ID ;
+    pair< G4int, G4int > primary_direction_x_ID;
+    pair< G4int, G4int > primary_direction_y_ID;
+    pair< G4int, G4int > primary_direction_z_ID;
+    pair< G4int, G4int > primary_process_ID    ;
+    pair< G4int, G4int > primary_time_ID       ;
 };
 
 #endif

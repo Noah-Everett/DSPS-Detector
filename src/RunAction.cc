@@ -25,9 +25,10 @@
 
 #include "RunAction.hh"
 
-RunAction::RunAction() {
+RunAction::RunAction( DetectorConstruction* t_detectorConstruction ) 
+    : m_detectorConstruction( t_detectorConstruction ) {
     G4cout << "RunAction::RunAction()" << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance();
+    m_analysisManager = G4AnalysisManager::Instance    ();
 
     m_analysisManager->SetDefaultFileType( "root" );
     m_analysisManager->SetFileName( "output" );
@@ -35,98 +36,71 @@ RunAction::RunAction() {
     // m_analysisManager->SetActivation( true );
     m_analysisManager->SetNtupleMerging( true );
     
-    G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
-    G4double width = m_constructionMessenger->get_photoSensor_body_size_width();
-    G4int nBins = m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
-    add_histogram_2D( t_photoSensorID,
-                      t_photoSensorID,
-                      nBins, -width/2, width/2, 
-                      nBins, -width/2, width/2 );
-    
-    m_analysisManager = G4AnalysisManager::Instance();
-    m_analysisManager->CreateNtuple( "photoSensor_hits", "photoSensor_hits" );
-    if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_absolute_x" );
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_absolute_y" );
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_absolute_z" );
+    // Make DSPD histograms
+    G4int index_histogram_1D{ 0 };
+    for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
+        G4String t_photoSensorID = DSPD->get_name() + "_sensitiveDetector";
+        G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
+        G4double width = m_constructionMessenger->get_photoSensor_body_size_width();
+        G4int nBins = m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
+        m_outputManager->add_histogram_2D( t_photoSensorID, t_photoSensorID,
+                                           nBins, -width/2, width/2,
+                                           nBins, -width/2, width/2 );
     }
-    if( m_outputMessenger->get_photoSensor_hits_position_relative_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_relative_x" );
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_relative_y" );
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_position_relative_z" );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_time_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_time" );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_process_save() ) {
-        m_analysisManager->CreateNtupleSColumn( "photoSensor_hits_process" );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_photoSensorID_save() ) {
-        m_analysisManager->CreateNtupleSColumn( "photoSensor_hits_photoSensorID" );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_energy_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photoSensor_hits_energy" );
-    }
-    m_analysisManager->FinishNtuple();
 
-    m_analysisManager = G4AnalysisManager::Instance();
-    m_analysisManager->CreateNtuple( "primary", "primary" );
-    if( m_outputMessenger->get_primary_position_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "primary_position_x" );
-        m_analysisManager->CreateNtupleDColumn( "primary_position_y" );
-        m_analysisManager->CreateNtupleDColumn( "primary_position_z" );
-    }
-    if( m_outputMessenger->get_primary_direction_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "primary_direction_x" );
-        m_analysisManager->CreateNtupleDColumn( "primary_direction_y" );
-        m_analysisManager->CreateNtupleDColumn( "primary_direction_z" );
-    }
-    if( m_outputMessenger->get_primary_emission_photon_save() ) {
-        m_analysisManager->CreateNtupleIColumn( "primary_emission_photon" );
-    }
-    if( m_outputMessenger->get_primary_emission_electron_save() ) {
-        m_analysisManager->CreateNtupleIColumn( "primary_emission_electron" );
-    }
-    if( m_outputMessenger->get_primary_process_save() ) {
-        m_analysisManager->CreateNtupleSColumn( "primary_process" );
-    }
-    if( m_outputMessenger->get_primary_time_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "primary_time" );
-    }
-    m_analysisManager->FinishNtuple();
+    // Make tuples
+    G4int index_tuple { 0 };
 
-    m_analysisManager = G4AnalysisManager::Instance();
-    m_analysisManager->CreateNtuple( "photon", "photon" );
-    if( m_outputMessenger->get_photon_length_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photon_length" );
-    }
-    if( m_outputMessenger->get_photon_process_save() ) {
-        m_analysisManager->CreateNtupleSColumn( "photon_process" );
-    }
-    if( m_outputMessenger->get_photon_time_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photon_time" );
-    }
-    if( m_outputMessenger->get_photon_position_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photon_position_x" );
-        m_analysisManager->CreateNtupleDColumn( "photon_position_y" );
-        m_analysisManager->CreateNtupleDColumn( "photon_position_z" );
-    }
-    if( m_outputMessenger->get_photon_direction_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photon_direction_x" );
-        m_analysisManager->CreateNtupleDColumn( "photon_direction_y" );
-        m_analysisManager->CreateNtupleDColumn( "photon_direction_z" );
-    }
-    if( m_outputMessenger->get_photon_energy_save() ) {
-        m_analysisManager->CreateNtupleDColumn( "photon_energy" );
-    }
-    if( m_outputMessenger->get_photon_volume_save() ) {
-        m_analysisManager->CreateNtupleSColumn( "photon_volume" );
-    }
-    m_analysisManager->FinishNtuple();
+    // Make photoSensor_hits tuple
+    index_tuple = m_outputManager->add_tuple_initialize( "photoSensor_hits", "photoSensor_hits" );
+    if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() )
+        m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_absolute", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_position_relative_save() )
+        m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_relative", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_time_save() )
+        m_outputManager->add_tuple_column_double ( "photoSensor_hits_time", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_process_save() )
+        m_outputManager->add_tuple_column_string ( "photoSensor_hits_process", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_photoSensorID_save() )
+        m_outputManager->add_tuple_column_string ( "photoSensor_hits_photoSensorID", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_energy_save() )
+        m_outputManager->add_tuple_column_double ( "photoSensor_hits_energy", index_tuple );
+    m_outputManager->add_tuple_finalize();
+
+    // Make primary tuple
+    index_tuple = m_outputManager->add_tuple_initialize( "primary", "primary" );
+    if( m_outputMessenger->get_primary_position_save() )
+        m_outputManager->add_tuple_column_3vector( "primary_position", index_tuple );
+    if( m_outputMessenger->get_primary_direction_save() )
+        m_outputManager->add_tuple_column_3vector( "primary_direction", index_tuple );
+    if( m_outputMessenger->get_primary_process_save() )
+        m_outputManager->add_tuple_column_string( "primary_process", index_tuple );
+    if( m_outputMessenger->get_primary_time_save() )
+        m_outputManager->add_tuple_column_double( "primary_time", index_tuple );
+    m_outputManager->add_tuple_finalize();
+
+    // Make photon tuple
+    index_tuple = m_outputManager->add_tuple_initialize( "photon", "photon" );
+    if( m_outputMessenger->get_photon_length_save() )
+        m_outputManager->add_tuple_column_double( "photon_length", index_tuple );
+    if( m_outputMessenger->get_photon_process_save() )
+        m_outputManager->add_tuple_column_string( "photon_process", index_tuple );
+    if( m_outputMessenger->get_photon_time_save() )
+        m_outputManager->add_tuple_column_double( "photon_time", index_tuple );
+    if( m_outputMessenger->get_photon_position_save() )
+        m_outputManager->add_tuple_column_3vector( "photon_position", index_tuple );
+    if( m_outputMessenger->get_photon_direction_save() )
+        m_outputManager->add_tuple_column_3vector( "photon_direction", index_tuple );
+    if( m_outputMessenger->get_photon_energy_save() )
+        m_outputManager->add_tuple_column_double( "photon_energy", index_tuple );
+    if( m_outputMessenger->get_photon_volume_save() )
+        m_outputManager->add_tuple_column_string( "photon_volume", index_tuple );
+    m_outputManager->add_tuple_finalize();
 }
 
 RunAction::~RunAction() {
-    m_outputManager->delete_instance();
+    // m_outputManager->delete_instance();
+    delete m_outputManager;
 }
 
 void RunAction::BeginOfRunAction(const G4Run*) {
@@ -137,7 +111,12 @@ void RunAction::BeginOfRunAction(const G4Run*) {
 }
 
 void RunAction::EndOfRunAction(const G4Run* run) {
+    G4cout << "RunAction::EndOfRunAction()" << G4endl;
     m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->Write();
     m_analysisManager->CloseFile( false );
+}
+
+OutputManager* RunAction::get_outputManager() {
+    return m_outputManager;
 }

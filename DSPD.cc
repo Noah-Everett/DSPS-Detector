@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 
     make_photonCreator();
 
-    runManager->SetUserInitialization( new ActionInitialization() );
+    runManager->SetUserInitialization( new ActionInitialization( det ) );
     
     // initialize visualization
     G4VisManager* visManager = new G4VisExecutive;
@@ -116,7 +116,6 @@ int main(int argc, char** argv)
     delete visManager;
     delete runManager;
 
-    OutputManager        ::delete_instance();
     Materials            ::delete_instance();
     UIMessenger          ::delete_instance();
     OutputMessenger      ::delete_instance();

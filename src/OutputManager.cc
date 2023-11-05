@@ -25,219 +25,172 @@
 
 #include "OutputManager.hh"
 
-OutputManager* OutputManager::m_instance{ nullptr };
+// OutputManager* OutputManager::m_instance{ nullptr };
 
-OutputManager* OutputManager::get_instance( G4bool t_new ) {
-    if ( t_new || !m_instance ) {
-        m_instance = new OutputManager();
-    }
-    return m_instance;
-}
+// OutputManager* OutputManager::get_instance( G4bool t_new ) {
+//     if ( t_new || !m_instance )
+//         m_instance = new OutputManager();
+//     return m_instance;
+// }
 
-void OutputManager::delete_instance() {
-    if ( m_instance ) {
-        delete m_instance;
-        m_instance = nullptr;
-    }
-}
+// void OutputManager::delete_instance() {
+//     if ( m_instance ) {
+//         delete m_instance;
+//         m_instance = nullptr;
+//     }
+// }
 
 OutputManager::OutputManager() {
 }
 
 OutputManager::~OutputManager() {
+    m_outputMessenger->delete_instance();
 }
 
-void OutputManager::make_histogram_photoSensor_hits( G4String t_photoSensorID ) {
-}
-
-void OutputManager::make_tuple_photoSensor_hits() {
-}
-
-void OutputManager::make_tuple_primary() {
-}
-
-void OutputManager::make_tuple_photon() {
-}
-
-void OutputManager::add_histogram_1D( G4String t_name, G4String t_title, G4int t_nbins, G4double t_xmin, G4double t_xmax ) {
+G4int OutputManager::add_histogram_1D( const G4String& t_name , const G4String& t_title,
+                                            G4int     t_nBins,       G4double  t_x_min, G4double  t_x_max ) {
     G4cout << "OutputManager::add_histogram_1D: " << t_name << G4endl;
-    m_analysisManager->CreateH1( t_name, t_title, t_nbins, t_xmin, t_xmax );
+    if( m_histogram_1D_IDs.find( t_name ) == m_histogram_1D_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateH1( t_name, t_title, t_nBins, t_x_min, t_x_max );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_histogram_1D", "Error", FatalException, "Histogram already exists but is not in map" );
+        m_histogram_1D_IDs.insert( { t_name, ID } ); 
+        return ID;
+    }
+    return kInvalidId;
 }
 
-void OutputManager::add_histogram_2D( G4String t_name, G4String t_title, G4int t_nbinsx, G4double t_xmin, G4double t_xmax, G4int t_nbinsy, G4double t_ymin, G4double t_ymax ) {
+G4int OutputManager::add_histogram_2D( const G4String& t_name   , const G4String& t_title, 
+                                            G4int     t_nBins_x,       G4double  t_x_min, G4double t_x_max, 
+                                            G4int     t_nBins_y,       G4double  t_y_min, G4double t_y_max ) {
     G4cout << "OutputManager::add_histogram_2D: " << t_name << G4endl;
-    m_analysisManager->CreateH2( t_name, t_title, t_nbinsx, t_xmin, t_xmax, t_nbinsy, t_ymin, t_ymax );
+    if( m_histogram_2D_IDs.find( t_name ) == m_histogram_2D_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateH2( t_name, t_title, t_nBins_x, t_x_min, t_x_max, t_nBins_y, t_y_min, t_y_max );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_histogram_2D", "Error", FatalException, "Histogram already exists but is not in map" );
+        m_histogram_2D_IDs.insert( { t_name, ID } );
+        return ID;
+    }
+    return kInvalidId;
 }
 
-void OutputManager::add_tuple_initialize( G4String t_name, G4String t_title ) {
+G4int OutputManager::add_tuple_initialize( const G4String& t_name, const G4String& t_title ) {
     G4cout << "OutputManager::add_tuple_initialize: " << t_name << G4endl;
-    m_analysisManager->CreateNtuple( t_name, t_title );
-    if( m_tuple_id.find( t_name ) == m_tuple_id.end() )
-        m_tuple_id.insert( std::pair<G4String,G4int>( t_name, m_tuple_id.size() ) );
+    if( m_tuple_IDs.find( t_name ) == m_tuple_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateNtuple( t_name, t_title );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_initialize", "Error", FatalException, "Tuple already exists but is not in map" );
+        m_tuple_IDs.insert( { t_name, ID } );
+        return ID;
+    }
+    return kInvalidId;
 }
 
 void OutputManager::add_tuple_finalize() {
     G4cout << "OutputManager::add_tuple_finalize" << G4endl;
+    m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->FinishNtuple();
 }
 
-void OutputManager::add_tuple_column_intiger( G4String t_name ) {
+pair< G4int, G4int > OutputManager::add_tuple_column_intiger( const G4String& t_name, G4int t_index_tuple ) {
     G4cout << "OutputManager::add_tuple_column_intiger: " << t_name << G4endl;
-    m_analysisManager->CreateNtupleIColumn( t_name );
+    if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateNtupleIColumn( t_name );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_column_intiger", "Error", FatalException, "Tuple column already exists but is not in map" );
+        m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );
+        return { t_index_tuple, ID };
+    }
+    return { kInvalidId, kInvalidId };
 }
 
-void OutputManager::add_tuple_column_double( G4String t_name ) {
+pair< G4int, G4int > OutputManager::add_tuple_column_double( const G4String& t_name, G4int t_index_tuple ) {
     G4cout << "OutputManager::add_tuple_column_double: " << t_name << G4endl;
-    m_analysisManager->CreateNtupleDColumn( t_name );
+    if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateNtupleDColumn( t_name );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_column_double", "Error", FatalException, "Tuple column already exists but is not in map" );
+        m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );
+        return { t_index_tuple, ID };
+    }
+    return { kInvalidId, kInvalidId };
 }
 
-void OutputManager::add_tuple_column_3vector( G4String t_name ) {
+pair< G4int, G4int > OutputManager::add_tuple_column_3vector( const G4String& t_name, G4int t_index_tuple ) { 
     G4cout << "OutputManager::add_tuple_column_3vector: " << t_name << G4endl;
-    m_analysisManager->CreateNtupleDColumn( t_name + "_x" );
-    m_analysisManager->CreateNtupleDColumn( t_name + "_y" );
-    m_analysisManager->CreateNtupleDColumn( t_name + "_z" );
+    char axis[ 3 ] = { 'x', 'y', 'z' };
+    pair< G4int, G4int > ID[ 3 ];
+    for( G4int i = 0; i < 3; i++ ) {
+        G4String name = t_name + "_" + axis[ i ];
+        ID[ i ] = add_tuple_column_double( name, t_index_tuple );
+        if( ID[ i ].first == kInvalidId || ID[ i ].second == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_column_3vector", "Error", FatalException, "Tuple column already exists but is not in map" );
+    }
+    return ID[0];
 }
 
-void OutputManager::add_tuple_column_string( G4String t_name ) {
+pair< G4int, G4int > OutputManager::add_tuple_column_string( const G4String& t_name, G4int t_index_tuple ) {
     G4cout << "OutputManager::add_tuple_column_string: " << t_name << G4endl;
-    m_analysisManager->CreateNtupleSColumn( t_name );
+    if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateNtupleSColumn( t_name );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_column_string", "Error", FatalException, "Tuple column already exists but is not in map" );
+        m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );
+        return { t_index_tuple, ID };
+    }
+    return { kInvalidId, kInvalidId };
 }
 
-void OutputManager::add_tuple_column_boolean( G4String t_name ) {
+pair< G4int, G4int > OutputManager::add_tuple_column_boolean( const G4String& t_name, G4int t_index_tuple ) {
     G4cout << "OutputManager::add_tuple_column_boolean: " << t_name << G4endl;
-    m_analysisManager->CreateNtupleIColumn( t_name );
+    if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
+        m_analysisManager = G4AnalysisManager::Instance();
+        G4int ID = m_analysisManager->CreateNtupleSColumn( t_name );
+        if( ID == kInvalidId )
+            G4Exception( "OutputManager::add_tuple_column_boolean", "Error", FatalException, "Tuple column already exists but is not in map" );
+        m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );
+        return { t_index_tuple, ID };
+    }
+    return { kInvalidId, kInvalidId };
 }
 
-G4int OutputManager::get_histogram_1D_id( G4String t_name ) {
-    return m_analysisManager->GetH1Id( t_name );
+G4int OutputManager::get_histogram_1D_ID( const G4String& t_name ) {
+    if( m_histogram_1D_IDs.find( t_name ) != m_histogram_1D_IDs.end() )
+        return m_histogram_1D_IDs.at( t_name );
+    else 
+        return kInvalidId;
 }
 
-G4int OutputManager::get_histogram_2D_id( G4String t_name ) {
-    return m_analysisManager->GetH2Id( t_name );
+G4int OutputManager::get_histogram_2D_ID( const G4String& t_name ) {
+    if( m_histogram_2D_IDs.find( t_name ) != m_histogram_2D_IDs.end() )
+        return m_histogram_2D_IDs.at( t_name );
+    else 
+        return kInvalidId;
 }
 
-G4int OutputManager::get_tuple_id( G4String t_name ) {
-    return m_tuple_id[ t_name ];
+G4int OutputManager::get_tuple_ID( const G4String& t_name ) {
+    if( m_tuple_IDs.find( t_name ) != m_tuple_IDs.end() )
+        return m_tuple_IDs.at( t_name );
+    else
+        return kInvalidId;
 }
 
-void OutputManager::save_step_photoSensor_hits( const G4Step* t_step, G4String t_photoSensorID, G4ThreeVector t_position, G4RotationMatrix t_rotation, G4bool t_verbose = false ) {
-    G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << G4endl;
-    m_index_histogram = get_histogram_2D_id( t_photoSensorID );
-    m_index_histogram = m_analysisManager->GetH2Id( t_photoSensorID );
-    if( t_verbose )
-        G4cout << "m_outputMessenger->get_photoSensor_hits_position_binned_save(): " << m_outputMessenger->get_photoSensor_hits_position_binned_save() << G4endl;
-    G4ThreeVector relativePosition = t_step->GetPostStepPoint()->GetPosition() - t_position;
-    if( t_verbose ) {
-        G4cout << "Before rotation:" << G4endl;
-        G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
-        G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
-        G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
-    }
-    relativePosition = t_rotation * relativePosition;
-    if( t_verbose ) {
-        G4cout << "After rotation:" << G4endl;
-        G4cout << "relativePosition.x(): " << relativePosition.x() << G4endl;
-        G4cout << "relativePosition.y(): " << relativePosition.y() << G4endl;
-        G4cout << "relativePosition.z(): " << relativePosition.z() << G4endl;
-    }
-    if( m_outputMessenger->get_photoSensor_hits_position_binned_save() ) {
-        if( t_verbose ) {
-            G4cout << "save_step_photoSensor_hits(): " << t_photoSensorID << " binned" << G4endl;
-            G4cout << "m_index_histogram: " << m_index_histogram << G4endl;
-        }
-        m_analysisManager->FillH2( m_index_histogram, 
-                                   relativePosition.x(), 
-                                   relativePosition.y() );
-    }
-
-    m_index_tuple  = get_tuple_id( "photoSensor_hits" );
-    m_index_column = 0;
-    if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().z() );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_position_relative_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, relativePosition.z() );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_time_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetGlobalTime() );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_process_save() ) {
-        m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_photoSensorID_save() ) {
-        m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_photoSensorID );
-    }
-    if( m_outputMessenger->get_photoSensor_hits_energy_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetTotalEnergy() );
-    }
-    m_analysisManager->AddNtupleRow( m_index_tuple );
-}
-
-void OutputManager::save_step_primary( const G4Step* t_step ) {
-    m_index_tuple  = get_tuple_id( "primary" );
-    m_index_column = 0;
-    if( m_outputMessenger->get_primary_position_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetPosition().z() );
-    }
-    if( m_outputMessenger->get_primary_direction_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetMomentumDirection().z() );
-    }
-    if( m_outputMessenger->get_primary_emission_photon_save() ) {
-        m_analysisManager->FillNtupleIColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetTrackID() ); // clearly wrong
-    }
-    if( m_outputMessenger->get_primary_emission_electron_save() ) {
-        m_analysisManager->FillNtupleIColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetTrackID() ); // clearly wrong
-    }
-    if( m_outputMessenger->get_primary_process_save() ) {
-        m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
-    }
-    if( m_outputMessenger->get_primary_time_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetTrack()->GetGlobalTime() );
-    }
-    m_analysisManager->AddNtupleRow( m_index_tuple );
-}
-
-void OutputManager::save_step_photon( const G4Step* t_step ) {
-    m_index_tuple  = get_tuple_id( "photon" );
-    m_index_column = 0;
-    if( m_outputMessenger->get_photon_length_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetStepLength() );
-    }
-    if( m_outputMessenger->get_photon_process_save() ) {
-        m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
-    }
-    if( m_outputMessenger->get_photon_time_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetGlobalTime() );
-    }
-    if( m_outputMessenger->get_photon_position_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPosition().z() );
-    }
-    if( m_outputMessenger->get_photon_direction_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetMomentumDirection().x() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetMomentumDirection().y() );
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetMomentumDirection().z() );
-    }
-    if( m_outputMessenger->get_photon_energy_save() ) {
-        m_analysisManager->FillNtupleDColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetTotalEnergy() );
-    }
-    if( m_outputMessenger->get_photon_volume_save() ) {
-        m_analysisManager->FillNtupleSColumn( m_index_tuple, m_index_column++, t_step->GetPostStepPoint()->GetPhysicalVolume()->GetName() );
-    }
-    m_analysisManager->AddNtupleRow( m_index_tuple );
+pair< G4int, G4int > OutputManager::get_tuple_column_ID( const G4String& t_name ) {
+    if( m_tuple_column_IDs.find( t_name ) != m_tuple_column_IDs.end() )
+        return m_tuple_column_IDs.at( t_name );
+    else
+        return { kInvalidId, kInvalidId };
 }
 
 void OutputManager::reset() {
-    m_histogram_1D_id.clear();
-    m_histogram_2D_id.clear();
-    m_tuple_id       .clear();
+    m_histogram_1D_IDs.clear();
+    m_histogram_2D_IDs.clear();
+    m_tuple_IDs       .clear();
+    m_tuple_column_IDs.clear();
 }

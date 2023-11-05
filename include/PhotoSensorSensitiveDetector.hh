@@ -46,22 +46,20 @@ class PhotoSensorSensitiveDetector : public G4VSensitiveDetector
         void Initialize( G4HCofThisEvent* ) override;
         G4bool ProcessHits( G4Step*, G4TouchableHistory* ) override;
 
-        G4String         get_name          ();
-        G4ThreeVector    get_position      ();
-        G4RotationMatrix get_rotationMatrix();
+        G4String          get_name          ();
+        G4ThreeVector     get_position      ();
+        G4RotationMatrix* get_rotationMatrix();
 
-        void set_position      ( G4ThreeVector    );
-        void set_rotationMatrix( G4RotationMatrix );
+        void set_position      ( G4ThreeVector     );
+        void set_rotationMatrix( G4RotationMatrix* );
     
     protected:
-        OutputManager* m_outputManager{ OutputManager::get_instance() };
+        G4String          m_name;
+        G4ThreeVector     m_position;
+        G4RotationMatrix* m_rotationMatrix;
 
-        G4String         m_name;
-        G4ThreeVector    m_position;
-        G4RotationMatrix m_rotationMatrix;
-
-        PhotoSensorHitsCollection* m_photoSensorHitsCollection  ;
-        G4int                      m_photoSensorHitsCollectionID;
+        PhotoSensorHitsCollection* m_photoSensorHitsCollection  { nullptr };
+        G4int                      m_photoSensorHitsCollectionID{ -1      };
 };
 
 #endif

@@ -44,6 +44,12 @@ class DirectionSensitivePhotoDetector
         static G4double      get_width ();
         static G4double      get_height();
         static G4double      get_depth ();
+        
+        G4String          get_name               ();
+        G4RotationMatrix* get_rotationMatrix     ();
+        G4ThreeVector     get_position           ();
+        G4LogicalVolume * get_parentLogicalVolume();
+        G4bool            get_isMany             ();
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
 
@@ -53,6 +59,8 @@ class DirectionSensitivePhotoDetector
     protected:
         LensSystem      * m_lensSystem         { nullptr };
         PhotoSensor     * m_photoSensor        { nullptr };
+
+        G4String          m_name                          ;
         G4RotationMatrix* m_rotationMatrix     { nullptr };
         G4ThreeVector     m_position                      ;
         G4LogicalVolume * m_parentLogicalVolume{ nullptr };

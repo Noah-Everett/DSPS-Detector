@@ -30,14 +30,15 @@
 #include "SteppingAction.hh"
 #include "StackingAction.hh"
 
-ActionInitialization::ActionInitialization() {
+ActionInitialization::ActionInitialization( DetectorConstruction* t_detectorConstruction ) 
+    : m_detectorConstruction( t_detectorConstruction ) {
 }
 
 ActionInitialization::~ActionInitialization() {
 }
 
 void ActionInitialization::BuildForMaster() const {
-    RunAction* runAction = new RunAction();
+    RunAction* runAction = new RunAction( m_detectorConstruction );
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 }
 
@@ -45,13 +46,13 @@ void ActionInitialization::Build() const {
     PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
     SetUserAction( primaryGeneratorAction );
 
-    RunAction* runAction = new RunAction();
+    RunAction* runAction = new RunAction( m_detectorConstruction );
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 
     EventAction* eventAction = new EventAction( runAction );
     SetUserAction( eventAction );
 
-    SteppingAction* steppingAction = new SteppingAction();
+    SteppingAction* steppingAction = new SteppingAction( runAction );
     SetUserAction( steppingAction );
 
     StackingAction* stackingAction = new StackingAction();

@@ -29,12 +29,12 @@ PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name )
     : G4VSensitiveDetector( t_name ) {
     m_name = t_name;
     collectionName.insert( "PhotoSensorSensitiveDetector" );
-    m_outputManager->make_histogram_photoSensor_hits( t_name );
 }
 
 void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* t_hitCollectionOfThisEvent ) {
     m_photoSensorHitsCollection = new PhotoSensorHitsCollection( SensitiveDetectorName, collectionName[ 0 ] );
-    m_photoSensorHitsCollectionID = G4SDManager::GetSDMpointer()->GetCollectionID( collectionName[ 0 ] );
+    if( m_photoSensorHitsCollectionID < 0 )
+        m_photoSensorHitsCollectionID = G4SDManager::GetSDMpointer()->GetCollectionID( m_photoSensorHitsCollection );
     t_hitCollectionOfThisEvent->AddHitsCollection( m_photoSensorHitsCollectionID, m_photoSensorHitsCollection );
 }
 
@@ -43,7 +43,7 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     PhotoSensorHit* hit = new PhotoSensorHit();
 
     hit->set_photoSensor_position      ( m_position                                     );
-    hit->set_photoSensor_rotationMatrix( &m_rotationMatrix                              );
+    hit->set_photoSensor_rotationMatrix( m_rotationMatrix                               );
     hit->set_photoSensor_name          ( m_name                                         );
     hit->set_hit_position              ( t_step->GetPostStepPoint()->GetPosition     () );
     hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   () );
@@ -53,6 +53,8 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum     () );
 
     m_photoSensorHitsCollection->insert( hit );
+
+    // G4cout << "Hit: " << hit << G4endl << G4endl;
 
     return true;
 }
@@ -66,7 +68,7 @@ void PhotoSensorSensitiveDetector::set_position( G4ThreeVector t_position ) {
     m_position = t_position;
 }
 
-void PhotoSensorSensitiveDetector::set_rotationMatrix( G4RotationMatrix t_rotationMatrix ) {
+void PhotoSensorSensitiveDetector::set_rotationMatrix( G4RotationMatrix* t_rotationMatrix ) {
     m_rotationMatrix = t_rotationMatrix;
 }
 
@@ -74,6 +76,6 @@ G4ThreeVector PhotoSensorSensitiveDetector::get_position() {
     return m_position;
 }
 
-G4RotationMatrix PhotoSensorSensitiveDetector::get_rotationMatrix() {
+G4RotationMatrix* PhotoSensorSensitiveDetector::get_rotationMatrix() {
     return m_rotationMatrix;
 }

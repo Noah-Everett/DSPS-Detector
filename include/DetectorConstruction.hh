@@ -74,11 +74,9 @@ public:
     
     void make_GDMLFile( G4String );
 
-    vector< Calorimeter* > get_calorimeters_full() const;
-    vector< Calorimeter* > get_calorimeters_middle() const;
-    vector< G4String > get_directionSensitivePhotoDetector_names() const;
-    vector< G4ThreeVector > get_directionSensitivePhotoDetector_positions() const;
-    vector< G4RotationMatrix > get_directionSensitivePhotoDetector_positions() const;
+    vector< Calorimeter                    * > get_calorimeters_full               () const;
+    vector< Calorimeter                    * > get_calorimeters_middle             () const;
+    vector< DirectionSensitivePhotoDetector* > get_directionSensitivePhotoDetectors() const;
 
 protected:
     G4bool m_checkOverlaps{ true };
@@ -93,7 +91,6 @@ protected:
     ConstructionMessenger  * m_constructionMessenger  { ConstructionMessenger::get_instance() };
     Materials              * m_materials              { Materials::get_instance() };    
     G4GDMLParser           * m_GDMLParser             { new G4GDMLParser() };
-    OutputManager          * m_outputManager          { OutputManager::get_instance() };
     
     G4VPhysicalVolume* m_world_physicalVolume{ nullptr };
 
@@ -104,9 +101,6 @@ protected:
     vector< Calorimeter                    * > m_calorimeters_full;
     vector< Calorimeter                    * > m_calorimeters_middle;
     vector< DirectionSensitivePhotoDetector* > m_directionSensitivePhotoDetectors;
-    vector< G4String                         > m_directionSensitivePhotoDetectors_names;
-    vector< G4ThreeVector                    > m_directionSensitivePhotoDetectors_positions;
-    vector< G4RotationMatrix                 > m_directionSensitivePhotoDetectors_rotationMatrices;
 
 private: 
     void make_world   ();

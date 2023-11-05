@@ -48,7 +48,6 @@ class LensSensitiveDetector : public G4VSensitiveDetector
         G4String get_name();
     
     protected:
-        OutputManager* m_outputManager{ OutputManager::get_instance() };
         G4String m_name;
 };
 

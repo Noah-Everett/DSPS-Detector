@@ -26,10 +26,10 @@
 #include "DirectionSensitivePhotoDetector.hh"
 
 DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name, G4String t_index ) {
-    t_name = t_name + "_" + t_index;
+    m_name = t_name + "_" + t_index;
 
-    m_lensSystem  = new LensSystem ( t_name + "_lensSystem" , true );
-    m_photoSensor = new PhotoSensor( t_name + "_photoSensor" );
+    m_lensSystem  = new LensSystem ( m_name + "_lensSystem" , true );
+    m_photoSensor = new PhotoSensor( m_name + "_photoSensor" );
 }
 
 DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
@@ -70,4 +70,24 @@ LensSystem * DirectionSensitivePhotoDetector::get_lensSystem() {
 
 PhotoSensor* DirectionSensitivePhotoDetector::get_photoSensor() {
     return m_photoSensor;
+}
+
+G4String DirectionSensitivePhotoDetector::get_name() {
+    return m_name;
+}
+
+G4RotationMatrix* DirectionSensitivePhotoDetector::get_rotationMatrix() {
+    return m_rotationMatrix;
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position() {
+    return m_position;
+}
+
+G4LogicalVolume * DirectionSensitivePhotoDetector::get_parentLogicalVolume() {
+    return m_parentLogicalVolume;
+}
+
+G4bool DirectionSensitivePhotoDetector::get_isMany() {
+    return m_isMany;
 }

@@ -246,10 +246,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
         G4ThreeVector translation_delta( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation_delta.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
-            make_directionSensitivePhotoDetector( name, index + "_" + to_string( count ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
-            m_directionSensitivePhotoDetectors_names.push_back( index + "_" + to_string( count++ ) );
-            m_directionSensitivePhotoDetectors_positions.push_back( *rotationMatrix * (translation_initial_DSPD + translation_delta) );
-            m_directionSensitivePhotoDetectors_rotationMatrices.push_back( *rotationMatrix );
+            make_directionSensitivePhotoDetector( name, index + "_" + to_string( count++ ) )->place( rotationMatrix, *rotationMatrix * (translation_initial_DSPD + translation_delta), m_detector_medium->get_logicalVolume(), true );
         }
     }
 }
@@ -279,8 +276,8 @@ void DetectorConstruction::ConstructSDandField() {
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
         PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector" );
-        psSD->set_position( m_directionSensitivePhotoDetectors_positions[i] );
-        psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors_rotationMatrices[i] );
+        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position() );
+        psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
         photoSensorSurface->get_logicalVolume()->SetSensitiveDetector( psSD );
     }
@@ -290,6 +287,14 @@ void DetectorConstruction::make_GDMLFile( G4String t_fileName ) {
     m_GDMLParser->Write( t_fileName, m_world_physicalVolume, true );
 }
 
-vector< G4String > get_directionSensitivePhotoDetector_names() const {
-    return m_directionSensitivePhotoDetectors_names;
+vector< Calorimeter* > DetectorConstruction::get_calorimeters_full() const {
+    return m_calorimeters_full;
+}
+
+vector< Calorimeter* > DetectorConstruction::get_calorimeters_middle() const {
+    return m_calorimeters_middle;
+}
+
+vector< DirectionSensitivePhotoDetector* > DetectorConstruction::get_directionSensitivePhotoDetectors() const {
+    return m_directionSensitivePhotoDetectors;
 }

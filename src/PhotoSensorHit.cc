@@ -86,14 +86,14 @@ void PhotoSensorHit::Print() {
 }
 
 std::ostream& operator<<( std::ostream& t_os, const PhotoSensorHit& t_photoSensorHit ) {
-    t_os << "[" << "photoSensor_position="       <<  t_photoSensorHit.m_photoSensor_position       << ", "
-                << "photoSensor_name="           <<  t_photoSensorHit.m_photoSensor_name           << ", "
-                << "photoSensor_rotationMatrix=" << *t_photoSensorHit.m_photoSensor_rotationMatrix << ", "
-                << "hit_position="               <<  t_photoSensorHit.m_hit_position               << ", "
-                << "hit_time="                   <<  t_photoSensorHit.m_hit_time                   << ", "
-                << "hit_energy="                 <<  t_photoSensorHit.m_hit_energy                 << ", "
-                << "hit_momentum="               <<  t_photoSensorHit.m_hit_momentum               << ", "
-                << "particle_energy="            <<  t_photoSensorHit.m_particle_energy            << ", "
+    t_os << "[" << "photoSensor_position="       <<  t_photoSensorHit.m_photoSensor_position       << ", \n"
+                << "photoSensor_name="           <<  t_photoSensorHit.m_photoSensor_name           << ", \n"
+                << "photoSensor_rotationMatrix=" << *t_photoSensorHit.m_photoSensor_rotationMatrix << ", \n"
+                << "hit_position="               <<  t_photoSensorHit.m_hit_position               << ", \n"
+                << "hit_time="                   <<  t_photoSensorHit.m_hit_time                   << ", \n"
+                << "hit_energy="                 <<  t_photoSensorHit.m_hit_energy                 << ", \n"
+                << "hit_momentum="               <<  t_photoSensorHit.m_hit_momentum               << ", \n"
+                << "particle_energy="            <<  t_photoSensorHit.m_particle_energy            << ", \n"
                 << "particle_momentum="          <<  t_photoSensorHit.m_particle_momentum          << "]";
 
     return t_os;
