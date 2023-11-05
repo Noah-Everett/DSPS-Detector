@@ -84,7 +84,6 @@ G4RotationMatrix* PhotoSensorSensitiveDetector::get_rotationMatrix() {
 PhotoSensorHitsCollection* PhotoSensorSensitiveDetector::get_hitsCollection( const G4Event* t_event ) {
     G4HCofThisEvent* hitCollectionOfThisEvent = t_event->GetHCofThisEvent();
     m_photoSensorHitsCollection_ID = G4SDManager::GetSDMpointer()->GetCollectionID( SensitiveDetectorName + "/" + collectionName[ 0 ] );
-    G4cout << __FILE__ << " " << __LINE__ << " m_photoSensorHitsCollection_ID: " << m_photoSensorHitsCollection_ID << G4endl;
     return static_cast< PhotoSensorHitsCollection* >( hitCollectionOfThisEvent->GetHC( m_photoSensorHitsCollection_ID ) );
 }
 

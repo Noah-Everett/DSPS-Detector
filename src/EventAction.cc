@@ -66,58 +66,32 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
 
     for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
         PhotoSensorSensitiveDetector* photoSensorSensitiveDetector = DSPD->get_photoSensor()->get_sensitiveDetector();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         PhotoSensorHitsCollection* photoSensorHitCollection = photoSensorSensitiveDetector->get_hitsCollection( t_event );
-        G4cout << "photoSensorHitCollection = " << photoSensorHitCollection << G4endl;
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         G4String photoSensorHitHistogramName = DSPD->get_name() + "_sensitiveDetector";
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         G4int photoSensorHitHistogramID = m_outputManager->get_histogram_2D_ID( photoSensorHitHistogramName );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
 
         for( G4int i = 0; i < photoSensorHitCollection->GetSize(); i++ ) {
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             PhotoSensorHit* photoSensorHit = static_cast< PhotoSensorHit* >( photoSensorHitCollection->GetHit( i ) );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
 
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4ThreeVector hit_position_absolute = photoSensorHit->get_hit_position_absolute();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4ThreeVector hit_position_relative = photoSensorHit->get_hit_position_relative();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4double      hit_time              = photoSensorHit->get_hit_time             ();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4String      hit_process           = photoSensorHit->get_hit_process          ();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4double      hit_energy            = photoSensorHit->get_hit_energy           ();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             G4String      hit_photoSensor_name  = photoSensorHit->get_photoSensor_name     ();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
 
             m_analysisManager->FillH2( photoSensorHitHistogramID, hit_position_relative.x(), hit_position_relative.y(), hit_position_relative.z() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second  , hit_position_absolute.x() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+1, hit_position_absolute.y() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+2, hit_position_absolute.z() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second  , hit_position_relative.x() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+1, hit_position_relative.y() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+2, hit_position_relative.z() );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_time_ID             .first, m_photoSensor_hits_time_ID             .second  , hit_time                  );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_process_ID          .first, m_photoSensor_hits_process_ID          .second  , hit_process               );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_photoSensorID_ID    .first, m_photoSensor_hits_photoSensorID_ID    .second  , hit_photoSensor_name      );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_energy_ID           .first, m_photoSensor_hits_energy_ID           .second  , hit_energy                );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
             m_analysisManager->AddNtupleRow( m_photoSensor_hits_position_absolute_ID.first );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         }
 
         // vector< LensSensitiveDetector* > lensSensitiveDetectors;
