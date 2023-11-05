@@ -44,7 +44,6 @@ OutputManager::OutputManager() {
 }
 
 OutputManager::~OutputManager() {
-    m_outputMessenger->delete_instance();
 }
 
 G4int OutputManager::add_histogram_1D( const G4String& t_name , const G4String& t_title,
@@ -184,6 +183,8 @@ G4int OutputManager::get_tuple_ID( const G4String& t_name ) {
 pair< G4int, G4int > OutputManager::get_tuple_column_ID( const G4String& t_name ) {
     if( m_tuple_column_IDs.find( t_name ) != m_tuple_column_IDs.end() )
         return m_tuple_column_IDs.at( t_name );
+    else if( m_tuple_column_IDs.find( t_name + "_x" ) != m_tuple_column_IDs.end() )
+        return m_tuple_column_IDs.at( t_name + "_x" );
     else
         return { kInvalidId, kInvalidId };
 }

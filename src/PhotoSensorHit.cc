@@ -105,7 +105,7 @@ std::ostream& operator<<( std::ostream& t_os, const PhotoSensorHit* t_photoSenso
     return t_os;
 }
 
-void PhotoSensorHit::set_hit_position( G4ThreeVector t_hit_position ) {
+void PhotoSensorHit::set_hit_position_absolute( G4ThreeVector t_hit_position ) {
     m_hit_position = t_hit_position;
 }
 
@@ -117,7 +117,7 @@ void PhotoSensorHit::set_photoSensor_rotationMatrix( G4RotationMatrix* t_photoSe
     m_photoSensor_rotationMatrix = t_photoSensor_rotationMatrix;
 }
 
-void PhotoSensorHit::set_photoSensor_name( G4String t_photoSensor_name ) {
+void PhotoSensorHit::set_photoSensor_name( const G4String& t_photoSensor_name ) {
     m_photoSensor_name = t_photoSensor_name;
 }
 
@@ -141,8 +141,16 @@ void PhotoSensorHit::set_particle_momentum( G4ThreeVector t_particle_momentum ) 
     m_particle_momentum = t_particle_momentum;
 }
 
-G4ThreeVector PhotoSensorHit::get_hit_position() {
+void PhotoSensorHit::set_hit_process( const G4String& t_hit_process ) {
+    m_hit_process = t_hit_process;
+}
+
+G4ThreeVector PhotoSensorHit::get_hit_position_absolute() {
     return m_hit_position;
+}
+
+G4ThreeVector PhotoSensorHit::get_hit_position_relative() {
+    return m_hit_position - m_photoSensor_position;
 }
 
 G4ThreeVector PhotoSensorHit::get_photoSensor_position() {
@@ -175,4 +183,8 @@ G4ThreeVector PhotoSensorHit::get_hit_momentum() {
 
 G4ThreeVector PhotoSensorHit::get_particle_momentum() {
     return m_particle_momentum;
+}
+
+G4String PhotoSensorHit::get_hit_process() {
+    return m_hit_process;
 }

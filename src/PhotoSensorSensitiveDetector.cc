@@ -33,24 +33,25 @@ PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name )
 
 void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* t_hitCollectionOfThisEvent ) {
     m_photoSensorHitsCollection = new PhotoSensorHitsCollection( SensitiveDetectorName, collectionName[ 0 ] );
-    if( m_photoSensorHitsCollectionID < 0 )
-        m_photoSensorHitsCollectionID = G4SDManager::GetSDMpointer()->GetCollectionID( m_photoSensorHitsCollection );
-    t_hitCollectionOfThisEvent->AddHitsCollection( m_photoSensorHitsCollectionID, m_photoSensorHitsCollection );
+    if( m_photoSensorHitsCollection_ID < 0 )
+        m_photoSensorHitsCollection_ID = G4SDManager::GetSDMpointer()->GetCollectionID( m_photoSensorHitsCollection );
+    t_hitCollectionOfThisEvent->AddHitsCollection( m_photoSensorHitsCollection_ID, m_photoSensorHitsCollection );
 }
 
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
     // m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix, false );
     PhotoSensorHit* hit = new PhotoSensorHit();
 
-    hit->set_photoSensor_position      ( m_position                                     );
-    hit->set_photoSensor_rotationMatrix( m_rotationMatrix                               );
-    hit->set_photoSensor_name          ( m_name                                         );
-    hit->set_hit_position              ( t_step->GetPostStepPoint()->GetPosition     () );
-    hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   () );
-    hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy() );
-    hit->set_hit_momentum              ( t_step->GetPostStepPoint()->GetMomentum     () );
-    hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy() );
-    hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum     () );
+    hit->set_photoSensor_position      ( m_position                                                            );
+    hit->set_photoSensor_rotationMatrix( m_rotationMatrix                                                      );
+    hit->set_photoSensor_name          ( m_name                                                                );
+    hit->set_hit_position_absolute     ( t_step->GetPostStepPoint()->GetPosition     ()                        );
+    hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   ()                        );
+    hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy()                        );
+    hit->set_hit_momentum              ( t_step->GetPostStepPoint()->GetMomentum     ()                        );
+    hit->set_hit_process               ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
+    hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy()                        );
+    hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum     ()                        );
 
     m_photoSensorHitsCollection->insert( hit );
 
@@ -78,4 +79,23 @@ G4ThreeVector PhotoSensorSensitiveDetector::get_position() {
 
 G4RotationMatrix* PhotoSensorSensitiveDetector::get_rotationMatrix() {
     return m_rotationMatrix;
+}
+
+PhotoSensorHitsCollection* PhotoSensorSensitiveDetector::get_hitsCollection( const G4Event* t_event ) {
+    G4HCofThisEvent* hitCollectionOfThisEvent = t_event->GetHCofThisEvent();
+    m_photoSensorHitsCollection_ID = G4SDManager::GetSDMpointer()->GetCollectionID( SensitiveDetectorName + "/" + collectionName[ 0 ] );
+    G4cout << __FILE__ << " " << __LINE__ << " m_photoSensorHitsCollection_ID: " << m_photoSensorHitsCollection_ID << G4endl;
+    return static_cast< PhotoSensorHitsCollection* >( hitCollectionOfThisEvent->GetHC( m_photoSensorHitsCollection_ID ) );
+}
+
+G4String PhotoSensorSensitiveDetector::get_hitsCollection_name() {
+    return collectionName[ 0 ];
+}
+
+G4int PhotoSensorSensitiveDetector::get_hitsCollection_ID() {
+    return m_photoSensorHitsCollection_ID;
+}
+
+void PhotoSensorSensitiveDetector::set_hitsCollection_ID( G4int t_photoSensorHitsCollection_ID ) {
+    m_photoSensorHitsCollection_ID = t_photoSensorHitsCollection_ID;
 }

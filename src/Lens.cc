@@ -139,7 +139,7 @@ G4double Lens::get_xLimit( G4double t_radius_x, G4double t_radius_y, G4double t_
     return ( -c_2 + sign * sqrt( pow( c_2, 2 ) -4 * c_1 * c_3 ) ) / ( 2 * c_1 );
 }
 
-GeometricObjectUnionSolid* Lens::get_geometricObject() const {
+GeometricObjectUnionSolid* Lens::get_geometricObject() {
     return m_lens;
 }
 
@@ -149,4 +149,8 @@ G4String Lens::get_name() {
 
 G4LogicalVolume* Lens::get_logicalVolume() {
     return m_lens->get_logicalVolume();
+}
+
+LensSensitiveDetector* Lens::get_sensitiveDetector() {
+    return m_lensSensitiveDetector;
 }

@@ -74,6 +74,9 @@ private:
     pair< G4int, G4int > primary_direction_z_ID;
     pair< G4int, G4int > primary_process_ID    ;
     pair< G4int, G4int > primary_time_ID       ;
+
+    G4int m_index_photon { -1 };
+    G4int m_index_primary{ -1 };
 };
 
 #endif

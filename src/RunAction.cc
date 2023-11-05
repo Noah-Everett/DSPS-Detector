@@ -103,14 +103,14 @@ RunAction::~RunAction() {
     delete m_outputManager;
 }
 
-void RunAction::BeginOfRunAction(const G4Run*) {
+void RunAction::BeginOfRunAction( const G4Run* t_run ) {
     G4cout << "RunAction::BeginOfRunAction()" << G4endl;
     m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->Reset();
     m_analysisManager->OpenFile();
 }
 
-void RunAction::EndOfRunAction(const G4Run* run) {
+void RunAction::EndOfRunAction( const G4Run* run ) {
     G4cout << "RunAction::EndOfRunAction()" << G4endl;
     m_analysisManager = G4AnalysisManager::Instance();
     m_analysisManager->Write();

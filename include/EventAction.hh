@@ -30,21 +30,35 @@
 #include "globals.hh"
 
 #include "OutputMessenger.hh"
-
-class RunAction;
+#include "ConstructionMessenger.hh"
+#include "RunAction.hh"
 
 class EventAction : public G4UserEventAction
 {
     public:
-        EventAction( RunAction* )         ;
-       ~EventAction(            ) override;
+        EventAction( RunAction*, DetectorConstruction* )         ;
+       ~EventAction(                                   ) override;
 
-        void BeginOfEventAction(const G4Event* ) override;
-        void EndOfEventAction  (const G4Event* ) override;
+        void BeginOfEventAction( const G4Event* ) override;
+        void EndOfEventAction  ( const G4Event* ) override;
 
     private:
-        RunAction      * m_runAction      { nullptr                         };
-        OutputMessenger* m_outputMessenger{ OutputMessenger::get_instance() };
+        RunAction            * m_runAction            { nullptr                               };
+        OutputMessenger      * m_outputMessenger      { OutputMessenger      ::get_instance() };
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
+        DetectorConstruction * m_detectorConstruction { nullptr                               };
+        OutputManager        * m_outputManager        { nullptr                               };
+        G4AnalysisManager    * m_analysisManager      { nullptr                               };
+        G4SDManager          * m_SDManager            { nullptr                               };
+
+        pair< G4int, G4int > m_photoSensor_hits_position_absolute_ID;
+        pair< G4int, G4int > m_photoSensor_hits_position_relative_ID;
+        pair< G4int, G4int > m_photoSensor_hits_time_ID             ;
+        pair< G4int, G4int > m_photoSensor_hits_process_ID          ;
+        pair< G4int, G4int > m_photoSensor_hits_photoSensorID_ID    ;
+        pair< G4int, G4int > m_photoSensor_hits_energy_ID           ;
+
+        // vector< G4int > m_hitsCollection_IDs_photoSensor;
 };
 
 #endif

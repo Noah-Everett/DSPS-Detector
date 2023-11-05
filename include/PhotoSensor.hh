@@ -46,11 +46,13 @@ class PhotoSensor
         GeometricObjectBox          * get_body             ();
         PhotoSensorSensitiveDetector* get_sensitiveDetector();
 
+        void set_sensitiveDetector( PhotoSensorSensitiveDetector* );
+
     protected:
-        GeometricObjectBox          * m_surface          { new GeometricObjectBox() };
-        GeometricObjectBox          * m_body             { new GeometricObjectBox() };
-        PhotoSensorSensitiveDetector* m_sensitiveDetector{                          };
+        GeometricObjectBox          * m_surface              { new GeometricObjectBox()              };
+        GeometricObjectBox          * m_body                 { new GeometricObjectBox()              };
         ConstructionMessenger       * m_constructionMessenger{ ConstructionMessenger::get_instance() };
+        PhotoSensorSensitiveDetector* m_sensitiveDetector    { nullptr                               };
 
         G4String m_name;
 };

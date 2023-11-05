@@ -49,8 +49,8 @@ void ActionInitialization::Build() const {
     RunAction* runAction = new RunAction( m_detectorConstruction );
     SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 
-    EventAction* eventAction = new EventAction( runAction );
-    SetUserAction( eventAction );
+    EventAction* eventAction = new EventAction( runAction, m_detectorConstruction );
+    SetUserAction( static_cast< G4UserEventAction* >( eventAction ) );
 
     SteppingAction* steppingAction = new SteppingAction( runAction );
     SetUserAction( steppingAction );

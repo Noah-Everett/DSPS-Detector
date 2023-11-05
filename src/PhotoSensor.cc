@@ -80,3 +80,8 @@ GeometricObjectBox* PhotoSensor::get_body() {
 PhotoSensorSensitiveDetector* PhotoSensor::get_sensitiveDetector() {
     return m_sensitiveDetector;
 }
+
+void PhotoSensor::set_sensitiveDetector( PhotoSensorSensitiveDetector* t_sensitiveDetector ) {
+    m_sensitiveDetector = t_sensitiveDetector;
+    m_surface->set_sensitiveDetector( t_sensitiveDetector );
+}

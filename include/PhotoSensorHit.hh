@@ -57,23 +57,26 @@ class PhotoSensorHit : public G4VHit
         friend std::ostream& operator<<( std::ostream&, const PhotoSensorHit& );
         friend std::ostream& operator<<( std::ostream&, const PhotoSensorHit* );
 
-        void set_photoSensor_position      ( G4ThreeVector     );
-        void set_photoSensor_name          ( G4String          );
-        void set_photoSensor_rotationMatrix( G4RotationMatrix* );
-        void set_hit_position              ( G4ThreeVector     );
-        void set_hit_time                  ( G4double          );
-        void set_hit_energy                ( G4double          );
-        void set_hit_momentum              ( G4ThreeVector     );
-        void set_particle_energy           ( G4double          );
-        void set_particle_momentum         ( G4ThreeVector     );
+        void set_photoSensor_position      (       G4ThreeVector     );
+        void set_photoSensor_name          ( const G4String&         );
+        void set_photoSensor_rotationMatrix(       G4RotationMatrix* );
+        void set_hit_position_absolute     (       G4ThreeVector     );
+        void set_hit_time                  (       G4double          );
+        void set_hit_energy                (       G4double          );
+        void set_hit_momentum              (       G4ThreeVector     );
+        void set_hit_process               ( const G4String&         );
+        void set_particle_energy           (       G4double          );
+        void set_particle_momentum         (       G4ThreeVector     );
 
         G4ThreeVector     get_photoSensor_position      ();
         G4String          get_photoSensor_name          ();
         G4RotationMatrix* get_photoSensor_rotationMatrix();
-        G4ThreeVector     get_hit_position              ();
+        G4ThreeVector     get_hit_position_absolute     ();
+        G4ThreeVector     get_hit_position_relative     ();
         G4double          get_hit_time                  ();
         G4double          get_hit_energy                ();
         G4ThreeVector     get_hit_momentum              ();
+        G4String          get_hit_process               ();
         G4double          get_particle_energy           ();
         G4ThreeVector     get_particle_momentum         ();
 
@@ -85,6 +88,7 @@ class PhotoSensorHit : public G4VHit
         G4double          m_hit_time                  ;
         G4double          m_hit_energy                ;
         G4ThreeVector     m_hit_momentum              ;
+        G4String          m_hit_process               ;
         G4double          m_particle_energy           ;
         G4ThreeVector     m_particle_momentum         ;
 };

@@ -279,6 +279,7 @@ void DetectorConstruction::ConstructSDandField() {
         psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position() );
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
+        directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
         photoSensorSurface->get_logicalVolume()->SetSensitiveDetector( psSD );
     }
 }

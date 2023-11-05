@@ -56,12 +56,12 @@ class Lens
         friend ostream& operator<<( ostream&,       Lens* );
         friend ostream& operator<<( ostream&, const Lens& );
 
-        GeometricObjectUnionSolid* get_geometricObject() const;
-
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool = false );
 
-        G4String         get_name         ();
-        G4LogicalVolume* get_logicalVolume();
+        G4String                   get_name             ();
+        G4LogicalVolume          * get_logicalVolume    ();
+        GeometricObjectUnionSolid* get_geometricObject  ();
+        LensSensitiveDetector    * get_sensitiveDetector();
 
     protected:
         GeometricObjectUnionSolid* m_lens{ new GeometricObjectUnionSolid() };
