@@ -28,21 +28,23 @@
 RunAction::RunAction( DetectorConstruction* t_detectorConstruction ) 
     : m_detectorConstruction( t_detectorConstruction ) {
     G4cout << "RunAction::RunAction()" << G4endl;
-    m_analysisManager = G4AnalysisManager::Instance    ();
+    m_analysisManager = G4AnalysisManager::Instance();
 
     m_analysisManager->SetDefaultFileType( "root" );
     m_analysisManager->SetFileName( "output" );
-    m_analysisManager->SetVerboseLevel( 1 );
-    // m_analysisManager->SetActivation( true );
+    m_analysisManager->SetVerboseLevel( 10 );
+    m_analysisManager->SetActivation( true );
     m_analysisManager->SetNtupleMerging( true );
+    // m_analysisManager->SetHistoDirectoryName( "photoSensor_hits" );
     
     // Make DSPD histograms
     G4int index_histogram_1D{ 0 };
     for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
         G4String t_photoSensorID = DSPD->get_name() + "_sensitiveDetector";
-        G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
+        // G4cout << "make_histogram_photoSensor_hits(): " << t_photoSensorID << G4endl;
         G4double width = m_constructionMessenger->get_photoSensor_body_size_width();
         G4int nBins = m_outputMessenger->get_photoSensor_hits_position_binned_nBinsPerSide();
+        G4cout << "nBins = " << nBins << ", width = " << width << G4endl;
         m_outputManager->add_histogram_2D( t_photoSensorID, t_photoSensorID,
                                            nBins, -width/2, width/2,
                                            nBins, -width/2, width/2 );
@@ -99,7 +101,7 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
 }
 
 RunAction::~RunAction() {
-    // m_outputManager->delete_instance();
+    G4cout << "RunAction::~RunAction()" << G4endl;
     delete m_outputManager;
 }
 

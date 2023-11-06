@@ -33,6 +33,7 @@ EventAction::EventAction( RunAction* t_runAction, DetectorConstruction* t_detect
     : m_runAction           ( t_runAction                      ), 
       m_detectorConstruction( t_detectorConstruction           ), 
       m_outputManager       ( t_runAction->get_outputManager() ) {
+    G4cout << "EventAction::EventAction()" << G4endl;
     m_photoSensor_hits_position_absolute_ID = m_outputManager->get_tuple_column_ID( "photoSensor_hits_position_absolute" );
     m_photoSensor_hits_position_relative_ID = m_outputManager->get_tuple_column_ID( "photoSensor_hits_position_relative" );
     m_photoSensor_hits_time_ID              = m_outputManager->get_tuple_column_ID( "photoSensor_hits_time"              );
@@ -46,6 +47,8 @@ EventAction::EventAction( RunAction* t_runAction, DetectorConstruction* t_detect
     G4cout << "m_photoSensor_hits_process_ID           = " << m_photoSensor_hits_process_ID          .first << ", " << m_photoSensor_hits_process_ID          .second << G4endl;
     G4cout << "m_photoSensor_hits_photoSensorID_ID     = " << m_photoSensor_hits_photoSensorID_ID    .first << ", " << m_photoSensor_hits_photoSensorID_ID    .second << G4endl;
     G4cout << "m_photoSensor_hits_energy_ID            = " << m_photoSensor_hits_energy_ID           .first << ", " << m_photoSensor_hits_energy_ID           .second << G4endl;
+
+    G4RunManager::GetRunManager()->SetPrintProgress(1);
 }
 
 EventAction::~EventAction() {
@@ -80,17 +83,22 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
             G4double      hit_energy            = photoSensorHit->get_hit_energy           ();
             G4String      hit_photoSensor_name  = photoSensorHit->get_photoSensor_name     ();
 
-            m_analysisManager->FillH2( photoSensorHitHistogramID, hit_position_relative.x(), hit_position_relative.y(), hit_position_relative.z() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second  , hit_position_absolute.x() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+1, hit_position_absolute.y() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+2, hit_position_absolute.z() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second  , hit_position_relative.x() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+1, hit_position_relative.y() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+2, hit_position_relative.z() );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_time_ID             .first, m_photoSensor_hits_time_ID             .second  , hit_time                  );
-            m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_process_ID          .first, m_photoSensor_hits_process_ID          .second  , hit_process               );
-            m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_photoSensorID_ID    .first, m_photoSensor_hits_photoSensorID_ID    .second  , hit_photoSensor_name      );
-            m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_energy_ID           .first, m_photoSensor_hits_energy_ID           .second  , hit_energy                );
+            // if( photoSensorHitHistogramID >= 0 ) m_analysisManager->FillH2( photoSensorHitHistogramID, hit_position_relative.x(), hit_position_relative.y(), 1 );
+            // G4cout << "m_analysisManager->GetNofH2s() = " << m_analysisManager->GetNofH2s() << G4endl;
+            // G4cout << "m_analysisManager->GetH2Activation( " << photoSensorHitHistogramID << " ) = " << m_analysisManager->GetH2Activation( photoSensorHitHistogramID ) << G4endl;
+            // m_analysisManager->GetH2( photoSensorHitHistogramID )->hprint(G4cout);
+            if( photoSensorHitHistogramID == 572 ) G4cout << "photoSensorHitHistogramID = " << photoSensorHitHistogramID << G4endl;
+            if( photoSensorHitHistogramID >= 0 ) m_analysisManager->FillH2( photoSensorHitHistogramID, 0, 0, 1 );
+            if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second  , hit_position_absolute.x() );
+            if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+1, hit_position_absolute.y() );
+            if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+2, hit_position_absolute.z() );
+            if( m_photoSensor_hits_position_relative_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second  , hit_position_relative.x() );
+            if( m_photoSensor_hits_position_relative_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+1, hit_position_relative.y() );
+            if( m_photoSensor_hits_position_relative_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_relative_ID.first, m_photoSensor_hits_position_relative_ID.second+2, hit_position_relative.z() );
+            if( m_photoSensor_hits_time_ID             .first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_time_ID             .first, m_photoSensor_hits_time_ID             .second  , hit_time                  );
+            if( m_photoSensor_hits_process_ID          .first >= 0 ) m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_process_ID          .first, m_photoSensor_hits_process_ID          .second  , hit_process               );
+            if( m_photoSensor_hits_photoSensorID_ID    .first >= 0 ) m_analysisManager->FillNtupleSColumn( m_photoSensor_hits_photoSensorID_ID    .first, m_photoSensor_hits_photoSensorID_ID    .second  , hit_photoSensor_name      );
+            if( m_photoSensor_hits_energy_ID           .first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_energy_ID           .first, m_photoSensor_hits_energy_ID           .second  , hit_energy                );
             m_analysisManager->AddNtupleRow( m_photoSensor_hits_position_absolute_ID.first );
         }
 
@@ -104,4 +112,5 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
 
         // vector< G4String > lensHitHistogramNames;
     }
+    G4cout << "EndOfEventAction" << G4endl;
 }

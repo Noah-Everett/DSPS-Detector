@@ -5,6 +5,7 @@
 /event/verbose 0
 /tracking/verbose 0 #1
 #/process/verbose 1
+/analysis/setFileName output.root
 
 /gun/particle e-
 /gun/energy 3 MeV #1200 keV

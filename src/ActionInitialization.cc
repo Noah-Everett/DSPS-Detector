@@ -47,10 +47,10 @@ void ActionInitialization::Build() const {
     SetUserAction( primaryGeneratorAction );
 
     RunAction* runAction = new RunAction( m_detectorConstruction );
-    SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 
     EventAction* eventAction = new EventAction( runAction, m_detectorConstruction );
     SetUserAction( static_cast< G4UserEventAction* >( eventAction ) );
+    SetUserAction( static_cast< G4UserRunAction* >( runAction ) );
 
     SteppingAction* steppingAction = new SteppingAction( runAction );
     SetUserAction( steppingAction );

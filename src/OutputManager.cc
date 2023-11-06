@@ -47,7 +47,7 @@ OutputManager::~OutputManager() {
 }
 
 G4int OutputManager::add_histogram_1D( const G4String& t_name , const G4String& t_title,
-                                            G4int     t_nBins,       G4double  t_x_min, G4double  t_x_max ) {
+                                             G4int     t_nBins,       G4double  t_x_min, G4double  t_x_max ) {
     G4cout << "OutputManager::add_histogram_1D: " << t_name << G4endl;
     if( m_histogram_1D_IDs.find( t_name ) == m_histogram_1D_IDs.end() ) {
         m_analysisManager = G4AnalysisManager::Instance();
@@ -61,8 +61,8 @@ G4int OutputManager::add_histogram_1D( const G4String& t_name , const G4String& 
 }
 
 G4int OutputManager::add_histogram_2D( const G4String& t_name   , const G4String& t_title, 
-                                            G4int     t_nBins_x,       G4double  t_x_min, G4double t_x_max, 
-                                            G4int     t_nBins_y,       G4double  t_y_min, G4double t_y_max ) {
+                                             G4int     t_nBins_x,       G4double  t_x_min, G4double t_x_max, 
+                                             G4int     t_nBins_y,       G4double  t_y_min, G4double t_y_max ) {
     G4cout << "OutputManager::add_histogram_2D: " << t_name << G4endl;
     if( m_histogram_2D_IDs.find( t_name ) == m_histogram_2D_IDs.end() ) {
         m_analysisManager = G4AnalysisManager::Instance();
