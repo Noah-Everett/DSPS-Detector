@@ -46,9 +46,12 @@
 
 int main(int argc, char** argv)
 {
+    // Initialize the messengers
     ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
     UIMessenger          * UImessenger           = UIMessenger          ::get_instance();
     OutputMessenger      * outputMessenger       = OutputMessenger      ::get_instance();
+
+    // Execute parameter macros
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     if( argc == 3 ) {
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
@@ -60,66 +63,81 @@ int main(int argc, char** argv)
         UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_output.mac"   ) );
     }
 
+    // Initialize UI if needed
     G4UIExecutive* ui = nullptr;
     if( UImessenger->get_showGUI() || argc == 1 )
-        ui = new G4UIExecutive(argc, argv);
+        ui = new G4UIExecutive( argc, argv );
 
+    // Initialize the run manager
     auto runManager = G4RunManagerFactory::CreateRunManager( G4RunManagerType::Default );
 
+    // Build the detector and initialize SDs
     G4SDManager::GetSDMpointer()->SetVerboseLevel( 1 );
     Materials* materials = Materials::get_instance();
-    DetectorConstruction* det = new DetectorConstruction();
-    runManager->SetUserInitialization( det );
+    DetectorConstruction* detectorConstruction = new DetectorConstruction( ( ui ) ? false : true );
+    runManager->SetUserInitialization( detectorConstruction );
 
+    // Initialize the physics list
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
     physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
 
+    // Initialize the optical physics
     G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-    auto opticalParams               = G4OpticalParameters::Instance();
+    auto opticalParams = G4OpticalParameters::Instance();
+    opticalParams->SetWLSTimeProfile( "delta" );
+    opticalParams->SetScintTrackSecondariesFirst( true );
+    opticalParams->SetCerenkovMaxPhotonsPerStep( 100 );
+    opticalParams->SetCerenkovMaxBetaChange( 10.0 );
+    opticalParams->SetCerenkovTrackSecondariesFirst( true );
+    physicsList->RegisterPhysics( opticalPhysics );
+    runManager->SetUserInitialization( physicsList );
 
-    opticalParams->SetWLSTimeProfile("delta");
-
-    opticalParams->SetScintTrackSecondariesFirst(true);
-
-    opticalParams->SetCerenkovMaxPhotonsPerStep(100);
-    opticalParams->SetCerenkovMaxBetaChange(10.0);
-    opticalParams->SetCerenkovTrackSecondariesFirst(true);
-
-    physicsList->RegisterPhysics(opticalPhysics);
-    runManager->SetUserInitialization(physicsList);
-
+    // Make photonCreator particle
     make_photonCreator();
 
-    runManager->SetUserInitialization( new ActionInitialization( det ) );
+    // Initialize the action initialization
+    runManager->SetUserInitialization( new ActionInitialization( detectorConstruction ) );
     
-    // initialize visualization
+    // Initialize the visulization manager
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
     
+    // Start the visualization if needed
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
     if( ui ) {
-        UImanager->ApplyCommand("/control/execute macros/vis.mac");
-        if(ui->IsGUI()) {
-            UImanager->ApplyCommand("/control/execute macros/gui.mac");
-        }
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
+        UImanager->ApplyCommand( "/control/execute macros/vis.mac" );
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
+        if( ui->IsGUI() ) {
+            UImanager->ApplyCommand( "/control/execute macros/gui.mac" );
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
+            }
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         ui->SessionStart();
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         delete ui;
-    } else if( argc == 2 ) {
+        G4cout << __FILE__ << " " << __LINE__ << G4endl;
+    } else if( argc == 2 )
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
-    } else if( argc == 4 ) {
+    else if( argc == 4 )
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 3 ] );
-    }
     
+    // Save GDML file if needed
     if( outputMessenger->get_GDML_save() )
-        det->make_GDMLFile( outputMessenger->get_GDML_fileName() );
+        detectorConstruction->make_GDMLFile( outputMessenger->get_GDML_fileName() );
 
-    // job termination
+    // Terminate job
     delete visManager;
     delete runManager;
-
-    Materials            ::delete_instance();
-    UIMessenger          ::delete_instance();
     OutputMessenger      ::delete_instance();
     ConstructionMessenger::delete_instance();
+    UIMessenger          ::delete_instance();
+    Materials            ::delete_instance();
 
+    // DONE!
+    G4cout << '\n' << "####################"
+           << '\n' << "### Job done! (: ###"
+           << '\n' << "### Goodbye!     ###"
+           << '\n' << "####################" << G4endl;
     return 0;
 }

@@ -25,9 +25,10 @@
 
 #include "PhotoSensorSensitiveDetector.hh"
 
-PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name )
+PhotoSensorSensitiveDetector::PhotoSensorSensitiveDetector( G4String t_name, G4int t_ID )
     : G4VSensitiveDetector( t_name ) {
     m_name = t_name;
+    m_ID = t_ID;
     collectionName.insert( "PhotoSensorSensitiveDetector" );
 }
 
@@ -45,6 +46,7 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     hit->set_photoSensor_position      ( m_position                                                            );
     hit->set_photoSensor_rotationMatrix( m_rotationMatrix                                                      );
     hit->set_photoSensor_name          ( m_name                                                                );
+    hit->set_photoSensor_ID            ( m_ID                                                                  );
     hit->set_hit_position_absolute     ( t_step->GetPostStepPoint()->GetPosition     ()                        );
     hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   ()                        );
     hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy()                        );
@@ -97,4 +99,8 @@ G4int PhotoSensorSensitiveDetector::get_hitsCollection_ID() {
 
 void PhotoSensorSensitiveDetector::set_hitsCollection_ID( G4int t_photoSensorHitsCollection_ID ) {
     m_photoSensorHitsCollection_ID = t_photoSensorHitsCollection_ID;
+}
+
+G4int PhotoSensorSensitiveDetector::get_ID() {
+    return m_ID;
 }

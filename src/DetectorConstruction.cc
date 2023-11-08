@@ -29,7 +29,8 @@
 using std::to_string;
 using std::string;
 
-DetectorConstruction::DetectorConstruction() {
+DetectorConstruction::DetectorConstruction( G4bool t_make_SDandField ) :
+    m_make_SDandField( t_make_SDandField ) {
 }
     
 DetectorConstruction::~DetectorConstruction() {
@@ -184,8 +185,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
     G4ThreeVector calorimeter_amount( calorimeter_amount_x, calorimeter_amount_y, calorimeter_amount_z );
 
     G4double angle = m_axis_z.angle( t_axis_normal );
-    G4ThreeVector axis = m_axis_z.cross( t_axis_normal );
-    axis = axis.unit();
+    G4ThreeVector axis = m_axis_z.cross( t_axis_normal ).unit();
     G4RotationMatrix* rotationMatrix = new G4RotationMatrix( axis, angle );
     G4RotationMatrix* rotationMatrixTurn = new G4RotationMatrix( m_axis_z, m_pi_2 );
     *rotationMatrixTurn *= *rotationMatrix;
@@ -252,6 +252,8 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
 }
 
 void DetectorConstruction::ConstructSDandField() {
+    if( !m_make_SDandField ) return;
+
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
     G4VSensitiveDetector* sensitiveDetector = nullptr;
 
@@ -275,7 +277,7 @@ void DetectorConstruction::ConstructSDandField() {
         }
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
-        PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector" );
+        PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
         psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position() );
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );

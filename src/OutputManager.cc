@@ -94,13 +94,13 @@ void OutputManager::add_tuple_finalize() {
     m_analysisManager->FinishNtuple();
 }
 
-pair< G4int, G4int > OutputManager::add_tuple_column_intiger( const G4String& t_name, G4int t_index_tuple ) {
-    G4cout << "OutputManager::add_tuple_column_intiger: " << t_name << G4endl;
+pair< G4int, G4int > OutputManager::add_tuple_column_Integer( const G4String& t_name, G4int t_index_tuple ) {
+    G4cout << "OutputManager::add_tuple_column_Integer: " << t_name << G4endl;
     if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
         m_analysisManager = G4AnalysisManager::Instance();
         G4int ID = m_analysisManager->CreateNtupleIColumn( t_name );
         if( ID == kInvalidId )
-            G4Exception( "OutputManager::add_tuple_column_intiger", "Error", FatalException, "Tuple column already exists but is not in map" );
+            G4Exception( "OutputManager::add_tuple_column_Integer", "Error", FatalException, "Tuple column already exists but is not in map" );
         m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );
         return { t_index_tuple, ID };
     }

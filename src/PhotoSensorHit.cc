@@ -36,8 +36,9 @@ PhotoSensorHit::PhotoSensorHit() {
 }
 
 PhotoSensorHit::PhotoSensorHit( const G4ThreeVector    & t_photoSensor_position      ,
-                                const G4String         & t_photoSensor_name          ,
                                       G4RotationMatrix*  t_photoSensor_rotationMatrix,
+                                const G4String         & t_photoSensor_name          ,
+                                      G4int              t_photoSensor_ID            ,
                                 const G4ThreeVector    & t_hit_position              ,
                                 const G4double         & t_hit_time                  ,
                                 const G4double         & t_hit_energy                ,
@@ -47,6 +48,7 @@ PhotoSensorHit::PhotoSensorHit( const G4ThreeVector    & t_photoSensor_position 
     m_photoSensor_position       = t_photoSensor_position      ;
     m_photoSensor_rotationMatrix = t_photoSensor_rotationMatrix;
     m_photoSensor_name           = t_photoSensor_name          ;
+    m_photoSensor_ID             = t_photoSensor_ID            ;
     m_hit_position               = t_hit_position              ;
     m_hit_time                   = t_hit_time                  ;
     m_hit_energy                 = t_hit_energy                ;
@@ -59,6 +61,7 @@ PhotoSensorHit::PhotoSensorHit( const PhotoSensorHit& t_hit ) {
     m_photoSensor_position       = t_hit.m_photoSensor_position      ;
     m_photoSensor_rotationMatrix = t_hit.m_photoSensor_rotationMatrix;
     m_photoSensor_name           = t_hit.m_photoSensor_name          ;
+    m_photoSensor_ID             = t_hit.m_photoSensor_ID            ;
     m_hit_position               = t_hit.m_hit_position              ;
     m_hit_time                   = t_hit.m_hit_time                  ;
     m_hit_energy                 = t_hit.m_hit_energy                ;
@@ -87,8 +90,9 @@ void PhotoSensorHit::Print() {
 
 std::ostream& operator<<( std::ostream& t_os, const PhotoSensorHit& t_photoSensorHit ) {
     t_os << "[" << "photoSensor_position="       <<  t_photoSensorHit.m_photoSensor_position       << ", \n"
-                << "photoSensor_name="           <<  t_photoSensorHit.m_photoSensor_name           << ", \n"
                 << "photoSensor_rotationMatrix=" << *t_photoSensorHit.m_photoSensor_rotationMatrix << ", \n"
+                << "photoSensor_name="           <<  t_photoSensorHit.m_photoSensor_name           << ", \n"
+                << "photoSensor_ID="             <<  t_photoSensorHit.m_photoSensor_ID             << ", \n"
                 << "hit_position="               <<  t_photoSensorHit.m_hit_position               << ", \n"
                 << "hit_time="                   <<  t_photoSensorHit.m_hit_time                   << ", \n"
                 << "hit_energy="                 <<  t_photoSensorHit.m_hit_energy                 << ", \n"
@@ -121,6 +125,10 @@ void PhotoSensorHit::set_photoSensor_name( const G4String& t_photoSensor_name ) 
     m_photoSensor_name = t_photoSensor_name;
 }
 
+void PhotoSensorHit::set_photoSensor_ID( G4int t_photoSensor_ID ) {
+    m_photoSensor_ID = t_photoSensor_ID;
+}
+
 void PhotoSensorHit::set_hit_time( G4double t_hit_time ) {
     m_hit_time = t_hit_time;
 }   
@@ -150,7 +158,13 @@ G4ThreeVector PhotoSensorHit::get_hit_position_absolute() {
 }
 
 G4ThreeVector PhotoSensorHit::get_hit_position_relative() {
-    return m_hit_position - m_photoSensor_position;
+    G4ThreeVector relative_position = m_hit_position - m_photoSensor_position;
+    G4RotationMatrix inverse_rotation = m_photoSensor_rotationMatrix->inverse();
+    G4ThreeVector rotated_relative_position = inverse_rotation * relative_position;
+    G4cout << "relative_position = " << relative_position << G4endl;
+    // Project onto xy-plane by setting z-component to 0
+    // rotated_relative_position.setZ(0);
+    return rotated_relative_position;
 }
 
 G4ThreeVector PhotoSensorHit::get_photoSensor_position() {
@@ -163,6 +177,10 @@ G4RotationMatrix* PhotoSensorHit::get_photoSensor_rotationMatrix() {
 
 G4String PhotoSensorHit::get_photoSensor_name() {
     return m_photoSensor_name;
+}
+
+G4int PhotoSensorHit::get_photoSensor_ID() {
+    return m_photoSensor_ID;
 }
 
 G4double PhotoSensorHit::get_hit_time() {

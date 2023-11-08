@@ -64,7 +64,7 @@ class G4LogicalVolume;
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-    DetectorConstruction();
+    DetectorConstruction( G4bool = true );
    ~DetectorConstruction();
 
     G4VPhysicalVolume* Construct() override;
@@ -79,7 +79,8 @@ public:
     vector< DirectionSensitivePhotoDetector* > get_directionSensitivePhotoDetectors() const;
 
 protected:
-    G4bool m_checkOverlaps{ true };
+    G4bool m_checkOverlaps  { true };
+    G4bool m_make_SDandField{ true };
 
     G4ThreeVector m_axis_x{ 1.0, 0.0, 0.0 };
     G4ThreeVector m_axis_y{ 0.0, 1.0, 0.0 };

@@ -86,6 +86,7 @@ ConstructionMessenger::ConstructionMessenger() {
     m_command_lens_circular                          = new G4UIcmdWithABool         ( "/geometry/lens/circular"                         , this );
 
     m_command_directionSensitivePhotoDetector_amount = new G4UIcmdWith3Vector       ( "/geometry/directionSensitivePhotoDetector/amount", this );
+
     m_command_checkOverlaps                          = new G4UIcmdWithABool         ( "/geometry/checkOverlaps"                         , this );
 }
 
@@ -148,6 +149,7 @@ ConstructionMessenger::~ConstructionMessenger() {
     if( m_command_lens_circular                          ) delete m_command_lens_circular                         ;
 
     if( m_command_directionSensitivePhotoDetector_amount ) delete m_command_directionSensitivePhotoDetector_amount;
+
     if( m_command_checkOverlaps                          ) delete m_command_checkOverlaps                         ;
 
     if( m_variable_world_visAttributes                   ) delete m_variable_world_visAttributes                  ;
@@ -465,114 +467,151 @@ void ConstructionMessenger::print_parameters() {
 G4ThreeVector ConstructionMessenger::get_world_size() { 
     return m_variable_world_size;
 }
+
 G4double ConstructionMessenger::get_world_size_x() { 
     return m_variable_world_size.x();
 }
+
 G4double ConstructionMessenger::get_world_size_y() { 
     return m_variable_world_size.y();
 }
+
 G4double ConstructionMessenger::get_world_size_z() { 
     return m_variable_world_size.z();
 }
+
 G4String ConstructionMessenger::get_world_material() { 
     return m_variable_world_material;
 }
+
 G4bool ConstructionMessenger::get_world_visibility() { 
     return m_variable_world_visibility;
 }
+
 G4String ConstructionMessenger::get_world_color() { 
     return m_variable_world_color;
 }
+
 G4double ConstructionMessenger::get_world_alpha() { 
     return m_variable_world_alpha;
 }
+
 G4bool ConstructionMessenger::get_world_forceSolid() { 
     return m_variable_world_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_world_visAttributes() { 
     return m_variable_world_visAttributes;
 }
+
 G4double ConstructionMessenger::get_detector_wall_thickness() { 
     return m_variable_detector_wall_thickness;
 }
+
 G4String ConstructionMessenger::get_detector_wall_material() { 
     return m_variable_detector_wall_material;
 }
+
 G4bool ConstructionMessenger::get_detector_wall_visibility() { 
     return m_variable_detector_wall_visibility;
 }
+
 G4String ConstructionMessenger::get_detector_wall_color() { 
     return m_variable_detector_wall_color;
 }
+
 G4double ConstructionMessenger::get_detector_wall_alpha() { 
     return m_variable_detector_wall_alpha;
 }
+
 G4bool ConstructionMessenger::get_detector_wall_forceSolid() { 
     return m_variable_detector_wall_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_detector_wall_visAttributes() {
     return m_variable_detector_wall_visAttributes;
 }
+
 G4String ConstructionMessenger::get_detector_medium_material() { 
     return m_variable_detector_medium_material;
 }
+
 G4bool ConstructionMessenger::get_detector_medium_visibility() { 
     return m_variable_detector_medium_visibility;
 }
+
 G4String ConstructionMessenger::get_detector_medium_color() { 
     return m_variable_detector_medium_color;
 }
+
 G4double ConstructionMessenger::get_detector_medium_alpha() { 
     return m_variable_detector_medium_alpha;
 }
+
 G4bool ConstructionMessenger::get_detector_medium_forceSolid() { 
     return m_variable_detector_medium_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_detector_medium_visAttributes() {
     return m_variable_detector_medium_visAttributes;
 }
+
 G4ThreeVector ConstructionMessenger::get_calorimeter_size() { 
     return m_variable_calorimeter_size;
 }
+
 G4double ConstructionMessenger::get_calorimeter_size_width() { 
     return m_variable_calorimeter_size.x();
 }
+
 G4double ConstructionMessenger::get_calorimeter_size_height() { 
     return m_variable_calorimeter_size.y();
 }
+
 G4double ConstructionMessenger::get_calorimeter_size_depth() { 
     return m_variable_calorimeter_size.z();
 }
+
 G4String ConstructionMessenger::get_calorimeter_material() { 
     return m_variable_calorimeter_material;
 }
+
 G4bool ConstructionMessenger::get_calorimeter_visibility() { 
     return m_variable_calorimeter_visibility;
 }
+
 G4String ConstructionMessenger::get_calorimeter_color() { 
     return m_variable_calorimeter_color;
 }
+
 G4double ConstructionMessenger::get_calorimeter_alpha() { 
     return m_variable_calorimeter_alpha;
 }
+
 G4bool ConstructionMessenger::get_calorimeter_forceSolid() { 
     return m_variable_calorimeter_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_calorimeter_visAttributes() {
     return m_variable_calorimeter_visAttributes;
 }
+
 G4ThreeVector ConstructionMessenger::get_photoSensor_surface_size() { 
     return m_variable_photoSensor_surface_size;
 }
+
 G4double ConstructionMessenger::get_photoSensor_surface_size_width() { 
     return m_variable_photoSensor_surface_size.x();
 }
+
 G4double ConstructionMessenger::get_photoSensor_surface_size_height() { 
     return m_variable_photoSensor_surface_size.y();
 }
+
 G4double ConstructionMessenger::get_photoSensor_surface_size_depth() { 
     return m_variable_photoSensor_surface_size.z();
 }
+
 G4double ConstructionMessenger::get_photoSensor_surface_size_widthAndHeight() { 
     if( m_variable_photoSensor_surface_size.x() == m_variable_photoSensor_surface_size.y() )
         return m_variable_photoSensor_surface_size.x();
@@ -583,36 +622,47 @@ G4double ConstructionMessenger::get_photoSensor_surface_size_widthAndHeight() {
                      "PhotoSensor surface width and height are not equal." );
         return 0;
 }
+
 G4String ConstructionMessenger::get_photoSensor_surface_material() { 
     return m_variable_photoSensor_surface_material;
 }
+
 G4bool ConstructionMessenger::get_photoSensor_surface_visibility() { 
     return m_variable_photoSensor_surface_visibility;
 }
+
 G4String ConstructionMessenger::get_photoSensor_surface_color() { 
     return m_variable_photoSensor_surface_color;
 }
+
 G4double ConstructionMessenger::get_photoSensor_surface_alpha() { 
     return m_variable_photoSensor_surface_alpha;
 }
+
 G4bool ConstructionMessenger::get_photoSensor_surface_forceSolid() { 
     return m_variable_photoSensor_surface_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_photoSensor_surface_visAttributes() {
     return m_variable_photoSensor_surface_visAttributes;
 }
+
 G4ThreeVector ConstructionMessenger::get_photoSensor_body_size() { 
     return m_variable_photoSensor_body_size;
 }
+
 G4double ConstructionMessenger::get_photoSensor_body_size_width() { 
     return m_variable_photoSensor_body_size.x();
 }
+
 G4double ConstructionMessenger::get_photoSensor_body_size_height() { 
     return m_variable_photoSensor_body_size.y();
 }
+
 G4double ConstructionMessenger::get_photoSensor_body_size_depth() { 
     return m_variable_photoSensor_body_size.z();
 }
+
 G4double ConstructionMessenger::get_photoSensor_body_size_widthAndHeight() { 
     if( m_variable_photoSensor_body_size.x() == m_variable_photoSensor_body_size.y() )
         return m_variable_photoSensor_body_size.x();
@@ -623,24 +673,31 @@ G4double ConstructionMessenger::get_photoSensor_body_size_widthAndHeight() {
                      "PhotoSensor body width and height are not equal." );
         return 0;
 }
+
 G4String ConstructionMessenger::get_photoSensor_body_material() { 
     return m_variable_photoSensor_body_material;
 }
+
 G4bool ConstructionMessenger::get_photoSensor_body_visibility() { 
     return m_variable_photoSensor_body_visibility;
 }
+
 G4String ConstructionMessenger::get_photoSensor_body_color() { 
     return m_variable_photoSensor_body_color;
 }
+
 G4double ConstructionMessenger::get_photoSensor_body_alpha() { 
     return m_variable_photoSensor_body_alpha;
 }
+
 G4bool ConstructionMessenger::get_photoSensor_body_forceSolid() { 
     return m_variable_photoSensor_body_forceSolid;
 }
+
 G4VisAttributes* ConstructionMessenger::get_photoSensor_body_visAttributes() {
     return m_variable_photoSensor_body_visAttributes;
 }
+
 G4int ConstructionMessenger::get_lens_amount() {
     if( m_variable_lens_currentLens + 1 != m_variable_lens_surface_1_radii_x .size() ||
         m_variable_lens_currentLens + 1 != m_variable_lens_surface_1_radii_y .size() ||
@@ -662,54 +719,71 @@ G4int ConstructionMessenger::get_lens_amount() {
                      "Lens amount is not equal to the amount of lens properties." );
     return m_variable_lens_currentLens + 1;
 }
+
 G4double ConstructionMessenger::get_lens_surface_1_radius_x( G4int t_lens_index ) {
     return m_variable_lens_surface_1_radii_x[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_surface_1_radius_y( G4int t_lens_index ) {
     return m_variable_lens_surface_1_radii_y[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_surface_1_yLimits( G4int t_lens_index ) {
     return m_variable_lens_surface_1_yLimitss[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_surface_2_radius_x( G4int t_lens_index ) {
     return m_variable_lens_surface_2_radii_x[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_surface_2_radius_y( G4int t_lens_index ) {
     return m_variable_lens_surface_2_radii_y[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_surface_2_yLimits( G4int t_lens_index ) {
     return m_variable_lens_surface_2_yLimitss[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_distance( G4int t_lens_index ) {
     return m_variable_lens_distances[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_position( G4int t_lens_index ) {
     return m_variable_lens_positions[ t_lens_index ];
 }
+
 G4String ConstructionMessenger::get_lens_material( G4int t_lens_index ) {
     return m_variable_lens_materials[ t_lens_index ];
 }
+
 G4bool ConstructionMessenger::get_lens_visibility( G4int t_lens_index ) {
     return m_variable_lens_visibilities[ t_lens_index ];
 }
+
 G4String ConstructionMessenger::get_lens_color( G4int t_lens_index ) {
     return m_variable_lens_colors[ t_lens_index ];
 }
+
 G4double ConstructionMessenger::get_lens_alpha( G4int t_lens_index ) {
     return m_variable_lens_alphas[ t_lens_index ];
 }
+
 G4bool ConstructionMessenger::get_lens_forceSolid( G4int t_lens_index ) {
     return m_variable_lens_forceSolids[ t_lens_index ];
 }
+
 G4bool ConstructionMessenger::get_lens_circular( G4int t_lens_index ) {
     return m_variable_lens_circulars[ t_lens_index ];
 }
+
 G4VisAttributes* ConstructionMessenger::get_lens_visAttributes( G4int t_lens_index ) {
     return m_variable_lens_visAttributess[ t_lens_index ];
 }
+
 G4ThreeVector ConstructionMessenger::get_directionSensitivePhotoDetector_amount() { 
     return m_variable_directionSensitivePhotoDetector_amount;
 }
+
 G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_x() { 
     G4int temp = m_variable_directionSensitivePhotoDetector_amount.x();
     if( temp == m_variable_directionSensitivePhotoDetector_amount.x() )
@@ -721,6 +795,7 @@ G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_x() {
                      "DirectionSensitivePhotoDetector amount x is not an integer." );
         return 0;
 }
+
 G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_y() { 
     G4int temp = m_variable_directionSensitivePhotoDetector_amount.y();
     if( temp == m_variable_directionSensitivePhotoDetector_amount.y() )
@@ -732,6 +807,7 @@ G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_y() {
                      "DirectionSensitivePhotoDetector amount y is not an integer." );
         return 0;
 }
+
 G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_z() { 
     G4int temp = m_variable_directionSensitivePhotoDetector_amount.z();
     if( temp == m_variable_directionSensitivePhotoDetector_amount.z() )
@@ -743,6 +819,13 @@ G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_z() {
                      "DirectionSensitivePhotoDetector amount z is not an integer." );
         return 0;
 }
+
+G4int ConstructionMessenger::get_directionSensitivePhotoDetector_amount_total() { 
+    return get_directionSensitivePhotoDetector_amount_x() * get_directionSensitivePhotoDetector_amount_y() * 2
+         + get_directionSensitivePhotoDetector_amount_x() * get_directionSensitivePhotoDetector_amount_z() * 2
+         + get_directionSensitivePhotoDetector_amount_y() * get_directionSensitivePhotoDetector_amount_z() * 2;
+}
+
 G4bool ConstructionMessenger::get_checkOverlaps() {
     return m_variable_checkOverlaps;
 }
@@ -750,176 +833,225 @@ G4bool ConstructionMessenger::get_checkOverlaps() {
 void ConstructionMessenger::set_world_size( G4ThreeVector t_variable_world_size ) { 
     m_variable_world_size=t_variable_world_size; 
 }
+
 void ConstructionMessenger::set_world_size_x( G4double t_variable_world_size_x ) { 
     m_variable_world_size.setX( t_variable_world_size_x );
 }
+
 void ConstructionMessenger::set_world_size_y( G4double t_variable_world_size_y ) { 
     m_variable_world_size.setY( t_variable_world_size_y );
 }
+
 void ConstructionMessenger::set_world_size_z( G4double t_variable_world_size_z ) { 
     m_variable_world_size.setZ( t_variable_world_size_z );
 }
+
 void ConstructionMessenger::set_world_material( G4String t_variable_world_material ) { 
     m_variable_world_material = t_variable_world_material;
 }
+
 void ConstructionMessenger::set_world_visibility( G4bool t_variable_world_visibility ) { 
     m_variable_world_visibility = t_variable_world_visibility;
     set_visAttributes_alpha( t_variable_world_visibility, m_variable_world_visAttributes );
 }
+
 void ConstructionMessenger::set_world_color( G4String t_variable_world_color ) { 
     m_variable_world_color = t_variable_world_color;
     set_visAttributes_color( t_variable_world_color, m_variable_world_visAttributes );
 }
+
 void ConstructionMessenger::set_world_alpha( G4double t_variable_world_alpha ) { 
     m_variable_world_alpha = t_variable_world_alpha;
     set_visAttributes_alpha( t_variable_world_alpha, m_variable_world_visAttributes );
 }
+
 void ConstructionMessenger::set_world_forceSolid( G4bool t_variable_world_forceSolid ) { 
     m_variable_world_forceSolid = t_variable_world_forceSolid;
     set_visAttributes_forceSolid( t_variable_world_forceSolid, m_variable_world_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_wall_thickness( G4double t_variable_detector_wall_thickness ) { 
     m_variable_detector_wall_thickness = t_variable_detector_wall_thickness;
 }
+
 void ConstructionMessenger::set_detector_wall_material( G4String t_variable_detector_wall_material ) { 
     m_variable_detector_wall_material = t_variable_detector_wall_material;
 }
+
 void ConstructionMessenger::set_detector_wall_visibility( G4bool t_variable_detector_wall_visibility ) { 
     m_variable_detector_wall_visibility = t_variable_detector_wall_visibility;
     set_visAttributes_visibility( t_variable_detector_wall_visibility, m_variable_detector_wall_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_wall_color( G4String t_variable_detector_wall_color ) { 
     m_variable_detector_wall_color = t_variable_detector_wall_color;
     set_visAttributes_color( t_variable_detector_wall_color, m_variable_detector_wall_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_wall_alpha( G4double t_variable_detector_wall_alpha ) { 
     m_variable_detector_wall_alpha = t_variable_detector_wall_alpha;
     set_visAttributes_alpha( t_variable_detector_wall_alpha, m_variable_detector_wall_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_wall_forceSolid( G4bool t_variable_detector_wall_forceSolid ) { 
     m_variable_detector_wall_forceSolid = t_variable_detector_wall_forceSolid;
     set_visAttributes_forceSolid( t_variable_detector_wall_forceSolid, m_variable_detector_wall_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_medium_material( G4String t_variable_detector_medium_material ) { 
     m_variable_detector_medium_material = t_variable_detector_medium_material;
 }
+
 void ConstructionMessenger::set_detector_medium_visibility( G4bool t_variable_detector_medium_visibility ) { 
     m_variable_detector_medium_visibility = t_variable_detector_medium_visibility;
     set_visAttributes_visibility( t_variable_detector_medium_visibility, m_variable_detector_medium_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_medium_color( G4String t_variable_detector_medium_color ) { 
     m_variable_detector_medium_color = t_variable_detector_medium_color;
     set_visAttributes_color( t_variable_detector_medium_color, m_variable_detector_medium_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_medium_alpha( G4double t_variable_detector_medium_alpha ) { 
     m_variable_detector_medium_alpha = t_variable_detector_medium_alpha;
     set_visAttributes_alpha( t_variable_detector_medium_alpha, m_variable_detector_medium_visAttributes );
 }
+
 void ConstructionMessenger::set_detector_medium_forceSolid( G4bool t_variable_detector_medium_forceSolid ) { 
     m_variable_detector_medium_forceSolid = t_variable_detector_medium_forceSolid;
     set_visAttributes_forceSolid( t_variable_detector_medium_forceSolid, m_variable_detector_medium_visAttributes );
 }
+
 void ConstructionMessenger::set_calorimeter_size( G4ThreeVector t_variable_calorimeter_size ) { 
     m_variable_calorimeter_size = t_variable_calorimeter_size;
 }
+
 void ConstructionMessenger::set_calorimeter_size_width( G4double t_variable_calorimeter_size_width ) { 
     m_variable_calorimeter_size.setX( t_variable_calorimeter_size_width );
 }
+
 void ConstructionMessenger::set_calorimeter_size_height( G4double t_variable_calorimeter_size_height ) { 
     m_variable_calorimeter_size.setY( t_variable_calorimeter_size_height );
 }
+
 void ConstructionMessenger::set_calorimeter_size_depth( G4double t_variable_calorimeter_size_depth ) { 
     m_variable_calorimeter_size.setZ( t_variable_calorimeter_size_depth );
 }
+
 void ConstructionMessenger::set_calorimeter_material( G4String t_variable_calorimeter_material ) { 
     m_variable_calorimeter_material = t_variable_calorimeter_material;
 }
+
 void ConstructionMessenger::set_calorimeter_visibility( G4bool t_variable_calorimeter_visibility ) { 
     m_variable_calorimeter_visibility = t_variable_calorimeter_visibility;
     set_visAttributes_visibility( t_variable_calorimeter_visibility, m_variable_calorimeter_visAttributes );
 }
+
 void ConstructionMessenger::set_calorimeter_color( G4String t_variable_calorimeter_color ) { 
     m_variable_calorimeter_color = t_variable_calorimeter_color;
     set_visAttributes_color( t_variable_calorimeter_color, m_variable_calorimeter_visAttributes );
 }
+
 void ConstructionMessenger::set_calorimeter_alpha( G4double t_variable_calorimeter_alpha ) { 
     m_variable_calorimeter_alpha = t_variable_calorimeter_alpha;
     set_visAttributes_alpha( t_variable_calorimeter_alpha, m_variable_calorimeter_visAttributes );
 }
+
 void ConstructionMessenger::set_calorimeter_forceSolid( G4bool t_variable_calorimeter_forceSolid ) { 
     m_variable_calorimeter_forceSolid = t_variable_calorimeter_forceSolid;
     set_visAttributes_forceSolid( t_variable_calorimeter_forceSolid, m_variable_calorimeter_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_size( G4ThreeVector t_variable_photoSensor_surface_size ) { 
     m_variable_photoSensor_surface_size = t_variable_photoSensor_surface_size;
 }
+
 void ConstructionMessenger::set_photoSensor_surface_size_width( G4double t_variable_photoSensor_surface_size_width ) { 
     m_variable_photoSensor_surface_size.setX( t_variable_photoSensor_surface_size_width );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_size_height( G4double t_variable_photoSensor_surface_size_height ) { 
     m_variable_photoSensor_surface_size.setY( t_variable_photoSensor_surface_size_height );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_size_depth( G4double t_variable_photoSensor_surface_size_depth ) { 
     m_variable_photoSensor_surface_size.setZ( t_variable_photoSensor_surface_size_depth );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_size_widthAndHeight( G4double t_variable_photoSensor_surface_size_widthAndHeight ) { 
     m_variable_photoSensor_surface_size.setX( t_variable_photoSensor_surface_size_widthAndHeight );
     m_variable_photoSensor_surface_size.setY( t_variable_photoSensor_surface_size_widthAndHeight );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_material( G4String t_variable_photoSensor_surface_material ) {
     m_variable_photoSensor_surface_material = t_variable_photoSensor_surface_material;
 }
+
 void ConstructionMessenger::set_photoSensor_surface_visibility( G4bool t_variable_photoSensor_surface_visibility ) { 
     m_variable_photoSensor_surface_visibility = t_variable_photoSensor_surface_visibility;
     set_visAttributes_visibility( t_variable_photoSensor_surface_visibility, m_variable_photoSensor_surface_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_color( G4String t_variable_photoSensor_surface_color ) { 
     m_variable_photoSensor_surface_color = t_variable_photoSensor_surface_color;
     set_visAttributes_color( t_variable_photoSensor_surface_color, m_variable_photoSensor_surface_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_alpha( G4double t_variable_photoSensor_surface_alpha ) { 
     m_variable_photoSensor_surface_alpha = t_variable_photoSensor_surface_alpha;
     set_visAttributes_alpha( t_variable_photoSensor_surface_alpha, m_variable_photoSensor_surface_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_surface_forceSolid( G4bool t_variable_photoSensor_surface_forceSolid ) { 
     m_variable_photoSensor_surface_forceSolid = t_variable_photoSensor_surface_forceSolid;
     set_visAttributes_forceSolid( t_variable_photoSensor_surface_forceSolid, m_variable_photoSensor_surface_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_body_size( G4ThreeVector t_variable_photoSensor_body_size ) {
     m_variable_photoSensor_body_size = t_variable_photoSensor_body_size;
 }
+
 void ConstructionMessenger::set_photoSensor_body_size_width( G4double t_variable_photoSensor_body_size_width ) { 
     m_variable_photoSensor_body_size.setX( t_variable_photoSensor_body_size_width );
 }
+
 void ConstructionMessenger::set_photoSensor_body_size_height( G4double t_variable_photoSensor_body_size_height ) { 
     m_variable_photoSensor_body_size.setY( t_variable_photoSensor_body_size_height );
 }
+
 void ConstructionMessenger::set_photoSensor_body_size_depth( G4double t_variable_photoSensor_body_size_depth ) { 
     m_variable_photoSensor_body_size.setZ( t_variable_photoSensor_body_size_depth );
 }
+
 void ConstructionMessenger::set_photoSensor_body_size_widthAndHeight( G4double t_variable_photoSensor_body_size_widthAndHeight ) { 
     m_variable_photoSensor_body_size.setX( t_variable_photoSensor_body_size_widthAndHeight );
     m_variable_photoSensor_body_size.setY( t_variable_photoSensor_body_size_widthAndHeight );
 }
+
 void ConstructionMessenger::set_photoSensor_body_material( G4String t_variable_photoSensor_body_material ) {
     m_variable_photoSensor_body_material = t_variable_photoSensor_body_material;
 }
+
 void ConstructionMessenger::set_photoSensor_body_visibility( G4bool t_variable_photoSensor_body_visibility ) { 
     m_variable_photoSensor_body_visibility = t_variable_photoSensor_body_visibility;
     set_visAttributes_visibility( t_variable_photoSensor_body_visibility, m_variable_photoSensor_body_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_body_color( G4String t_variable_photoSensor_body_color ) { 
     m_variable_photoSensor_body_color = t_variable_photoSensor_body_color;
     set_visAttributes_color( t_variable_photoSensor_body_color, m_variable_photoSensor_body_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_body_alpha( G4double t_variable_photoSensor_body_alpha ) { 
     m_variable_photoSensor_body_alpha = t_variable_photoSensor_body_alpha;
     set_visAttributes_alpha( t_variable_photoSensor_body_alpha, m_variable_photoSensor_body_visAttributes );
 }
+
 void ConstructionMessenger::set_photoSensor_body_forceSolid( G4bool t_variable_photoSensor_body_forceSolid ) { 
     m_variable_photoSensor_body_forceSolid = t_variable_photoSensor_body_forceSolid;
     set_visAttributes_forceSolid( t_variable_photoSensor_body_forceSolid, m_variable_photoSensor_body_visAttributes );
 }
+
 void ConstructionMessenger::set_lens_incramentCurrentLens() {
     if( m_variable_lens_surface_1_radii_x.size() != 0 )
         m_variable_lens_currentLens++;
@@ -939,73 +1071,94 @@ void ConstructionMessenger::set_lens_incramentCurrentLens() {
     m_variable_lens_circulars         .push_back( false );
     m_variable_lens_visAttributess    .push_back( new G4VisAttributes() );
 }
+
 void ConstructionMessenger::set_lens_surface_1_radius_x( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_1_radius_x ) {
     m_variable_lens_surface_1_radii_x[ t_variable_lens_currentLens ] = t_variable_lens_surface_1_radius_x;
 }
+
 void ConstructionMessenger::set_lens_surface_1_radius_y( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_1_radius_y ) {
     m_variable_lens_surface_1_radii_y[ t_variable_lens_currentLens ] = t_variable_lens_surface_1_radius_y;
 }
+
 void ConstructionMessenger::set_lens_surface_1_yLimits( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_1_yLimits ) {
     m_variable_lens_surface_1_yLimitss[ t_variable_lens_currentLens ] = t_variable_lens_surface_1_yLimits;
 }
+
 void ConstructionMessenger::set_lens_surface_2_radius_x( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_2_radius_x ) {
     m_variable_lens_surface_2_radii_x[ t_variable_lens_currentLens ] = t_variable_lens_surface_2_radius_x;
 }
+
 void ConstructionMessenger::set_lens_surface_2_radius_y( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_2_radius_y ) {
     m_variable_lens_surface_2_radii_y[ t_variable_lens_currentLens ] = t_variable_lens_surface_2_radius_y;
 }
+
 void ConstructionMessenger::set_lens_surface_2_yLimits( G4int t_variable_lens_currentLens, G4double t_variable_lens_surface_2_yLimits ) {
     m_variable_lens_surface_2_yLimitss[ t_variable_lens_currentLens ] = t_variable_lens_surface_2_yLimits;
 }
+
 void ConstructionMessenger::set_lens_distance( G4int t_variable_lens_currentLens, G4double t_variable_lens_distance ) {
     m_variable_lens_distances[ t_variable_lens_currentLens ] = t_variable_lens_distance;
 }
+
 void ConstructionMessenger::set_lens_position( G4int t_variable_lens_currentLens, G4double t_variable_lens_position ) {
     m_variable_lens_positions[ t_variable_lens_currentLens ] = t_variable_lens_position;
 }
+
 void ConstructionMessenger::set_lens_material( G4int t_variable_lens_currentLens, G4String t_variable_lens_material ) {
     m_variable_lens_materials[ t_variable_lens_currentLens ] = t_variable_lens_material;
 }
+
 void ConstructionMessenger::set_lens_visibility( G4int t_variable_lens_currentLens, G4bool t_variable_lens_visibility ) {
     m_variable_lens_visibilities[ t_variable_lens_currentLens ] = t_variable_lens_visibility;
     set_visAttributes_visibility( t_variable_lens_visibility, m_variable_lens_visAttributess[ t_variable_lens_currentLens ] );
 }
+
 void ConstructionMessenger::set_lens_color( G4int t_variable_lens_currentLens, G4String t_variable_lens_color ) {
     m_variable_lens_colors[ t_variable_lens_currentLens ] = t_variable_lens_color;
     set_visAttributes_color( t_variable_lens_color, m_variable_lens_visAttributess[ t_variable_lens_currentLens ] );
 }
+
 void ConstructionMessenger::set_lens_alpha( G4int t_variable_lens_currentLens, G4double t_variable_lens_alpha ) {
     m_variable_lens_alphas[ t_variable_lens_currentLens ] = t_variable_lens_alpha;
     set_visAttributes_alpha( t_variable_lens_alpha, m_variable_lens_visAttributess[ t_variable_lens_currentLens ] );
 }
+
 void ConstructionMessenger::set_lens_forceSolid( G4int t_variable_lens_currentLens, G4bool t_variable_lens_forceSolid ) {
     m_variable_lens_forceSolids[ t_variable_lens_currentLens ] = t_variable_lens_forceSolid;
     set_visAttributes_forceSolid( t_variable_lens_forceSolid, m_variable_lens_visAttributess[ t_variable_lens_currentLens ] );
 }
+
 void ConstructionMessenger::set_lens_circular( G4int t_variable_lens_currentLens, G4bool t_variable_lens_circular ) {
     m_variable_lens_circulars[ t_variable_lens_currentLens ] = t_variable_lens_circular;
 }
+
 void ConstructionMessenger::set_directionSensitivePhotoDetector_amount( G4ThreeVector t_variable_directionSensitivePhotoDetector_amount ) { 
     m_variable_directionSensitivePhotoDetector_amount = t_variable_directionSensitivePhotoDetector_amount;
 }
+
 void ConstructionMessenger::set_directionSensitivePhotoDetector_amount_x( G4double t_variable_directionSensitivePhotoDetector_amount_x ) {
     m_variable_directionSensitivePhotoDetector_amount.setX( t_variable_directionSensitivePhotoDetector_amount_x );
 }
+
 void ConstructionMessenger::set_directionSensitivePhotoDetector_amount_y( G4double t_variable_directionSensitivePhotoDetector_amount_y ) {
     m_variable_directionSensitivePhotoDetector_amount.setY( t_variable_directionSensitivePhotoDetector_amount_y );
 }
+
 void ConstructionMessenger::set_directionSensitivePhotoDetector_amount_z( G4double t_variable_directionSensitivePhotoDetector_amount_z ) {
     m_variable_directionSensitivePhotoDetector_amount.setZ( t_variable_directionSensitivePhotoDetector_amount_z );
 }
+
 void ConstructionMessenger::set_checkOverlaps( G4bool t_variable_checkOverlaps ) {
     m_variable_checkOverlaps = t_variable_checkOverlaps;
 }
+
 void ConstructionMessenger::set_visAttributes_visibility( G4bool t_variable_visibility, G4VisAttributes*& t_variable_visAttributes ) {
     if( !t_variable_visAttributes )
         t_variable_visAttributes = new G4VisAttributes( t_variable_visibility );
     else
         t_variable_visAttributes->SetVisibility( t_variable_visibility );
 }
+
 void ConstructionMessenger::set_visAttributes_color( G4String t_variable_color, G4VisAttributes*& t_variable_visAttributes ) {
     G4Colour temp;
     if( !G4Colour::GetColour( t_variable_color, temp ) )
@@ -1015,6 +1168,7 @@ void ConstructionMessenger::set_visAttributes_color( G4String t_variable_color, 
     else
         t_variable_visAttributes->SetColor( temp );
 }
+
 void ConstructionMessenger::set_visAttributes_alpha( G4double t_variable_alpha, G4VisAttributes*& t_variable_visAttributes ) {
     if( !t_variable_visAttributes )
         t_variable_visAttributes = new G4VisAttributes();
@@ -1024,6 +1178,7 @@ void ConstructionMessenger::set_visAttributes_alpha( G4double t_variable_alpha, 
                                          t_variable_visAttributes->GetColour().GetBlue (), 
                                          t_variable_alpha                                 );
 }
+
 void ConstructionMessenger::set_visAttributes_forceSolid( G4bool t_variable_forceSolid, G4VisAttributes*& t_variable_visAttributes ) {
     if( !t_variable_visAttributes )
         t_variable_visAttributes = new G4VisAttributes();

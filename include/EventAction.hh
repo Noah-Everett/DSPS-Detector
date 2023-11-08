@@ -33,6 +33,8 @@
 #include "ConstructionMessenger.hh"
 #include "RunAction.hh"
 
+using std::to_string;
+
 class EventAction : public G4UserEventAction
 {
     public:

@@ -34,6 +34,8 @@
 #include "PhotoSensor.hh"
 #include "ConstructionMessenger.hh"
 
+using std::to_string;
+
 class DirectionSensitivePhotoDetector
 {
     public:
@@ -61,6 +63,7 @@ class DirectionSensitivePhotoDetector
         PhotoSensor     * m_photoSensor        { nullptr };
 
         G4String          m_name                          ;
+        G4int             m_ID                            ;
         G4RotationMatrix* m_rotationMatrix     { nullptr };
         G4ThreeVector     m_position                      ;
         G4LogicalVolume * m_parentLogicalVolume{ nullptr };

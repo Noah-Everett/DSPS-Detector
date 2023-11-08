@@ -36,6 +36,8 @@
 #include "DetectorConstruction.hh"
 #include "ConstructionMessenger.hh"
 
+using std::to_string;
+
 class RunAction : public G4UserRunAction
 {
     public:

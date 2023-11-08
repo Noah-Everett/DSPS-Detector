@@ -54,7 +54,7 @@ class OutputManager
                                                              G4int    ,       G4double , G4double  );
         G4int                add_tuple_initialize    ( const G4String&, const G4String&            );
         void                 add_tuple_finalize      (                                             );
-        pair< G4int, G4int > add_tuple_column_intiger( const G4String&,       G4int                );
+        pair< G4int, G4int > add_tuple_column_Integer( const G4String&,       G4int                );
         pair< G4int, G4int > add_tuple_column_double ( const G4String&,       G4int                );
         pair< G4int, G4int > add_tuple_column_3vector( const G4String&,       G4int                );
         pair< G4int, G4int > add_tuple_column_string ( const G4String&,       G4int                );

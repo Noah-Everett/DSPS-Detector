@@ -11,4 +11,4 @@
 /gun/energy 3 MeV #1200 keV
 /gun/position 0 0 0
 /gun/direction 1 0 0
-/run/beamOn 100
+/run/beamOn 1

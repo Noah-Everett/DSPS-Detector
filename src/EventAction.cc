@@ -48,20 +48,24 @@ EventAction::EventAction( RunAction* t_runAction, DetectorConstruction* t_detect
     G4cout << "m_photoSensor_hits_photoSensorID_ID     = " << m_photoSensor_hits_photoSensorID_ID    .first << ", " << m_photoSensor_hits_photoSensorID_ID    .second << G4endl;
     G4cout << "m_photoSensor_hits_energy_ID            = " << m_photoSensor_hits_energy_ID           .first << ", " << m_photoSensor_hits_energy_ID           .second << G4endl;
 
-    G4RunManager::GetRunManager()->SetPrintProgress(1);
+    G4RunManager::GetRunManager()->SetPrintProgress( 1 );
 }
 
 EventAction::~EventAction() {
 }
 
 void EventAction::BeginOfEventAction( const G4Event* t_event ) {
-    // m_sensitiveDetectorManager = G4SDManager::GetSDMpointer();
-    // for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
-    //     PhotoSensorSensitiveDetector* photoSensorSensitiveDetector = DSPD->get_photoSensor()->get_sensitiveDetector();
-    //     G4String HCName = photoSensorSensitiveDetector->get_name() + "/" + photoSensorSensitiveDetector->get_hitsCollection_name();
-    //     G4int HCID = m_sensitiveDetectorManager->GetCollectionID( HCName );
-    //     photoSEnsotSensitiveDetector->set_hitsCollection_ID( HCID );
-    // }
+    m_analysisManager = G4AnalysisManager::Instance();
+
+    G4int ID = m_outputManager->get_histogram_2D_ID( "photoSensor_0" );
+    if( ID != kInvalidId && m_analysisManager->GetH2Title( ID ) != "photoSensor_0" )
+        for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
+            G4cout << "Resetting histogram name : photoSensor_" << DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() 
+                << " --> " << DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() << G4endl;
+            m_analysisManager->SetH2Title( m_outputManager->get_histogram_2D_ID( 
+                                        "photoSensor_" + to_string( DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() ) ),
+                                        DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() );
+        }
 }
 
 void EventAction::EndOfEventAction( const G4Event* t_event ) {
@@ -70,7 +74,7 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
     for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
         PhotoSensorSensitiveDetector* photoSensorSensitiveDetector = DSPD->get_photoSensor()->get_sensitiveDetector();
         PhotoSensorHitsCollection* photoSensorHitCollection = photoSensorSensitiveDetector->get_hitsCollection( t_event );
-        G4String photoSensorHitHistogramName = DSPD->get_name() + "_sensitiveDetector";
+        G4String photoSensorHitHistogramName = "photoSensor_" + to_string( DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() );
         G4int photoSensorHitHistogramID = m_outputManager->get_histogram_2D_ID( photoSensorHitHistogramName );
 
         for( G4int i = 0; i < photoSensorHitCollection->GetSize(); i++ ) {
@@ -83,12 +87,7 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
             G4double      hit_energy            = photoSensorHit->get_hit_energy           ();
             G4String      hit_photoSensor_name  = photoSensorHit->get_photoSensor_name     ();
 
-            // if( photoSensorHitHistogramID >= 0 ) m_analysisManager->FillH2( photoSensorHitHistogramID, hit_position_relative.x(), hit_position_relative.y(), 1 );
-            // G4cout << "m_analysisManager->GetNofH2s() = " << m_analysisManager->GetNofH2s() << G4endl;
-            // G4cout << "m_analysisManager->GetH2Activation( " << photoSensorHitHistogramID << " ) = " << m_analysisManager->GetH2Activation( photoSensorHitHistogramID ) << G4endl;
-            // m_analysisManager->GetH2( photoSensorHitHistogramID )->hprint(G4cout);
-            if( photoSensorHitHistogramID == 572 ) G4cout << "photoSensorHitHistogramID = " << photoSensorHitHistogramID << G4endl;
-            if( photoSensorHitHistogramID >= 0 ) m_analysisManager->FillH2( photoSensorHitHistogramID, 0, 0, 1 );
+            if( photoSensorHitHistogramID >= 0 ) m_analysisManager->FillH2( photoSensorHitHistogramID, hit_position_relative.x(), hit_position_relative.y(), 1 );
             if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second  , hit_position_absolute.x() );
             if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+1, hit_position_absolute.y() );
             if( m_photoSensor_hits_position_absolute_ID.first >= 0 ) m_analysisManager->FillNtupleDColumn( m_photoSensor_hits_position_absolute_ID.first, m_photoSensor_hits_position_absolute_ID.second+2, hit_position_absolute.z() );

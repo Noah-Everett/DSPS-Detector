@@ -38,11 +38,11 @@ class PhotoSensorHit : public G4VHit
 {
     public:
         PhotoSensorHit(                                                    );
-        PhotoSensorHit( const G4ThreeVector    &, const G4String         &,
-                              G4RotationMatrix* , const G4ThreeVector    &,
-                        const G4double         &, const G4double         &,
-                        const G4double         &, const G4ThreeVector    &,
-                        const G4ThreeVector    &                           );
+        PhotoSensorHit( const G4ThreeVector    &,       G4RotationMatrix* , 
+                        const G4String         &,       G4int             ,
+                        const G4ThreeVector    &, const G4double         &, 
+                        const G4double         &, const G4double         &, 
+                        const G4ThreeVector    &, const G4ThreeVector    & );
         PhotoSensorHit( const PhotoSensorHit   &                           );
        ~PhotoSensorHit(                                                    ) override = default;
 
@@ -58,8 +58,9 @@ class PhotoSensorHit : public G4VHit
         friend std::ostream& operator<<( std::ostream&, const PhotoSensorHit* );
 
         void set_photoSensor_position      (       G4ThreeVector     );
-        void set_photoSensor_name          ( const G4String&         );
         void set_photoSensor_rotationMatrix(       G4RotationMatrix* );
+        void set_photoSensor_name          ( const G4String&         );
+        void set_photoSensor_ID            (       G4int             );
         void set_hit_position_absolute     (       G4ThreeVector     );
         void set_hit_time                  (       G4double          );
         void set_hit_energy                (       G4double          );
@@ -69,8 +70,9 @@ class PhotoSensorHit : public G4VHit
         void set_particle_momentum         (       G4ThreeVector     );
 
         G4ThreeVector     get_photoSensor_position      ();
-        G4String          get_photoSensor_name          ();
         G4RotationMatrix* get_photoSensor_rotationMatrix();
+        G4String          get_photoSensor_name          ();
+        G4int             get_photoSensor_ID            ();
         G4ThreeVector     get_hit_position_absolute     ();
         G4ThreeVector     get_hit_position_relative     ();
         G4double          get_hit_time                  ();
@@ -84,6 +86,7 @@ class PhotoSensorHit : public G4VHit
         G4ThreeVector     m_photoSensor_position      ;
         G4RotationMatrix* m_photoSensor_rotationMatrix;
         G4String          m_photoSensor_name          ;
+        G4int             m_photoSensor_ID            ;
         G4ThreeVector     m_hit_position              ;
         G4double          m_hit_time                  ;
         G4double          m_hit_energy                ;

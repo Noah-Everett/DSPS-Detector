@@ -36,16 +36,19 @@
 #include "OutputManager.hh"
 #include "PhotoSensorHit.hh"
 
+using std::to_string;
+
 class PhotoSensorSensitiveDetector : public G4VSensitiveDetector 
 {
     public:
-        PhotoSensorSensitiveDetector( G4String );
+        PhotoSensorSensitiveDetector( G4String, G4int );
        ~PhotoSensorSensitiveDetector() override = default;
 
         void Initialize( G4HCofThisEvent* ) override;
         G4bool ProcessHits( G4Step*, G4TouchableHistory* ) override;
 
         G4String                   get_name               (                );
+        G4int                      get_ID                 (                );
         G4ThreeVector              get_position           (                );
         G4RotationMatrix         * get_rotationMatrix     (                );
         PhotoSensorHitsCollection* get_hitsCollection     ( const G4Event* );
@@ -63,6 +66,8 @@ class PhotoSensorSensitiveDetector : public G4VSensitiveDetector
 
         PhotoSensorHitsCollection* m_photoSensorHitsCollection   { nullptr };
         G4int                      m_photoSensorHitsCollection_ID{ -1      };
+
+        G4int m_ID;
 };
 
 #endif

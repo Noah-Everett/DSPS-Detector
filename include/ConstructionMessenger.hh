@@ -128,10 +128,12 @@ class  ConstructionMessenger : public G4UImessenger
         G4bool           get_lens_forceSolid                         ( G4int );
         G4bool           get_lens_circular                           ( G4int );
 
-        G4ThreeVector    get_directionSensitivePhotoDetector_amount  ();
-        G4int            get_directionSensitivePhotoDetector_amount_x();
-        G4int            get_directionSensitivePhotoDetector_amount_y();
-        G4int            get_directionSensitivePhotoDetector_amount_z();
+        G4ThreeVector    get_directionSensitivePhotoDetector_amount      ();
+        G4int            get_directionSensitivePhotoDetector_amount_x    ();
+        G4int            get_directionSensitivePhotoDetector_amount_y    ();
+        G4int            get_directionSensitivePhotoDetector_amount_z    ();
+        G4int            get_directionSensitivePhotoDetector_amount_total();
+
         G4bool           get_checkOverlaps                           ();
 
         void set_world_size                              ( G4ThreeVector );
