@@ -37,7 +37,23 @@ DirectionSensitivePhotoDetector::~DirectionSensitivePhotoDetector() {
     if( m_lensSystem  ) delete m_lensSystem;
 }
 
-void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {
+void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix     , 
+                                             G4ThreeVector     t_translationVector  , 
+                                             G4LogicalVolume * t_parentLogicalVolume, 
+                                             G4bool            t_isMany             ,
+                                             G4String          t_relativePosition    ) {
+    if( t_relativePosition.lower() == "front" || t_relativePosition.lower() == "f" )
+        t_translationVector += G4ThreeVector( 0, 0, -get_depth()/2 );
+    else if( t_relativePosition.lower() == "back" || t_relativePosition.lower() == "b" )
+        t_translationVector += G4ThreeVector( 0, 0,  get_depth()/2 );
+    else if( t_relativePosition.lower() == "center" || t_relativePosition.lower() == "c" )
+        t_translationVector += G4ThreeVector( 0, 0,  0 );
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::place"          , 
+                     "InvalidArgument"                                 ,
+                     FatalErrorInArgument                              ,
+                     "Invalid relative position string. Valid positions are: \"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+
     m_rotationMatrix      = t_rotationMatrix     ;
     m_position            = t_translationVector  ;
     m_parentLogicalVolume = t_parentLogicalVolume;
