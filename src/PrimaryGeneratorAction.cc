@@ -34,24 +34,23 @@
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 {
-    G4int n_particle = 1;
-    fParticleGun     = new G4ParticleGun(n_particle);
+    m_particleGun = new ParticleGun( 100 );
 
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 
     G4String particleName;
-    fParticleGun->SetParticleDefinition(particleTable->FindParticle(particleName = "gamma"));
+    m_particleGun->SetParticleDefinition( particleTable->FindParticle( particleName = "gamma" ) );
     // Default energy,position,momentum
-    fParticleGun->SetParticleEnergy(511. * keV);
-    fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -20. * cm));
-    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
+    m_particleGun->SetParticleEnergy( 511. * keV );
+    m_particleGun->SetParticlePosition( G4ThreeVector( 0., 0., -20. * cm ) );
+    m_particleGun->SetParticleMomentumDirection( G4ThreeVector( 0., 0., 1. ) );
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction() { 
-    if( fParticleGun )
-        delete fParticleGun; 
+    if( m_particleGun )
+        delete m_particleGun; 
 }
 
-void PrimaryGeneratorAction::GeneratePrimaries( G4Event* anEvent ) {
-    fParticleGun->GeneratePrimaryVertex(anEvent);
+void PrimaryGeneratorAction::GeneratePrimaries( G4Event* event ) {
+    m_particleGun->GeneratePrimaries( event );
 }

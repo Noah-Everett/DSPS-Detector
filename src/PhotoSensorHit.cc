@@ -161,7 +161,7 @@ G4ThreeVector PhotoSensorHit::get_hit_position_relative() {
     G4ThreeVector relative_position = m_hit_position - m_photoSensor_position;
     G4RotationMatrix inverse_rotation = m_photoSensor_rotationMatrix->inverse();
     G4ThreeVector rotated_relative_position = inverse_rotation * relative_position;
-    G4cout << "relative_position = " << relative_position << G4endl;
+    G4cout << "photosensor = " << m_photoSensor_name << ", relative_position = " << relative_position << G4endl;
     // Project onto xy-plane by setting z-component to 0
     // rotated_relative_position.setZ(0);
     return rotated_relative_position;

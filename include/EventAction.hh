@@ -52,15 +52,6 @@ class EventAction : public G4UserEventAction
         OutputManager        * m_outputManager        { nullptr                               };
         G4AnalysisManager    * m_analysisManager      { nullptr                               };
         G4SDManager          * m_SDManager            { nullptr                               };
-
-        pair< G4int, G4int > m_photoSensor_hits_position_absolute_ID;
-        pair< G4int, G4int > m_photoSensor_hits_position_relative_ID;
-        pair< G4int, G4int > m_photoSensor_hits_time_ID             ;
-        pair< G4int, G4int > m_photoSensor_hits_process_ID          ;
-        pair< G4int, G4int > m_photoSensor_hits_photoSensorID_ID    ;
-        pair< G4int, G4int > m_photoSensor_hits_energy_ID           ;
-
-        // vector< G4int > m_hitsCollection_IDs_photoSensor;
 };
 
 #endif

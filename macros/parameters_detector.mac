@@ -7,7 +7,7 @@
 
 /geometry/detector/wall/thickness                10 cm
 /geometry/detector/wall/material                 ANNIEWater_unDoped #G4StainlessSteel
-/geometry/detector/wall/visibility               false
+/geometry/detector/wall/visibility               true
 /geometry/detector/wall/color                    black
 /geometry/detector/wall/alpha                    0
 /geometry/detector/wall/forceSolid               false
@@ -35,7 +35,7 @@
 /geometry/photoSensor/body/size                  10.0 10.0 2.00 cm
 /geometry/photoSensor/body/material              ANNIEWater_unDoped
 /geometry/photoSensor/body/visibility            true
-/geometry/photoSensor/body/color                 blue
+/geometry/photoSensor/body/color                 green
 /geometry/photoSensor/body/alpha                 0.5
 /geometry/photoSensor/body/forceSolid            true
 

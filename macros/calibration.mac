@@ -1,21 +1,47 @@
+##########################
+# Calibration macro file #
+##########################
+
+# Global parameters
 /run/initialize
-
-/control/verbose 0 #2
-/run/verbose 0 #2
+/control/verbose 0
+/run/verbose 0
 /event/verbose 0
-/tracking/verbose 0 #1
-#/process/verbose 1
-
-/gun/particle e-
-/gun/energy 3 MeV #1200 keV
-/gun/position 0 0 0
-/gun/direction 1 0 0
-/analysis/setFileName calibration_1_0_0.root
-/run/beamOn 1
-
+/tracking/verbose 0
 /gun/particle PhotonCreator
-/gun/energy 3 MeV #1200 keV
-/gun/position 0 0 0
-/gun/direction 0 1 0
-/analysis/setFileName calibration_0_1_0.root
-/run/beamOn 1000
+/gun/energy 24.12 eV
+/analysis/setHistoDirName photoSensor_hits_histograms
+
+# Detector parameters
+/gun/position -0.85000 -0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_-0.85000.root
+/run/beamOn 100
+
+/gun/position -0.85000 -0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_0.85000.root
+/run/beamOn 100
+
+/gun/position -0.85000 0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_-0.85000.root
+/run/beamOn 100
+
+/gun/position -0.85000 0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_0.85000.root
+/run/beamOn 100
+
+/gun/position 0.85000 -0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_-0.85000.root
+/run/beamOn 100
+
+/gun/position 0.85000 -0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_0.85000.root
+/run/beamOn 100
+
+/gun/position 0.85000 0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_-0.85000.root
+/run/beamOn 100
+
+/gun/position 0.85000 0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_0.85000.root
+/run/beamOn 100
+

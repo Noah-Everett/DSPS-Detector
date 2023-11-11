@@ -23,24 +23,18 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 
-#ifndef PrimaryGeneratorAction_h
-#define PrimaryGeneratorAction_h
-
-#include "G4VUserPrimaryGeneratorAction.hh"
+#include "G4ParticleGun.hh"
+#include "G4RandomDirection.hh"
+#include "Randomize.hh"
+#include "G4OpticalPhoton.hh"
 #include "G4Event.hh"
+#include "G4SystemOfUnits.hh"
 
-#include "ParticleGun.hh"
-
-class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
-{
+class ParticleGun : public G4ParticleGun {
     public:
-        PrimaryGeneratorAction();
-       ~PrimaryGeneratorAction();
+        ParticleGun(       );
+        ParticleGun( G4int );
+       ~ParticleGun(       );
 
-    void GeneratePrimaries( G4Event* ) override;
-
-    private:
-        ParticleGun* m_particleGun;
+        void GeneratePrimaries( G4Event* );
 };
-
-#endif
