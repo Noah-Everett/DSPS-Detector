@@ -268,19 +268,22 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
     name = "/DSPD";
     G4ThreeVector translation_initial_DSPD( detector_medium_x - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
                                             detector_medium_y - calorimeter_width - 2*calorimeter_height - 2*calorimeter_depth,
-                                            detector_medium_z - DSPD_depth );
+                                            detector_medium_z );
     for( G4int index_x{ 0 }; index_x < calorimeter_amount.getX(); index_x++ ) {
         G4ThreeVector translation( -2*(calorimeter_width + calorimeter_height) * index_x, 0, 0 );
         for( G4int index_y{ 0 }; index_y < calorimeter_amount.getY(); index_y++ ) {
             translation.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
             G4ThreeVector position = translation + translation_initial_DSPD;
             position = *rotationMatrix * position;
+            G4cout << "position: " << position << G4endl;
+            G4ThreeVector position_front = DirectionSensitivePhotoDetector::get_position_front( rotationMatrix, position, "back" );
+            G4cout << "position_front: " << position_front << G4endl;
             make_directionSensitivePhotoDetector( name, index                     + "_"
-                                                      + to_string( position.x() ) + "_" 
-                                                      + to_string( position.y() ) + "_" 
-                                                      + to_string( position.z() ) + "_" 
+                                                      + to_string( position_front.x() ) + "_" 
+                                                      + to_string( position_front.y() ) + "_" 
+                                                      + to_string( position_front.z() ) + "_" 
                                                       + to_string( count++ ) 
-                                                )->place( rotationMatrix, position, m_detector_medium->get_logicalVolume(), true );
+                                                )->place( rotationMatrix, position, m_detector_medium->get_logicalVolume(), true, "back" );
         }
     }
 }
@@ -312,7 +315,7 @@ void DetectorConstruction::ConstructSDandField() {
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
         PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
-        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position() );
+        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position_front() );
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
         directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );

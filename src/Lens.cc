@@ -154,3 +154,7 @@ G4LogicalVolume* Lens::get_logicalVolume() {
 LensSensitiveDetector* Lens::get_sensitiveDetector() {
     return m_lensSensitiveDetector;
 }
+
+void Lens::set_name( const G4String& t_name ) {
+    m_name = t_name;
+}

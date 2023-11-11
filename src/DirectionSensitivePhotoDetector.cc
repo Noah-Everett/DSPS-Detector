@@ -25,7 +25,7 @@
 
 #include "DirectionSensitivePhotoDetector.hh"
 
-DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( G4String t_name, G4String t_index ) {
+DirectionSensitivePhotoDetector::DirectionSensitivePhotoDetector( const G4String& t_name, const G4String& t_index ) {
     m_name = t_name + "_" + t_index;
 
     m_lensSystem  = new LensSystem ( m_name + "_lensSystem" , true );
@@ -41,26 +41,38 @@ void DirectionSensitivePhotoDetector::place( G4RotationMatrix* t_rotationMatrix 
                                              G4ThreeVector     t_translationVector  , 
                                              G4LogicalVolume * t_parentLogicalVolume, 
                                              G4bool            t_isMany             ,
-                                             G4String          t_relativePosition    ) {
-    if( t_relativePosition.lower() == "front" || t_relativePosition.lower() == "f" )
-        t_translationVector += G4ThreeVector( 0, 0, -get_depth()/2 );
-    else if( t_relativePosition.lower() == "back" || t_relativePosition.lower() == "b" )
-        t_translationVector += G4ThreeVector( 0, 0,  get_depth()/2 );
-    else if( t_relativePosition.lower() == "center" || t_relativePosition.lower() == "c" )
-        t_translationVector += G4ThreeVector( 0, 0,  0 );
-    else
+                                             G4String        & t_relativePosition    ) {
+    to_lower( t_relativePosition );
+    if( t_relativePosition == "front" || t_relativePosition == "f" ) {
+        m_position_lensSystem  = t_translationVector;
+        m_position_photoSensor = t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0, -get_depth() );
+    } else if( t_relativePosition == "back" || t_relativePosition == "b" ) {
+        m_position_lensSystem  = t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0,  get_depth() );
+        m_position_photoSensor = t_translationVector;
+    } else if( t_relativePosition == "center" || t_relativePosition == "c" ) {
+        m_position_lensSystem  = t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0,  get_depth() / 2 );
+        m_position_photoSensor = t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0, -get_depth() / 2 );
+    } else
         G4Exception( "DirectionSensitivePhotoDetector::place"          , 
                      "InvalidArgument"                                 ,
                      FatalErrorInArgument                              ,
-                     "Invalid relative position string. Valid positions are: \"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
 
     m_rotationMatrix      = t_rotationMatrix     ;
-    m_position            = t_translationVector  ;
     m_parentLogicalVolume = t_parentLogicalVolume;
     m_isMany              = t_isMany             ;
 
-    m_photoSensor->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
-    m_lensSystem ->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
+    m_lensSystem ->place( t_rotationMatrix, m_position_lensSystem , t_parentLogicalVolume, t_isMany );
+    m_photoSensor->place( t_rotationMatrix, m_position_photoSensor, t_parentLogicalVolume, t_isMany );
+}
+
+void DirectionSensitivePhotoDetector::place(       G4RotationMatrix* t_rotationMatrix     , 
+                                                   G4ThreeVector     t_translationVector  , 
+                                                   G4LogicalVolume * t_parentLogicalVolume, 
+                                                   G4bool            t_isMany             ,
+                                             const char             * t_relativePosition    ) {
+    place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany, G4String( t_relativePosition ) );
 }
 
 G4ThreeVector DirectionSensitivePhotoDetector::get_size() {
@@ -96,8 +108,45 @@ G4RotationMatrix* DirectionSensitivePhotoDetector::get_rotationMatrix() {
     return m_rotationMatrix;
 }
 
-G4ThreeVector DirectionSensitivePhotoDetector::get_position() {
-    return m_position;
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_lensSystem() {
+    return m_position_lensSystem;
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_photoSensor() {
+    return m_position_photoSensor;
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( G4String& t_relativePosition ) {
+    to_lower( t_relativePosition );
+    if( t_relativePosition == "front" || t_relativePosition == "f" )
+        return get_position_front();
+    else if( t_relativePosition == "back" || t_relativePosition == "b" )
+        return get_position_back();
+    else if( t_relativePosition == "center" || t_relativePosition == "c" )
+        return get_position_center();
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::get_position" , 
+                     "InvalidArgument"                               ,
+                     FatalErrorInArgument                            ,
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+    return G4ThreeVector();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_front() {
+    return get_position_lensSystem();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_back() {
+    return get_position_photoSensor();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_center() {
+    return ( get_position_lensSystem() + get_position_photoSensor() ) / 2;
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( const char* t_relativePosition ) {
+    return get_position( G4String( t_relativePosition ) );
 }
 
 G4LogicalVolume * DirectionSensitivePhotoDetector::get_parentLogicalVolume() {
@@ -106,4 +155,126 @@ G4LogicalVolume * DirectionSensitivePhotoDetector::get_parentLogicalVolume() {
 
 G4bool DirectionSensitivePhotoDetector::get_isMany() {
     return m_isMany;
+}
+
+void DirectionSensitivePhotoDetector::set_name( const G4String& t_name ) {
+    m_name = t_name;
+    m_lensSystem ->set_name( m_name + "_lensSystem"  );
+    m_photoSensor->set_name( m_name + "_photoSensor" );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_front( G4RotationMatrix* t_rotationMatrix, 
+                                                                   G4ThreeVector     t_translationVector, 
+                                                                   G4String&         t_relativePosition ) {
+    to_lower( t_relativePosition );
+    if( t_relativePosition == "front" || t_relativePosition == "f" )
+        return t_translationVector;
+    else if( t_relativePosition == "back" || t_relativePosition == "b" )
+        return t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() );
+    else if( t_relativePosition == "center" || t_relativePosition == "c" )
+        return t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() / 2 );
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::get_position_front" , 
+                     "InvalidArgument"                                     ,
+                     FatalErrorInArgument                                  ,
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+    return G4ThreeVector();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_front( G4RotationMatrix* t_rotationMatrix, 
+                                                                   G4ThreeVector     t_translationVector, 
+                                                                   const char*       t_relativePosition ) {
+    return get_position_front( t_rotationMatrix, t_translationVector, G4String( t_relativePosition ) );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_back( G4RotationMatrix* t_rotationMatrix, 
+                                                                  G4ThreeVector     t_translationVector, 
+                                                                  G4String&         t_relativePosition ) {
+    to_lower( t_relativePosition );
+    if( t_relativePosition == "front" || t_relativePosition == "f" )
+        return t_translationVector - *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() );
+    else if( t_relativePosition == "back" || t_relativePosition == "b" )
+        return t_translationVector;
+    else if( t_relativePosition == "center" || t_relativePosition == "c" )
+        return t_translationVector - *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() / 2 );
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::get_position_back" , 
+                     "InvalidArgument"                                    ,
+                     FatalErrorInArgument                                 ,
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+    return G4ThreeVector();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_back( G4RotationMatrix* t_rotationMatrix, 
+                                                                  G4ThreeVector     t_translationVector, 
+                                                                  const char*       t_relativePosition ) {
+    return get_position_back( t_rotationMatrix, t_translationVector, G4String( t_relativePosition ) );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_center( G4RotationMatrix* t_rotationMatrix, 
+                                                                    G4ThreeVector     t_translationVector, 
+                                                                    G4String&         t_relativePosition ) {
+    to_lower( t_relativePosition );
+    if( t_relativePosition == "front" || t_relativePosition == "f" )
+        return t_translationVector - *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() / 2 );
+    else if( t_relativePosition == "back" || t_relativePosition == "b" )
+        return t_translationVector + *t_rotationMatrix * G4ThreeVector( 0, 0, get_depth() / 2 );
+    else if( t_relativePosition == "center" || t_relativePosition == "c" )
+        return t_translationVector;
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::get_position_center" , 
+                     "InvalidArgument"                                      ,
+                     FatalErrorInArgument                                   ,
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+    return G4ThreeVector();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position_center( G4RotationMatrix* t_rotationMatrix, 
+                                                                    G4ThreeVector     t_translationVector, 
+                                                                    const char*       t_relativePosition ) {
+    return get_position_center( t_rotationMatrix, t_translationVector, G4String( t_relativePosition ) );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( G4String& t_relativePosition_want,
+                                                             G4RotationMatrix* t_rotationMatrix, 
+                                                             G4ThreeVector     t_translationVector, 
+                                                             G4String&         t_relativePosition_given ) {
+    to_lower( t_relativePosition_want );
+    if( t_relativePosition_want == "front" || t_relativePosition_want == "f" )
+        return get_position_front( t_rotationMatrix, t_translationVector, t_relativePosition_given );
+    else if( t_relativePosition_want == "back" || t_relativePosition_want == "b" )
+        return get_position_back( t_rotationMatrix, t_translationVector, t_relativePosition_given );
+    else if( t_relativePosition_want == "center" || t_relativePosition_want == "c" )
+        return get_position_center( t_rotationMatrix, t_translationVector, t_relativePosition_given );
+    else
+        G4Exception( "DirectionSensitivePhotoDetector::get_position" , 
+                     "InvalidArgument"                               ,
+                     FatalErrorInArgument                            ,
+                     "Invalid relative position string. Valid positions are: "
+                     "\"front\", \"f\", \"back\", \"b\", \"center\", \"c\"." );
+    return G4ThreeVector();
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( G4String& t_relativePosition_want,
+                                                             G4RotationMatrix* t_rotationMatrix, 
+                                                             G4ThreeVector     t_translationVector, 
+                                                             const char*       t_relativePosition_given ) {
+    return get_position( t_relativePosition_want, t_rotationMatrix, t_translationVector, G4String( t_relativePosition_given ) );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( const char* t_relativePosition_want,
+                                                             G4RotationMatrix* t_rotationMatrix, 
+                                                             G4ThreeVector     t_translationVector, 
+                                                             G4String&         t_relativePosition_given ) {
+    return get_position( G4String( t_relativePosition_want ), t_rotationMatrix, t_translationVector, t_relativePosition_given );
+}
+
+G4ThreeVector DirectionSensitivePhotoDetector::get_position( const char* t_relativePosition_want,
+                                                             G4RotationMatrix* t_rotationMatrix, 
+                                                             G4ThreeVector     t_translationVector, 
+                                                             const char*       t_relativePosition_given ) {
+    return get_position( G4String( t_relativePosition_want ), t_rotationMatrix, t_translationVector, G4String( t_relativePosition_given ) );
 }

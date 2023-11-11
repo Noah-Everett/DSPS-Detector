@@ -47,6 +47,7 @@ class PhotoSensor
         PhotoSensorSensitiveDetector* get_sensitiveDetector();
 
         void set_sensitiveDetector( PhotoSensorSensitiveDetector* );
+        void set_name             ( const G4String&               );
 
     protected:
         GeometricObjectBox          * m_surface              { new GeometricObjectBox()              };

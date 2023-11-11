@@ -25,7 +25,9 @@
 
 #include "LensSystem.hh"
 
-LensSystem::LensSystem( G4String t_name, G4bool t_makeLenses ) {
+LensSystem::LensSystem( const G4String& t_name, G4bool t_makeLenses ) {
+    m_name = t_name;
+
     if( !t_makeLenses ) 
         return;
 
@@ -60,4 +62,14 @@ vector< Lens* > LensSystem::get_lenses() const {
 
 Lens* LensSystem::get_lens( G4int t_index ) const { 
     return m_lenses.at( t_index ); 
+}
+
+G4String LensSystem::get_name() const { 
+    return m_name; 
+}
+
+void LensSystem::set_name( const G4String& t_name ) { 
+    m_name = t_name; 
+    for( G4int nLens{ 0 }; nLens < m_lenses.size(); nLens++ )
+        m_lenses[ nLens ]->set_name( t_name + "_lens_" + to_string( nLens ) );
 }

@@ -39,7 +39,7 @@ using std::vector;
 class LensSystem
 {
     public:
-        LensSystem( G4String, G4bool = true );
+        LensSystem( const G4String&, G4bool = true );
        ~LensSystem();
 
         void add_lens( Lens* );
@@ -48,9 +48,13 @@ class LensSystem
 
         vector< Lens* >  get_lenses(       ) const;
         Lens           * get_lens  ( G4int ) const;
+        G4String         get_name  (       ) const;
+
+        void set_name( const G4String& );
 
     protected:
         vector< Lens* > m_lenses;
+        G4String        m_name;
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 

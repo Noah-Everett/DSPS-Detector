@@ -55,8 +55,8 @@ void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     ,
     G4double surface_z = m_surface->get_solid()->GetZHalfLength();
     G4double body_z    = m_body   ->get_solid()->GetZHalfLength();
     G4double total_z   = surface_z * 2 + body_z * 2;
-    G4ThreeVector translation_surface( 0, 0, -total_z/2 + surface_z );
-    G4ThreeVector translation_body   ( 0, 0,  total_z/2 - body_z    );
+    G4ThreeVector translation_surface( 0, 0,  2 * body_z + surface_z );
+    G4ThreeVector translation_body   ( 0, 0,  body_z                 );
     translation_surface = *t_rotationMatrix * translation_surface;
     translation_body    = *t_rotationMatrix * translation_body;
     translation_surface += t_translation;
@@ -84,4 +84,8 @@ PhotoSensorSensitiveDetector* PhotoSensor::get_sensitiveDetector() {
 void PhotoSensor::set_sensitiveDetector( PhotoSensorSensitiveDetector* t_sensitiveDetector ) {
     m_sensitiveDetector = t_sensitiveDetector;
     m_surface->set_sensitiveDetector( t_sensitiveDetector );
+}
+
+void PhotoSensor::set_name( const G4String& t_name ) {
+    m_name = t_name;
 }

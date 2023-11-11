@@ -63,6 +63,8 @@ class Lens
         GeometricObjectUnionSolid* get_geometricObject  ();
         LensSensitiveDetector    * get_sensitiveDetector();
 
+        void set_name( const G4String& );
+
     protected:
         GeometricObjectUnionSolid* m_lens{ new GeometricObjectUnionSolid() };
         LensSensitiveDetector    * m_lensSensitiveDetector{ nullptr };
