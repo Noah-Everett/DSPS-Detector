@@ -67,6 +67,8 @@ void GeometricObject< SolidType >::set_sensitiveDetector( G4VSensitiveDetector* 
         m_logicalVolume->SetSensitiveDetector( m_sensitiveDetector );
         G4cout << "Sensitive detector set to " << m_sensitiveDetector->GetName() << G4endl;
     }
+    // G4cout << "size = " << m_logicalVolume->GetSolid()->GetDimensions() << G4endl;
+    G4cout << "translation = " << m_translationVector << G4endl;
 }
 
 template< class SolidType >
@@ -194,6 +196,10 @@ G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotation
         copyNumber = m_copyNumber;
         m_copyNumber++;
     }
+
+    m_rotationMatrix    = t_rotationMatrix;
+    m_translationVector = t_translationVector;
+
     return new G4PVPlacement( t_rotationMatrix     , 
                               t_translationVector  , 
                               m_logicalVolume      , 

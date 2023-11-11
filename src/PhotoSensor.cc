@@ -35,6 +35,9 @@ PhotoSensor::PhotoSensor( G4String t_name ) {
     G4ThreeVector body_size    = m_constructionMessenger->get_photoSensor_body_size   ();
     m_surface->set_solid( new G4Box( t_name + "_surface", surface_size.x()/2, surface_size.y()/2, surface_size.z()/2 ) );
     m_body   ->set_solid( new G4Box( t_name + "_body"   , body_size   .x()/2, body_size   .y()/2, body_size   .z()/2 ) );
+    G4cout << G4endl;
+    G4cout << "m_surface size = " << surface_size << G4endl;
+    G4cout << "m_body    size = " << body_size    << G4endl;
 
     m_surface->set_visAttributes( m_constructionMessenger->get_photoSensor_surface_visAttributes() );
     m_body   ->set_visAttributes( m_constructionMessenger->get_photoSensor_body_visAttributes   () );
@@ -59,10 +62,8 @@ void PhotoSensor::place( G4RotationMatrix* t_rotationMatrix     ,
     G4ThreeVector translation_body   ( 0, 0,  body_z                 );
     translation_surface = *t_rotationMatrix * translation_surface;
     translation_body    = *t_rotationMatrix * translation_body;
-    translation_surface += t_translation;
-    translation_body    += t_translation;
-    m_surface->place( t_rotationMatrix, translation_surface, t_motherLogicalVolume, t_isMany );
-    m_body   ->place( t_rotationMatrix, translation_body   , t_motherLogicalVolume, t_isMany );
+    m_surface->place( t_rotationMatrix, t_translation - translation_surface, t_motherLogicalVolume, t_isMany );
+    m_body   ->place( t_rotationMatrix, t_translation - translation_body   , t_motherLogicalVolume, t_isMany );
 }
 
 G4String PhotoSensor::get_name() {

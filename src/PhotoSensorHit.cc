@@ -161,9 +161,17 @@ G4ThreeVector PhotoSensorHit::get_hit_position_relative() {
     G4ThreeVector relative_position = m_hit_position - m_photoSensor_position;
     G4RotationMatrix inverse_rotation = m_photoSensor_rotationMatrix->inverse();
     G4ThreeVector rotated_relative_position = inverse_rotation * relative_position;
-    G4cout << "photosensor = " << m_photoSensor_name << ", relative_position = " << relative_position << G4endl;
-    // Project onto xy-plane by setting z-component to 0
-    // rotated_relative_position.setZ(0);
+    if( abs( rotated_relative_position.z() ) >  5.000001 ||
+        abs( rotated_relative_position.x() ) > 50.000001 ||
+        abs( rotated_relative_position.y() ) > 50.000001   ) {
+        G4cout << G4endl;
+        G4cout << "photosensor = " << m_photoSensor_name << G4endl;
+        G4cout << "photosensor position = " << m_photoSensor_position << G4endl;
+        G4cout << "hit position = " << m_hit_position << G4endl;
+        G4cout << "relative_position = " << relative_position << G4endl;
+        G4cout << "rotated_relative_position = " << rotated_relative_position << G4endl;
+        G4Exception( "PhotoSensorHit::get_hit_position_relative()", "Error", FatalException, "rotated_relative_position is out of range" );
+    }
     return rotated_relative_position;
 }
 

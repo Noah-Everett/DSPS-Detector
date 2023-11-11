@@ -54,21 +54,14 @@ class DirectionSensitivePhotoDetector
         G4bool            get_isMany              ();
         G4ThreeVector     get_position_lensSystem ();
         G4ThreeVector     get_position_photoSensor();
-        G4ThreeVector     get_position            ( G4String&   );
         G4ThreeVector     get_position            ( const char* );
         G4ThreeVector     get_position_front      ();
         G4ThreeVector     get_position_back       ();
         G4ThreeVector     get_position_center     ();
 
-        static G4ThreeVector get_position_front (              G4RotationMatrix*, G4ThreeVector, G4String&   );
         static G4ThreeVector get_position_front (              G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position_back  (              G4RotationMatrix*, G4ThreeVector, G4String&   );
         static G4ThreeVector get_position_back  (              G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position_center(              G4RotationMatrix*, G4ThreeVector, G4String&   );
         static G4ThreeVector get_position_center(              G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position       ( G4String&  , G4RotationMatrix*, G4ThreeVector, G4String&   );
-        static G4ThreeVector get_position       ( G4String&  , G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position       ( const char*, G4RotationMatrix*, G4ThreeVector, G4String&   );
         static G4ThreeVector get_position       ( const char*, G4RotationMatrix*, G4ThreeVector, const char* );
 
         LensSystem * get_lensSystem ();
@@ -76,7 +69,6 @@ class DirectionSensitivePhotoDetector
 
         void set_name( const G4String& );
         
-        void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool, G4String&   );
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool, const char* );
 
     protected:

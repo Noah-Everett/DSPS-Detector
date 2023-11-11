@@ -86,6 +86,8 @@ class GeometricObject
         G4int                 m_copyNumber       { 0       };
         G4bool                m_visibility       { true    };
         G4VisAttributes     * m_visAttributes    { nullptr };
+        G4RotationMatrix    * m_rotationMatrix   { nullptr };
+        G4ThreeVector         m_translationVector{ 0       };
 };
 
 #include "GeometricObject.inl"

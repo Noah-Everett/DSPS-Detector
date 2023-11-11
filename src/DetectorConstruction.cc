@@ -68,8 +68,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4int countIndex { 0 };
     place_surface(  m_axis_x, countIndex++ );
     place_surface( -m_axis_x, countIndex++ );
-    // place_surface(  m_axis_y, countIndex++ );
-    // place_surface( -m_axis_y, countIndex++ );
+    place_surface(  m_axis_y, countIndex++ );
+    place_surface( -m_axis_y, countIndex++ );
     place_surface(  m_axis_z, countIndex++ );
     place_surface( -m_axis_z, countIndex++ );
 
@@ -275,9 +275,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
             translation.setY( -2*(calorimeter_width + calorimeter_height) * index_y );
             G4ThreeVector position = translation + translation_initial_DSPD;
             position = *rotationMatrix * position;
-            G4cout << "position: " << position << G4endl;
             G4ThreeVector position_front = DirectionSensitivePhotoDetector::get_position_front( rotationMatrix, position, "back" );
-            G4cout << "position_front: " << position_front << G4endl;
             make_directionSensitivePhotoDetector( name, index                     + "_"
                                                       + to_string( position_front.x() ) + "_" 
                                                       + to_string( position_front.y() ) + "_" 

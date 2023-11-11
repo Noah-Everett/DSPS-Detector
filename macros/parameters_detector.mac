@@ -32,7 +32,7 @@
 /geometry/photoSensor/surface/alpha              1
 /geometry/photoSensor/surface/forceSolid         true
 
-/geometry/photoSensor/body/size                  10.0 10.0 2.00 cm
+/geometry/photoSensor/body/size                  10.0 10.0 5.00 cm
 /geometry/photoSensor/body/material              ANNIEWater_unDoped
 /geometry/photoSensor/body/visibility            true
 /geometry/photoSensor/body/color                 green
@@ -47,7 +47,7 @@
 /geometry/lens/surfaces/2/radius/y               45.0 cm
 /geometry/lens/surfaces/2/yLimits                10.0 cm
 /geometry/lens/distance                          4.0 cm
-/geometry/lens/position                          -6 cm
+/geometry/lens/position                          6 cm
 /geometry/lens/material                          SNPH2
 /geometry/lens/visibility                        true
 /geometry/lens/color                             white
@@ -63,7 +63,7 @@
 /geometry/lens/surfaces/2/radius/y               45.0 cm
 /geometry/lens/surfaces/2/yLimits                10.0 cm
 /geometry/lens/distance                          4.0 cm
-/geometry/lens/position                          -13 cm
+/geometry/lens/position                          13 cm
 /geometry/lens/material                          SNPH2
 /geometry/lens/visibility                        true
 /geometry/lens/color                             white
