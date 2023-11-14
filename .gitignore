@@ -2,5 +2,6 @@
 
 build/
 scratch/
+Analytical-Meridional-Non-Paraxial-Ray-Propagation/
 runs/
 .vscode/

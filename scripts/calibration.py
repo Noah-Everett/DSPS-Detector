@@ -1,4 +1,4 @@
-grid_size = (2, 2, 2)
+grid_size = (3, 3, 3)
 world_size = (2.5, 2.5, 2.5) # m
 detector_wall_thickness = 0.1 # m
 calorimeter_height = 0.2 # m
