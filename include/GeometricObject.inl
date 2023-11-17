@@ -192,10 +192,8 @@ G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotation
         make_logicalVolume();
 
     G4int copyNumber = 0;
-    if( t_isMany ) {
-        copyNumber = m_copyNumber;
-        m_copyNumber++;
-    }
+    if( t_isMany )
+        copyNumber = m_copyNumber++;
 
     m_rotationMatrix    = t_rotationMatrix;
     m_translationVector = t_translationVector;
@@ -206,7 +204,8 @@ G4PVPlacement* GeometricObject< SolidType >::place( G4RotationMatrix* t_rotation
                               m_name               , 
                               t_motherLogicalVolume, 
                               t_isMany             , 
-                              copyNumber            );
+                              copyNumber           ,
+                              m_constructionMessenger->get_checkOverlaps() );
 }
 
 template< class SolidType >

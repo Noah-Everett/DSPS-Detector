@@ -37,12 +37,16 @@
 #include "G4VisAttributes.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4UnionSolid.hh"
+#include "G4DisplacedSolid.hh"
+
+#include "ConstructionMessenger.hh"
 
 #define GeometricObjectBox              GeometricObject< G4Box              >
 #define GeometricObjectEllipsoid        GeometricObject< G4Ellipsoid        >
 #define GeometricObjectEllipticalTube   GeometricObject< G4EllipticalTube   >
 #define GeometricObjectSubtractionSolid GeometricObject< G4SubtractionSolid >
 #define GeometricObjectUnionSolid       GeometricObject< G4UnionSolid       >
+#define GeometricObjectDisplacedSolid   GeometricObject< G4DisplacedSolid   >
 
 template< class SolidType >
 class GeometricObject
@@ -88,6 +92,8 @@ class GeometricObject
         G4VisAttributes     * m_visAttributes    { nullptr };
         G4RotationMatrix    * m_rotationMatrix   { nullptr };
         G4ThreeVector         m_translationVector{ 0       };
+
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 
 #include "GeometricObject.inl"

@@ -50,7 +50,8 @@ void  LensSystem::place( G4RotationMatrix* t_rotationMatrix     ,
                          G4LogicalVolume * t_motherLogicalVolume, 
                          G4bool            t_isMany              ) {
     for( G4int nLens{ 0 }; nLens < m_lenses.size(); nLens++ ) {
-        G4ThreeVector position( 0, 0, m_constructionMessenger->get_lens_position( nLens ) );
+        G4ThreeVector position( 0, 0, -m_constructionMessenger->get_lens_position( nLens ) );
+        G4cout << "LensSystem::place: " << m_name << " lens " << nLens << " position: " << position << G4endl;
         position = *t_rotationMatrix * position;
         m_lenses[ nLens ]->place( t_rotationMatrix, t_translationVector - position, t_motherLogicalVolume, t_isMany );
     }

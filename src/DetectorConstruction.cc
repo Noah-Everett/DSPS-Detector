@@ -187,14 +187,18 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
     G4double angle = m_axis_z.angle( t_axis_normal );
     G4ThreeVector axis = m_axis_z.cross( t_axis_normal ).unit();
     G4RotationMatrix* rotationMatrix = new G4RotationMatrix( axis, angle );
-    // if( index == "+y" )
-    //     *rotationMatrix *= G4RotationMatrix( m_axis_y, m_pi );
-    // G4RotationMatrix* rotationMatrix = new G4RotationMatrix( G4ThreeVector( 1, 0, 0 ),
-    //                                                          G4ThreeVector( 0, 1, 0 ),
-    //                                                          G4ThreeVector( 0, 0, 1 ) );
+
     G4RotationMatrix* rotationMatrix_zPi2 = new G4RotationMatrix( m_axis_z, m_pi_2 );
+    G4RotationMatrix* rotationMatrix_zPi  = new G4RotationMatrix( m_axis_z, m_pi   );
+
     G4RotationMatrix* rotationMatrix_calorimeterFull = new G4RotationMatrix();
+    G4RotationMatrix* rotationMatrix_DSPD            = new G4RotationMatrix();
+
     *rotationMatrix_calorimeterFull = *rotationMatrix_zPi2 * *rotationMatrix;
+    if( index != "+z" && index != "-z" )
+        *rotationMatrix_DSPD = *rotationMatrix * *rotationMatrix_zPi;
+    else
+        *rotationMatrix_DSPD = *rotationMatrix;
 
     // place "horizontal" calorimeters
     G4cout << "place horizontal calorimeters" << G4endl;
@@ -276,12 +280,12 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
             G4ThreeVector position = translation + translation_initial_DSPD;
             position = *rotationMatrix * position;
             G4ThreeVector position_front = DirectionSensitivePhotoDetector::get_position_front( rotationMatrix, position, "back" );
-            make_directionSensitivePhotoDetector( name, index                     + "_"
-                                                      + to_string( position_front.x() ) + "_" 
-                                                      + to_string( position_front.y() ) + "_" 
-                                                      + to_string( position_front.z() ) + "_" 
-                                                      + to_string( count++ ) 
-                                                )->place( rotationMatrix, position, m_detector_medium->get_logicalVolume(), true, "back" );
+            make_directionSensitivePhotoDetector( name, index                             + "_"
+                                                        + to_string( position_front.x() ) + "_" 
+                                                        + to_string( position_front.y() ) + "_" 
+                                                        + to_string( position_front.z() ) + "_" 
+                                                        + to_string( count++ ) 
+                                                )->place( rotationMatrix_DSPD, position, m_detector_medium->get_logicalVolume(), true, "back" );
         }
     }
 }
@@ -335,4 +339,8 @@ vector< Calorimeter* > DetectorConstruction::get_calorimeters_middle() const {
 
 vector< DirectionSensitivePhotoDetector* > DetectorConstruction::get_directionSensitivePhotoDetectors() const {
     return m_directionSensitivePhotoDetectors;
+}
+
+G4bool DetectorConstruction::get_make_SDandField() const {
+    return m_make_SDandField;
 }

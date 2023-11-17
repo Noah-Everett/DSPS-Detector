@@ -55,6 +55,9 @@ class PhotoSensor
         ConstructionMessenger       * m_constructionMessenger{ ConstructionMessenger::get_instance() };
         PhotoSensorSensitiveDetector* m_sensitiveDetector    { nullptr                               };
 
+        G4RotationMatrix* m_rotationMatrix{ new G4RotationMatrix() };
+        G4ThreeVector     m_position      { 0, 0, 0 };
+
         G4String m_name;
 };
 

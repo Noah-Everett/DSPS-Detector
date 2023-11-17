@@ -18,36 +18,39 @@
 /geometry/detector/medium/alpha                  0
 /geometry/detector/medium/forceSolid             false
 
-/geometry/calorimeter/size                       10.0 2.00 20.0 cm
+/geometry/calorimeter/size                       20.0 2.00 50.0 cm
 /geometry/calorimeter/material                   aluminum
 /geometry/calorimeter/visibility                 true
 /geometry/calorimeter/color                      red
-/geometry/calorimeter/alpha                      0.5
+/geometry/calorimeter/alpha                      0.2
 /geometry/calorimeter/forceSolid                 true
 
-/geometry/photoSensor/surface/size               10.0 10.0 0.50 cm
+/geometry/photoSensor/surface/size               20.0 20.0 0.50 cm
 /geometry/photoSensor/surface/material           ANNIEWater_unDoped
 /geometry/photoSensor/surface/visibility         true
 /geometry/photoSensor/surface/color              blue
 /geometry/photoSensor/surface/alpha              1
 /geometry/photoSensor/surface/forceSolid         true
 
-/geometry/photoSensor/body/size                  10.0 10.0 5.00 cm
+/geometry/photoSensor/body/size                  20.0 20.0 5.00 cm
 /geometry/photoSensor/body/material              ANNIEWater_unDoped
 /geometry/photoSensor/body/visibility            true
 /geometry/photoSensor/body/color                 green
 /geometry/photoSensor/body/alpha                 0.5
 /geometry/photoSensor/body/forceSolid            true
 
+# [(-30.0687810097708, 15.802738144936738, -10, 10), 4.3382303630830705, 1.98, (-39.02710551853179, 25.329948525532547, -10, 10), -21.214101936012206],
+# [(-38.12700978510308, 21.387714391677214, -10, 10), 12.558474124579016, 1.98, (8.311193302575996, 16.004035474931783, -10, 10), -37.75034098092813],
+
 /geometry/lens/incramentCurrentLens
-/geometry/lens/surfaces/1/radius/x               -50.0 cm
-/geometry/lens/surfaces/1/radius/y               45.0 cm
+/geometry/lens/surfaces/1/radius/x              -30.0687810097708   cm
+/geometry/lens/surfaces/1/radius/y               15.802738144936738 cm
 /geometry/lens/surfaces/1/yLimits                10.0 cm
-/geometry/lens/surfaces/2/radius/x               100.0 cm
-/geometry/lens/surfaces/2/radius/y               45.0 cm
+/geometry/lens/surfaces/2/radius/x              -39.02710551853179  cm
+/geometry/lens/surfaces/2/radius/y               25.329948525532547 cm
 /geometry/lens/surfaces/2/yLimits                10.0 cm
-/geometry/lens/distance                          4.0 cm
-/geometry/lens/position                          6 cm
+/geometry/lens/distance                          4.3382303630830705 cm
+/geometry/lens/position                         -21.214101936012206 cm
 /geometry/lens/material                          SNPH2
 /geometry/lens/visibility                        true
 /geometry/lens/color                             white
@@ -56,20 +59,84 @@
 /geometry/lens/circular                          false
 
 /geometry/lens/incramentCurrentLens
-/geometry/lens/surfaces/1/radius/x               -50.0 cm
-/geometry/lens/surfaces/1/radius/y               45.0 cm
+/geometry/lens/surfaces/1/radius/x              -38.12700978510308  cm
+/geometry/lens/surfaces/1/radius/y               21.387714391677214 cm
 /geometry/lens/surfaces/1/yLimits                10.0 cm
-/geometry/lens/surfaces/2/radius/x               100.0 cm
-/geometry/lens/surfaces/2/radius/y               45.0 cm
+/geometry/lens/surfaces/2/radius/x               8.311193302575996  cm
+/geometry/lens/surfaces/2/radius/y               16.004035474931783 cm
 /geometry/lens/surfaces/2/yLimits                10.0 cm
-/geometry/lens/distance                          4.0 cm
-/geometry/lens/position                          13 cm
+/geometry/lens/distance                          12.558474124579016 cm
+/geometry/lens/position                         -37.75034098092813  cm
 /geometry/lens/material                          SNPH2
 /geometry/lens/visibility                        true
 /geometry/lens/color                             white
 /geometry/lens/alpha                             1
 /geometry/lens/forceSolid                        true
 /geometry/lens/circular                          false
+
+#/geometry/lens/incramentCurrentLens
+#/geometry/lens/surfaces/1/radius/x               -30 cm
+#/geometry/lens/surfaces/1/radius/y               15 cm
+#/geometry/lens/surfaces/1/yLimits                10.0 cm
+#/geometry/lens/surfaces/2/radius/x               40 cm
+#/geometry/lens/surfaces/2/radius/y               25 cm
+#/geometry/lens/surfaces/2/yLimits                10.0 cm
+#/geometry/lens/distance                          30 cm
+#/geometry/lens/position                          -30 cm
+#/geometry/lens/material                          SNPH2
+#/geometry/lens/visibility                        true
+#/geometry/lens/color                             white
+#/geometry/lens/alpha                             1
+#/geometry/lens/forceSolid                        true
+#/geometry/lens/circular                          false
+
+#/geometry/lens/incramentCurrentLens
+#/geometry/lens/surfaces/1/radius/x               -25 cm
+#/geometry/lens/surfaces/1/radius/y               15 cm
+#/geometry/lens/surfaces/1/yLimits                10.0 cm
+#/geometry/lens/surfaces/2/radius/x               50 cm
+#/geometry/lens/surfaces/2/radius/y               100 cm
+#/geometry/lens/surfaces/2/yLimits                10.0 cm
+#/geometry/lens/distance                          10 cm
+#/geometry/lens/position                          -10 cm
+#/geometry/lens/material                          SNPH2
+#/geometry/lens/visibility                        true
+#/geometry/lens/color                             white
+#/geometry/lens/alpha                             1
+#/geometry/lens/forceSolid                        true
+#/geometry/lens/circular                          false
+
+#/geometry/lens/incramentCurrentLens
+#/geometry/lens/surfaces/1/radius/x               -50.0 cm
+#/geometry/lens/surfaces/1/radius/y               45.0 cm
+#/geometry/lens/surfaces/1/yLimits                10.0 cm
+#/geometry/lens/surfaces/2/radius/x               100.0 cm
+#/geometry/lens/surfaces/2/radius/y               45.0 cm
+#/geometry/lens/surfaces/2/yLimits                10.0 cm
+#/geometry/lens/distance                          4.0 cm
+#/geometry/lens/position                          -6 cm
+#/geometry/lens/material                          SNPH2
+#/geometry/lens/visibility                        true
+#/geometry/lens/color                             white
+#/geometry/lens/alpha                             1
+#/geometry/lens/forceSolid                        true
+#/geometry/lens/circular                          false
+
+#/geometry/lens/incramentCurrentLens
+#/geometry/lens/surfaces/1/radius/x               -50.0 cm
+#/geometry/lens/surfaces/1/radius/y               45.0 cm
+#/geometry/lens/surfaces/1/yLimits                10.0 cm
+#/geometry/lens/surfaces/2/radius/x               100.0 cm
+#/geometry/lens/surfaces/2/radius/y               45.0 cm
+#/geometry/lens/surfaces/2/yLimits                10.0 cm
+#/geometry/lens/distance                          4.0 cm
+#/geometry/lens/position                          -13 cm
+#/geometry/lens/material                          SNPH2
+#/geometry/lens/visibility                        true
+#/geometry/lens/color                             white
+#/geometry/lens/alpha                             1
+#/geometry/lens/forceSolid                        true
+#/geometry/lens/circular                          false
 
 /geometry/directionSensitivePhotoDetector/amount 10 10 10
 

@@ -28,6 +28,10 @@
 RunAction::RunAction( DetectorConstruction* t_detectorConstruction ) 
     : m_detectorConstruction( t_detectorConstruction ) {
     G4cout << "RunAction::RunAction()" << G4endl;
+
+    if( m_detectorConstruction && !m_detectorConstruction->get_make_SDandField() ) 
+        return;
+
     m_analysisManager = G4AnalysisManager::Instance();
 
     m_analysisManager->SetDefaultFileType( "root" );

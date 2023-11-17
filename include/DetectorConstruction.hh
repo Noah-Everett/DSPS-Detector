@@ -77,6 +77,7 @@ public:
     vector< Calorimeter                    * > get_calorimeters_full               () const;
     vector< Calorimeter                    * > get_calorimeters_middle             () const;
     vector< DirectionSensitivePhotoDetector* > get_directionSensitivePhotoDetectors() const;
+    G4bool                                     get_make_SDandField                 () const;
 
 protected:
     G4bool m_checkOverlaps  { true };

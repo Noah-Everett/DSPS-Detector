@@ -1,4 +1,4 @@
-/GDML/save                                            false
+/GDML/save                                            true
 /GDML/fileName                                        geometry.gdml
 
 /output/photoSensor/hits/position/binned/save         true
