@@ -41,15 +41,14 @@
 #include <sstream>
 #include <map>
 
-using CLHEP::pi;
-
-using std::vector;
-using std::ostream;
-using std::ifstream;
-using std::stringstream;
-using std::map;
-using std::swap;
-
+using CLHEP    ::pi;
+using std      ::vector;
+using std      ::ostream;
+using std      ::ifstream;
+using std      ::stringstream;
+using std      ::map;
+using std      ::swap;
+using G4StrUtil::to_lower ;
 class Lens
 {
     public:
@@ -68,6 +67,28 @@ class Lens
         LensSensitiveDetector          * get_sensitiveDetector();
         G4int                            get_shape_int        ();
         G4String                         get_shape_string     ();
+
+        G4ThreeVector get_position        ( const char      * );
+        G4ThreeVector get_position_front  (                   );
+        G4ThreeVector get_position_center (                   );
+        G4ThreeVector get_position_back   (                   );
+        static G4ThreeVector get_position        ( const char      *, 
+                                                   G4RotationMatrix*, 
+                                                   G4ThreeVector    , 
+                                                   const char      *,
+                                                   G4int             );
+        static G4ThreeVector get_position_front  ( G4RotationMatrix*, 
+                                                   G4ThreeVector    , 
+                                                   const char      *,
+                                                   G4int             );
+        static G4ThreeVector get_position_center ( G4RotationMatrix*,
+                                                   G4ThreeVector    , 
+                                                   const char      *,
+                                                   G4int             );
+        static G4ThreeVector get_position_back   ( G4RotationMatrix*,
+                                                   G4ThreeVector    , 
+                                                   const char      *,
+                                                   G4int             );
 
         void set_name( const G4String& );
 
@@ -98,10 +119,11 @@ class Lens
         G4VisAttributes* m_visAttributes     ;
         G4double         m_width             ;
 
-        G4double m_position_front ;
-        G4double m_position_center;
-        G4double m_position_back  ;
-        
+        G4ThreeVector m_relativePosition_front ;
+        G4ThreeVector m_relativePosition_center;
+        G4ThreeVector m_relativePosition_back  ;
+        static vector< G4ThreeVector > calculate_relativePositions( G4int );
+
         G4ThreeVector m_axis_y{ 0, 1, 0 };
         G4double m_pi_2 = 0.5 * pi;
         G4double m_pi   =       pi;
@@ -109,7 +131,7 @@ class Lens
         G4SubtractionSolid* subtract_circular   ( G4VSolid* );
         G4SubtractionSolid* subtract_rectangular( G4VSolid* );
 
-        G4double get_xLimit( G4double, G4double, G4double, G4double );
+        static G4double get_surfaceX( G4double, G4double, G4double, G4double );
 
         enum m_lensShape_enum {
             m_biconvex,

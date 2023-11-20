@@ -73,8 +73,8 @@ Lens::Lens( G4String t_name, G4int t_nLens ) {
     G4double surface_2_position_absolute = m_position + m_distance / 2 + m_surface_2_radius_x;
     G4double surface_1_position_relative = surface_1_position_absolute - m_position;
     G4double surface_2_position_relative = surface_2_position_absolute - m_position;
-    G4double surface_1_xLimit            = abs( get_xLimit( m_surface_1_radius_x, m_surface_1_radius_y, m_surface_1_yLimits, 0 ) );
-    G4double surface_2_xLimit            = abs( get_xLimit( m_surface_2_radius_x, m_surface_2_radius_y, m_surface_2_yLimits, 0 ) );
+    G4double surface_1_xLimit            = abs( get_surfaceX( m_surface_1_radius_x, m_surface_1_radius_y, m_surface_1_yLimits, 0 ) );
+    G4double surface_2_xLimit            = abs( get_surfaceX( m_surface_2_radius_x, m_surface_2_radius_y, m_surface_2_yLimits, 0 ) );
     G4int    surface_1_radius_x_sign     = m_surface_1_radius_x > 0 ? 1 : -1;
     G4int    surface_2_radius_x_sign     = m_surface_2_radius_x > 0 ? 1 : -1;
 
@@ -122,14 +122,23 @@ Lens::Lens( G4String t_name, G4int t_nLens ) {
         if( middleTube_size > 0 ) {
             G4UnionSolid* middle_and_surface1 = new G4UnionSolid( m_name + "_middle_and_surface1", middleTube_trim_final, surface_1_trim_final, nullptr, G4ThreeVector( 0, 0, surface_1_xLimit - middleTube_size ) );
             G4UnionSolid* lens_preTrim_preTranslation = new G4UnionSolid( m_name + "_middle_and_surface2", middle_and_surface1, surface_2_trim_final, nullptr, G4ThreeVector( 0, 0, middleTube_size - surface_2_xLimit ) ) ;
-            lens = new G4DisplacedSolid( m_name + "_preTrim", lens_preTrim_preTranslation, nullptr, G4ThreeVector( 0, 0, -( m_surface_1_radius_x + surface_1_xLimit + m_surface_2_radius_x - surface_2_xLimit ) / 2 ) );
+            G4double avgPos = ( m_surface_1_radius_x + surface_1_xLimit + m_surface_2_radius_x - surface_2_xLimit ) / 2;
+            lens = new G4DisplacedSolid( m_name + "_preTrim", lens_preTrim_preTranslation, nullptr, G4ThreeVector( 0, 0, -avgPos ) );
+
+            m_relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - surface_2_xLimit + m_surface_2_radius_x - avgPos );
+            m_relativePosition_back = G4ThreeVector( 0, 0, surface_1_xLimit - middleTube_size + m_surface_1_radius_x - avgPos );
+            m_relativePosition_center = ( m_relativePosition_front + m_relativePosition_back ) / 2;
         } else {
             G4DisplacedSolid* surface_1_displaced = new G4DisplacedSolid( m_name + "_surface_1_displaced", surface_1_trim, nullptr, G4ThreeVector( 0, 0, surface_1_xLimit ) );
             G4DisplacedSolid* surface_2_displaced = new G4DisplacedSolid( m_name + "_surface_2_displaced", surface_2_trim, nullptr, G4ThreeVector( 0, 0, -surface_2_xLimit ) );
             G4UnionSolid* lens_preTranslation = new G4UnionSolid( m_name + "_preTranslation", surface_1_displaced, surface_2_displaced, nullptr, G4ThreeVector( 0, 0, 0 ) ) ;
-            lens = new G4DisplacedSolid( m_name + "_preTrim", lens_preTranslation, nullptr, G4ThreeVector( 0, 0, -( m_surface_1_radius_x + m_surface_2_radius_x ) / 2 ) );
+            G4double avgPos = ( m_surface_1_radius_x + surface_1_xLimit + m_surface_2_radius_x - surface_2_xLimit ) / 2;
+            lens = new G4DisplacedSolid( m_name + "_preTrim", lens_preTranslation, nullptr, G4ThreeVector( 0, 0, -avgPos ) );
+
+            m_relativePosition_front = G4ThreeVector( 0, 0, m_surface_2_radius_x - surface_2_xLimit - avgPos );
+            m_relativePosition_back = G4ThreeVector( 0, 0, m_surface_1_radius_x + surface_1_xLimit - avgPos );
+            m_relativePosition_center = ( m_relativePosition_front + m_relativePosition_back ) / 2;
         }
-        // G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "STOP" );
     } else if( m_shape == m_biconcave ) {
         G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Biconcave lens is not implemented ):" );
         // G4double middleTube_size = distance;
@@ -165,6 +174,8 @@ Lens::Lens( G4String t_name, G4int t_nLens ) {
 
         // G4UnionSolid* temp = new G4UnionSolid( m_name + "_temp", middleTube_init, surface_1_trim, nullptr, G4ThreeVector( 0, 0, middleTube_size / 2 * -surface_1_radius_x_sign - surface_1_width / 2 ) );
         // lens_preTrim = new G4UnionSolid( m_name + "_solid", temp, surface_2_trim, nullptr, G4ThreeVector( 0, 0, middleTube_size / 2 * -surface_2_radius_x_sign - surface_2_width / 2 ) ) ;
+    } else if( m_shape == m_concave_convex ) {
+        G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Concave-convex lens is not implemented ):" );
     } else if( m_shape == m_convex_concave ) {
         G4double middleTube_size = m_distance - abs( m_surface_1_radius_x + surface_1_xLimit )
                                               + abs( m_surface_2_radius_x + surface_2_xLimit );
@@ -200,14 +211,22 @@ Lens::Lens( G4String t_name, G4int t_nLens ) {
         if( middleTube_size > 0 ) {
             G4UnionSolid* surface1_and_middle = new G4UnionSolid( m_name + "_surface1_and_middle", middleTube_trim_final, surface_1_trim_final, nullptr, G4ThreeVector( 0, 0, surface_1_xLimit - middleTube_size ) );
             G4SubtractionSolid* lens_preDisplacement = new G4SubtractionSolid( m_name + "_lens_preDisplacement", surface1_and_middle, surface_2_init, nullptr, G4ThreeVector( 0, 0, surface_2_xLimit + middleTube_size ) );
-            lens = new G4DisplacedSolid( m_name + "_lens", lens_preDisplacement, nullptr, G4ThreeVector( 0, 0, -( m_surface_1_radius_x + surface_1_xLimit + m_surface_2_radius_x + surface_2_xLimit ) / 2 ) );
+            G4double avgPos = ( m_surface_1_radius_x + surface_1_xLimit + m_surface_2_radius_x + surface_2_xLimit ) / 2;
+            lens = new G4DisplacedSolid( m_name + "_lens", lens_preDisplacement, nullptr, G4ThreeVector( 0, 0, -avgPos ) );
+
+            m_relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - avgPos );
+            m_relativePosition_back = G4ThreeVector( 0, 0, m_surface_1_radius_x + surface_1_xLimit - middleTube_size - avgPos );
+            m_relativePosition_center = ( m_relativePosition_front + m_relativePosition_back ) / 2;
         } else {
             G4DisplacedSolid* surface_1_displaced = new G4DisplacedSolid( m_name + "_surface_1_displaced", surface_1_trim_final, nullptr, G4ThreeVector( 0, 0, surface_1_xLimit ) );
             G4SubtractionSolid* lens_preDisplacement = new G4SubtractionSolid( m_name + "_surface_1_displaced", surface_1_displaced, surface_2_init, nullptr, G4ThreeVector( 0, 0, -m_distance ) );
-            lens = new G4DisplacedSolid( m_name + "_lens", lens_preDisplacement, nullptr, G4ThreeVector( 0, 0, -( -m_distance + m_surface_1_radius_x + surface_1_xLimit ) / 2 ) );
+            G4double avgPos = ( -m_distance + m_surface_1_radius_x + surface_1_xLimit ) / 2;
+            lens = new G4DisplacedSolid( m_name + "_lens", lens_preDisplacement, nullptr, G4ThreeVector( 0, 0, -avgPos ) );
+
+            m_relativePosition_front = G4ThreeVector( 0, 0, -avgPos );
+            m_relativePosition_back = G4ThreeVector( 0, 0, -m_distance - avgPos );
+            m_relativePosition_center = ( m_relativePosition_front + m_relativePosition_back ) / 2;
         }
-    } else if( m_shape == m_concave_convex ) {
-        G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Concave-convex lens is not implemented ):" );
     } else
         G4Exception( "Lens::Lens", "InvalidSetup", FatalException, "Lens shape is not valid." );
 
@@ -216,6 +235,16 @@ Lens::Lens( G4String t_name, G4int t_nLens ) {
     m_lens->set_material( m_material );
     m_lens->set_visAttributes( m_visAttributes );
     m_lens->make_logicalVolume();
+
+    // Check if m_relativePosition_front, back, center match the values returned by calculate_relativePositions
+    if( abs( m_relativePosition_front .z() - calculate_relativePositions( t_nLens )[ 0 ].z() ) > 1e-6 ||
+        abs( m_relativePosition_back  .z() - calculate_relativePositions( t_nLens )[ 1 ].z() ) > 1e-6 ||
+        abs( m_relativePosition_center.z() - calculate_relativePositions( t_nLens )[ 2 ].z() ) > 1e-6   )
+        G4Exception( "Lens::Lens", "InvalidSetup", FatalException, 
+                     "m_relativePosition_front, back, or center do not "
+                     "match the values returned by calculate_relativePositions."
+                     "This is not a user error, it is a code error." 
+                   );
 }
 
 Lens::~Lens() {
@@ -246,7 +275,7 @@ void Lens::place( G4RotationMatrix * t_rotationMatrix     ,
     m_lens->place( t_rotationMatrix, t_translation, t_motherLogicalVolume, t_isMany );
 }
 
-G4double Lens::get_xLimit( G4double t_radius_x, G4double t_radius_y, 
+G4double Lens::get_surfaceX( G4double t_radius_x, G4double t_radius_y, 
                            G4double t_yLimits , G4double t_position ) {
     G4int    sign = t_radius_x / abs( t_radius_x );
     G4double c_1  = 1 / pow( t_radius_x, 2 );
@@ -307,37 +336,198 @@ G4SubtractionSolid* Lens::subtract_rectangular( G4VSolid* t_solid ) {
     return new G4SubtractionSolid( m_name + "_lens", t_solid, lens_trimmer );
 }
 
-// G4ThreeVector Lens::get_position_front() {
-//     return m_translation + G4ThreeVector( 0, 0, m_distance / 2 + m_surface_2_radius_x );
-// }
+G4ThreeVector Lens::get_position( const char* t_relativePosition ) {
+    G4String relativePosition( t_relativePosition );
+    if( relativePosition == "front" || relativePosition == "f" )
+        return get_position_front();
+    else if( relativePosition == "back" || relativePosition == "b" )
+        return get_position_back();
+    else if( relativePosition == "center" || relativePosition == "c" )
+        return get_position_center();
+    else
+        G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition is not valid." );
+    return G4ThreeVector();
+}
 
-// G4ThreeVector Lens::get_position_back() {
-//     return m_translation + G4ThreeVector( 0, 0, -m_distance / 2 + m_surface_1_radius_x );
-// }
+G4ThreeVector Lens::get_position_front() {
+    return m_translation + *m_rotationMatrix * m_relativePosition_front;
+}
 
-// G4ThreeVector Lens::get_position_center() {
-//     return m_translation;
-// }
+G4ThreeVector Lens::get_position_back() {
+    return m_translation + *m_rotationMatrix * m_relativePosition_back;
+}
 
-// G4ThreeVector Lens::get_position( const char* t_position ) {
-//     if( to_lower( t_position ) == "front" )
-//         return get_position_front();
-//     else if( to_lower( t_position ) == "back" )
-//         return get_position_back();
-//     else if( to_lower( t_position ) == "center" )
-//         return get_position_center();
-//     else
-//         G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_position is not valid." );
-// }
+G4ThreeVector Lens::get_position_center() {
+    return m_translation + *m_rotationMatrix * m_relativePosition_center;
+}
 
-// G4ThreeVector Lens::get_position_front() {
-//     return m_translation + *m_rotationMatrix * m_position_front;
-// }
+G4ThreeVector Lens::get_position( const char      * t_relativePosition_given,
+                                  G4RotationMatrix* t_rotationMatrix        ,
+                                  G4ThreeVector     t_translation           ,
+                                  const char      * t_relativePosition_want ,
+                                  G4int             t_nLens                  ) {
+    G4String relativePosition_given( t_relativePosition_given );
+    to_lower( relativePosition_given );
 
-// G4ThreeVector Lens::get_position_back() {
-//     return m_translation + *m_rotationMatrix * m_position_back;
-// }
+    if( relativePosition_given == "front" || relativePosition_given == "f" )
+        return get_position_front( t_rotationMatrix, t_translation, t_relativePosition_want, t_nLens );
+    else if( relativePosition_given == "back" || relativePosition_given == "b" )
+        return get_position_back( t_rotationMatrix, t_translation, t_relativePosition_want, t_nLens );
+    else if( relativePosition_given == "center" || relativePosition_given == "c" )
+        return get_position_center( t_rotationMatrix, t_translation, t_relativePosition_want, t_nLens );
+    else
+        G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition_given is not valid." );
 
-// G4ThreeVector Lens::get_position_center() {
-//     return m_translation + *m_rotationMatrix * m_position_center;
-// }
+    return G4ThreeVector();
+}
+
+G4ThreeVector Lens::get_position_front( G4RotationMatrix* t_rotationMatrix  ,
+                                        G4ThreeVector     t_translation     ,
+                                        const char      * t_relativePosition,
+                                        G4int             t_nLens            ) {
+    G4String relativePosition( t_relativePosition );
+    to_lower( relativePosition );
+
+    vector< G4ThreeVector > relativePositions = calculate_relativePositions( t_nLens );
+    G4ThreeVector relativePosition_front  = relativePositions[ 0 ];
+    G4ThreeVector relativePosition_back   = relativePositions[ 1 ];
+    G4ThreeVector relativePosition_center = relativePositions[ 2 ];
+
+    if( relativePosition == "front" || relativePosition == "f" )
+        return t_translation;
+    else if( relativePosition == "back" || relativePosition == "b" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_back + relativePosition_front );
+    else if( relativePosition == "center" || relativePosition == "c" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_center + relativePosition_front );
+    else
+        G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition is not valid." );
+
+    return G4ThreeVector();
+}
+
+G4ThreeVector Lens::get_position_back( G4RotationMatrix* t_rotationMatrix  ,
+                                       G4ThreeVector     t_translation     ,
+                                       const char      * t_relativePosition,
+                                       G4int             t_nLens            ) {
+    G4String relativePosition( t_relativePosition );
+    to_lower( relativePosition );
+
+    vector< G4ThreeVector > relativePositions = calculate_relativePositions( t_nLens );
+    G4ThreeVector relativePosition_front  = relativePositions[ 0 ];
+    G4ThreeVector relativePosition_back   = relativePositions[ 1 ];
+    G4ThreeVector relativePosition_center = relativePositions[ 2 ];
+
+    if( relativePosition == "front" || relativePosition == "f" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_front + relativePosition_back );
+    else if( relativePosition == "back" || relativePosition == "b" )
+        return t_translation;
+    else if( relativePosition == "center" || relativePosition == "c" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_center + relativePosition_back );
+    else
+        G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition is not valid." );
+
+    return G4ThreeVector();
+}
+
+G4ThreeVector Lens::get_position_center( G4RotationMatrix* t_rotationMatrix  ,
+                                         G4ThreeVector     t_translation     ,
+                                         const char      * t_relativePosition,
+                                         G4int             t_nLens            ) {
+    G4String relativePosition( t_relativePosition );
+    to_lower( relativePosition );
+
+    vector< G4ThreeVector > relativePositions = calculate_relativePositions( t_nLens );
+    G4ThreeVector relativePosition_front  = relativePositions[ 0 ];
+    G4ThreeVector relativePosition_back   = relativePositions[ 1 ];
+    G4ThreeVector relativePosition_center = relativePositions[ 2 ];
+
+    if( relativePosition == "front" || relativePosition == "f" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_front + relativePosition_center );
+    else if( relativePosition == "back" || relativePosition == "b" )
+        return t_translation + *t_rotationMatrix * ( -relativePosition_back + relativePosition_center );
+    else if( relativePosition == "center" || relativePosition == "c" )
+        return t_translation;
+    else
+        G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition is not valid." );
+
+    return G4ThreeVector();
+}
+
+vector< G4ThreeVector > Lens::calculate_relativePositions( G4int t_nLens ) {
+    ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
+
+    if( t_nLens >= constructionMessenger->get_lens_amount() )
+        G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, 
+                     "t_nLens is greater than the number of lenses." );
+
+    G4double surface_1_radius_x = constructionMessenger->get_lens_surface_1_radius_x( t_nLens );
+    G4double surface_1_radius_y = constructionMessenger->get_lens_surface_1_radius_y( t_nLens );
+    G4double surface_1_yLimits  = constructionMessenger->get_lens_surface_1_yLimits ( t_nLens );
+    G4double surface_2_radius_x = constructionMessenger->get_lens_surface_2_radius_x( t_nLens );
+    G4double surface_2_radius_y = constructionMessenger->get_lens_surface_2_radius_y( t_nLens );
+    G4double surface_2_yLimits  = constructionMessenger->get_lens_surface_2_yLimits ( t_nLens );
+    G4double distance           = constructionMessenger->get_lens_distance          ( t_nLens );
+
+    G4double surface_1_xLimit = abs( get_surfaceX( surface_1_radius_x, surface_1_radius_y, surface_1_yLimits, 0 ) );
+    G4double surface_2_xLimit = abs( get_surfaceX( surface_2_radius_x, surface_2_radius_y, surface_2_yLimits, 0 ) );
+
+    G4double surface_1_radius_x_sign = surface_1_radius_x > 0 ? 1 : -1;
+    G4double surface_2_radius_x_sign = surface_2_radius_x > 0 ? 1 : -1;
+
+    G4int shape = -1;
+    if( surface_1_radius_x < 0 && surface_2_radius_x > 0 )
+        shape = m_biconvex;
+    else if( surface_1_radius_x > 0 && surface_2_radius_x < 0 )
+        shape = m_biconcave;
+    else if( surface_1_radius_x > 0 && surface_2_radius_x > 0 )
+        shape = m_concave_convex;
+    else if( surface_1_radius_x < 0 && surface_2_radius_x < 0 )
+        shape = m_convex_concave;
+    else
+        G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Lens shape is not valid." );
+
+    G4ThreeVector relativePosition_front ;
+    G4ThreeVector relativePosition_center;
+    G4ThreeVector relativePosition_back  ;
+
+    if( shape == m_biconvex ) {
+        G4double middleTube_size = distance + ( surface_1_radius_x + surface_1_xLimit ) 
+                                            - ( surface_2_radius_x - surface_2_xLimit );
+        middleTube_size /= 2;
+
+       if( middleTube_size > 0 ) {
+            G4double avgPos = ( surface_1_radius_x + surface_1_xLimit + surface_2_radius_x - surface_2_xLimit ) / 2;
+            relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - surface_2_xLimit + surface_2_radius_x - avgPos );
+            relativePosition_back = G4ThreeVector( 0, 0, surface_1_xLimit - middleTube_size + surface_1_radius_x - avgPos );
+            relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+        } else {
+            G4double avgPos = ( surface_1_radius_x + surface_1_xLimit + surface_2_radius_x - surface_2_xLimit ) / 2;
+            relativePosition_front = G4ThreeVector( 0, 0, surface_2_radius_x - surface_2_xLimit - avgPos );
+            relativePosition_back = G4ThreeVector( 0, 0, surface_1_radius_x + surface_1_xLimit - avgPos );
+            relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+        }
+    } else if( shape == m_biconcave ) {
+        G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Biconcave lens is not implemented ):" );
+    } else if( shape == m_concave_convex ) {
+        G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Concave-convex lens is not implemented ):" );
+    } else if( shape == m_convex_concave ) {
+        G4double middleTube_size = distance - abs( surface_1_radius_x + surface_1_xLimit )
+                                            + abs( surface_2_radius_x + surface_2_xLimit );
+        middleTube_size /= 2;
+
+       if( middleTube_size > 0 ) {
+            G4double avgPos = ( surface_1_radius_x + surface_1_xLimit + surface_2_radius_x + surface_2_xLimit ) / 2;
+            relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - avgPos );
+            relativePosition_back = G4ThreeVector( 0, 0, surface_1_radius_x + surface_1_xLimit - middleTube_size - avgPos );
+            relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+        } else {
+            G4double avgPos = ( -distance + surface_1_radius_x + surface_1_xLimit ) / 2;
+            relativePosition_front = G4ThreeVector( 0, 0, -avgPos );
+            relativePosition_back = G4ThreeVector( 0, 0, -distance - avgPos );
+            relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+        }    
+    } else
+        G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Lens shape is not valid." );
+
+    return { relativePosition_front, relativePosition_back, relativePosition_center };
+}

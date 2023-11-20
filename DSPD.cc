@@ -31,6 +31,7 @@
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
 #include "PhotonCreator.inl"
+#include "OpticalPhysics.hh"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -79,11 +80,11 @@ int main(int argc, char** argv)
 
     // Initialize the physics list
     G4VModularPhysicsList* physicsList = new FTFP_BERT;
-    physicsList->ReplacePhysics(new G4EmStandardPhysics_option4());
+    physicsList->ReplacePhysics( new G4EmStandardPhysics_option4() );
 
-    // Initialize the optical physics
-    G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-    auto opticalParams = G4OpticalParameters::Instance();
+    // Initialize the optical physics (with NEST)
+    OpticalPhysics* opticalPhysics = new OpticalPhysics( detectorConstruction );
+    G4OpticalParameters* opticalParams = G4OpticalParameters::Instance();
     opticalParams->SetWLSTimeProfile( "delta" );
     opticalParams->SetScintTrackSecondariesFirst( true );
     opticalParams->SetCerenkovMaxPhotonsPerStep( 100 );
@@ -103,20 +104,12 @@ int main(int argc, char** argv)
     visManager->Initialize();
     
     // Start the visualization if needed
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
     if( ui ) {
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         UImanager->ApplyCommand( "/control/execute macros/vis.mac" );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
-        if( ui->IsGUI() ) {
+        if( ui->IsGUI() )
             UImanager->ApplyCommand( "/control/execute macros/gui.mac" );
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
-            }
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         ui->SessionStart();
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
         delete ui;
-        G4cout << __FILE__ << " " << __LINE__ << G4endl;
     } else if( argc == 2 )
         UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
     else if( argc == 4 )
