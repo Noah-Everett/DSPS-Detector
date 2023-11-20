@@ -22,7 +22,8 @@
 
 using NEST::NESTThermalElectron;
 
-class OpticalPhysics : public G4OpticalPhysics {
+class OpticalPhysics : public G4OpticalPhysics 
+{
     public:
         OpticalPhysics( DetectorConstruction*             , 
                         const G4String& = "OpticalPhysics" );
