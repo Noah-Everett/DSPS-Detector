@@ -36,6 +36,25 @@ class LensSystem
         Lens           * get_lens  ( G4int ) const;
         G4String         get_name  (       ) const;
 
+        G4ThreeVector get_position       ( const char*  );
+        G4ThreeVector get_position_front (              );
+        G4ThreeVector get_position_center(              );
+        G4ThreeVector get_position_back  (              );
+
+        // static G4ThreeVector get_position       ( const char      *, 
+        //                                           G4RotationMatrix*, 
+        //                                           G4ThreeVector    , 
+        //                                           const char      * );
+        static G4ThreeVector get_position_front ( G4RotationMatrix*, 
+                                                  G4ThreeVector    , 
+                                                  const char      * );
+        // static G4ThreeVector get_position_center( G4RotationMatrix*, 
+        //                                           G4ThreeVector    , 
+        //                                           const char      * );
+        // static G4ThreeVector get_position_back  ( G4RotationMatrix*, 
+        //                                           G4ThreeVector    , 
+        //                                           const char      * );
+
         void set_name( const G4String& );
 
     protected:
@@ -43,10 +62,15 @@ class LensSystem
         G4String        m_name;
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 
+        static vector< G4int         > calculate_lensOrder        ();
         static vector< G4ThreeVector > calculate_relativePositions();
-        G4ThreeVector m_position_front ;
-        G4ThreeVector m_position_center;
-        G4ThreeVector m_position_back  ;
+        static vector< G4ThreeVector > calculate_relativePositions( const vector< G4int >& );
+        G4ThreeVector m_relativePosition_front ;
+        G4ThreeVector m_relativePosition_center;
+        G4ThreeVector m_relativePosition_back  ;
+
+        G4RotationMatrix* m_rotationMatrix;
+        G4ThreeVector     m_translationVector;
 };
 
 #endif

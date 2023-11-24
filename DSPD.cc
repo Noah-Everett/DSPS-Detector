@@ -70,6 +70,7 @@ int main(int argc, char** argv)
 
     // Initialize the optical physics (with NEST)
     OpticalPhysics* opticalPhysics = new OpticalPhysics( detectorConstruction );
+    // G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
     G4OpticalParameters* opticalParams = G4OpticalParameters::Instance();
     opticalParams->SetWLSTimeProfile( "delta" );
     opticalParams->SetScintTrackSecondariesFirst( true );

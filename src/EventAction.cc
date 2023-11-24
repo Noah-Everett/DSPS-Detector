@@ -28,17 +28,6 @@ EventAction::~EventAction() {
 }
 
 void EventAction::BeginOfEventAction( const G4Event* t_event ) {
-    m_analysisManager = G4AnalysisManager::Instance();
-
-    G4int ID = m_outputManager->get_histogram_2D_ID( "photoSensor_0" );
-    if( ID != kInvalidId && m_analysisManager->GetH2Title( ID ) == "photoSensor_0" )
-        for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
-            G4cout << "Resetting histogram name : photoSensor_" << DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() 
-                   << " --> " << DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() << G4endl;
-            m_analysisManager->SetH2Title( m_outputManager->get_histogram_2D_ID( 
-                                           "photoSensor_" + to_string( DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() ) ),
-                                           DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() );
-        }
 }
 
 void EventAction::EndOfEventAction( const G4Event* t_event ) {

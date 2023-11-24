@@ -303,7 +303,7 @@ void DetectorConstruction::ConstructSDandField() {
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
         PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
-        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_position_front() );
+        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_photoSensor()->get_position_front() );
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
         directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );

@@ -18,7 +18,7 @@ OpticalPhysics::OpticalPhysics( DetectorConstruction* t_detectorConstruction,
 }
 
 OpticalPhysics::~OpticalPhysics() {
-    delete m_detector;
+    delete m_NESTDetector;
 }
 
 void OpticalPhysics::ConstructProcess() {
@@ -26,15 +26,18 @@ void OpticalPhysics::ConstructProcess() {
 
     NESTProc* theNEST2ScintillationProcess = new NESTProc( "S1", fElectromagnetic, m_NESTDetector );
 
-    G4PTblDicIterator* particleIterator = GetParticleIterator();
+    G4ParticleTable::G4PTblDicIterator* particleIterator = GetParticleIterator();
     particleIterator->reset();
     G4ProcessManager* processManager{ nullptr };
-    for( G4PTblDicIterator* particle = particleIterator->begin(); particle != particleIterator->end(); ++particle ) {
+    G4ParticleDefinition* particle{ nullptr };
+    while( ( *particleIterator )() ) {
+        particle = particleIterator->value();
         processManager = particle->GetProcessManager();
-        if( theNEST2ScintillationProcess->IsApplicable( *particle ) )
+        if( theNEST2ScintillationProcess->IsApplicable( *particle ) ) {
             processManager->AddProcess( theNEST2ScintillationProcess );
             processManager->SetProcessOrderingToLast( theNEST2ScintillationProcess, idxAtRest   );
             processManager->SetProcessOrderingToLast( theNEST2ScintillationProcess, idxPostStep );
+        }
     }
 }
 

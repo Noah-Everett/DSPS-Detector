@@ -22,7 +22,7 @@
 /geometry/calorimeter/material                   aluminum
 /geometry/calorimeter/visibility                 true
 /geometry/calorimeter/color                      red
-/geometry/calorimeter/alpha                      0.2
+/geometry/calorimeter/alpha                      0.01
 /geometry/calorimeter/forceSolid                 true
 
 /geometry/photoSensor/surface/size               20.0 20.0 0.50 cm

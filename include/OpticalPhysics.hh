@@ -14,6 +14,7 @@
 
 #include "G4ParticleTable.hh"
 #include "G4OpticalPhysics.hh"
+#include "G4ProcessManager.hh"
 
 #include "NESTProc.hh"
 
@@ -21,6 +22,7 @@
 #include "DetectorConstruction.hh"
 
 using NEST::NESTThermalElectron;
+using NEST::NESTProc;
 
 class OpticalPhysics : public G4OpticalPhysics 
 {

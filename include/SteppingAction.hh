@@ -12,19 +12,24 @@
 #ifndef SteppingAction_hh
 #define SteppingAction_hh
 
+#include <cmath>
+
 #include "G4Step.hh"
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
-#include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "G4AnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4RunManager.hh"
+#include "G4LogicalVolume.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4ProcessTable.hh"
 
 #include "OutputManager.hh"
 #include "OutputMessenger.hh"
-
-class G4LogicalVolume;
-
-class EventAction;
+#include "RunAction.hh"
+#include "EventAction.hh"
+#include "DetectorConstruction.hh"
 
 class SteppingAction : public G4UserSteppingAction
 {

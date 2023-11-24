@@ -9,22 +9,12 @@
 //*//                                                                     //*//
 //*/////////////////////////////////////////////////////////////////////////*//
 
+
 #include "SteppingAction.hh"
-#include "EventAction.hh"
-#include "DetectorConstruction.hh"
-#include "Maps.hh"
 
-#include "G4Event.hh"
-#include "G4RunManager.hh"
-#include "G4LogicalVolume.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4ProcessTable.hh"
-
-#include <cmath>
-
-SteppingAction::SteppingAction( RunAction* t_runAction ) {
-    m_runAction     = t_runAction;
-    m_outputManager = m_runAction->get_outputManager();
+SteppingAction::SteppingAction( RunAction* t_runAction ) :
+    m_runAction( t_runAction ),
+    m_outputManager( m_runAction->get_outputManager() ) {
 }
 
 SteppingAction::~SteppingAction() {

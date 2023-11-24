@@ -1,13 +1,27 @@
-//*/////////////////////////////////////////////////////////////////////////*//
-//*//                    G4-DSPS-Detector-Simulation                      //*//
-//*/////////////////////////////////////////////////////////////////////////*//
-//*//                                                                     //*//
-//*// Author:                                                             //*//
-//*//   Noah Everett (noah.everett@mines.sdsmt.edu)                       //*//
-//*//                                                                     //*//
-//*/////////////////////////////////////////////////////////////////////////*//
-//*//                                                                     //*//
-//*/////////////////////////////////////////////////////////////////////////*//
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
 
 #include "Lens.hh"
 
@@ -379,12 +393,16 @@ G4ThreeVector Lens::get_position_front( G4RotationMatrix* t_rotationMatrix  ,
     G4ThreeVector relativePosition_back   = relativePositions[ 1 ];
     G4ThreeVector relativePosition_center = relativePositions[ 2 ];
 
+    G4ThreeVector position = G4ThreeVector( 0, 0, ConstructionMessenger::get_instance()->get_lens_position( t_nLens ) );
+
     if( relativePosition == "front" || relativePosition == "f" )
         return t_translation;
     else if( relativePosition == "back" || relativePosition == "b" )
-        return t_translation + *t_rotationMatrix * ( -relativePosition_back + relativePosition_front );
+        return t_translation + *t_rotationMatrix * ( position - relativePosition_front );
     else if( relativePosition == "center" || relativePosition == "c" )
-        return t_translation + *t_rotationMatrix * ( -relativePosition_center + relativePosition_front );
+        return t_translation + *t_rotationMatrix * ( position - relativePosition_center + relativePosition_front );
+    else if( relativePosition == "standard" || relativePosition == "s" )
+        return t_translation + *t_rotationMatrix * ( position - relativePosition_back );
     else
         G4Exception( "Lens::get_position", "InvalidSetup", FatalException, "t_relativePosition is not valid." );
 
@@ -403,10 +421,12 @@ G4ThreeVector Lens::get_position_back( G4RotationMatrix* t_rotationMatrix  ,
     G4ThreeVector relativePosition_back   = relativePositions[ 1 ];
     G4ThreeVector relativePosition_center = relativePositions[ 2 ];
 
+    G4ThreeVector position = G4ThreeVector( 0, 0, ConstructionMessenger::get_instance()->get_lens_position( t_nLens ) );
+
     if( relativePosition == "front" || relativePosition == "f" )
         return t_translation + *t_rotationMatrix * ( -relativePosition_front + relativePosition_back );
     else if( relativePosition == "back" || relativePosition == "b" )
-        return t_translation;
+        return t_translation + *t_rotationMatrix * ( position + relativePosition_back );
     else if( relativePosition == "center" || relativePosition == "c" )
         return t_translation + *t_rotationMatrix * ( -relativePosition_center + relativePosition_back );
     else
@@ -475,6 +495,7 @@ vector< G4ThreeVector > Lens::calculate_relativePositions( G4int t_nLens ) {
     G4ThreeVector relativePosition_front ;
     G4ThreeVector relativePosition_center;
     G4ThreeVector relativePosition_back  ;
+    G4ThreeVector relativePosition_avg   ;
 
     if( shape == m_biconvex ) {
         G4double middleTube_size = distance + ( surface_1_radius_x + surface_1_xLimit ) 
@@ -486,11 +507,13 @@ vector< G4ThreeVector > Lens::calculate_relativePositions( G4int t_nLens ) {
             relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - surface_2_xLimit + surface_2_radius_x - avgPos );
             relativePosition_back = G4ThreeVector( 0, 0, surface_1_xLimit - middleTube_size + surface_1_radius_x - avgPos );
             relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+            relativePosition_avg = G4ThreeVector( 0, 0, avgPos );
         } else {
             G4double avgPos = ( surface_1_radius_x + surface_1_xLimit + surface_2_radius_x - surface_2_xLimit ) / 2;
             relativePosition_front = G4ThreeVector( 0, 0, surface_2_radius_x - surface_2_xLimit - avgPos );
             relativePosition_back = G4ThreeVector( 0, 0, surface_1_radius_x + surface_1_xLimit - avgPos );
             relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+            relativePosition_avg = G4ThreeVector( 0, 0, avgPos );
         }
     } else if( shape == m_biconcave ) {
         G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Biconcave lens is not implemented ):" );
@@ -506,14 +529,16 @@ vector< G4ThreeVector > Lens::calculate_relativePositions( G4int t_nLens ) {
             relativePosition_front = G4ThreeVector( 0, 0, middleTube_size - avgPos );
             relativePosition_back = G4ThreeVector( 0, 0, surface_1_radius_x + surface_1_xLimit - middleTube_size - avgPos );
             relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+            relativePosition_avg = G4ThreeVector( 0, 0, avgPos );
         } else {
             G4double avgPos = ( -distance + surface_1_radius_x + surface_1_xLimit ) / 2;
             relativePosition_front = G4ThreeVector( 0, 0, -avgPos );
             relativePosition_back = G4ThreeVector( 0, 0, -distance - avgPos );
             relativePosition_center = ( relativePosition_front + relativePosition_back ) / 2;
+            relativePosition_avg = G4ThreeVector( 0, 0, avgPos );
         }    
     } else
         G4Exception( "Lens::calculate_relativePositions", "InvalidSetup", FatalException, "Lens shape is not valid." );
 
-    return { relativePosition_front, relativePosition_back, relativePosition_center };
+    return { relativePosition_front, relativePosition_back, relativePosition_center, relativePosition_avg };
 }

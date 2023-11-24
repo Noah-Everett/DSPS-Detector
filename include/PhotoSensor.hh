@@ -19,6 +19,8 @@
 #include "PhotoSensorSensitiveDetector.hh"
 #include "ConstructionMessenger.hh"
 
+using G4StrUtil::to_lower;
+
 class PhotoSensor
 {
     public:
@@ -34,6 +36,25 @@ class PhotoSensor
 
         void set_sensitiveDetector( PhotoSensorSensitiveDetector* );
         void set_name             ( const G4String&               );
+
+        G4ThreeVector get_position       ( const char* );
+        G4ThreeVector get_position_front (              );
+        G4ThreeVector get_position_center(              );
+        G4ThreeVector get_position_back  (              );
+
+        static G4ThreeVector get_position       ( const char      *, 
+                                                  G4RotationMatrix*, 
+                                                  G4ThreeVector    , 
+                                                  const char      * );
+        static G4ThreeVector get_position_front ( G4RotationMatrix*,
+                                                  G4ThreeVector    , 
+                                                  const char      * );
+        static G4ThreeVector get_position_center( G4RotationMatrix*,
+                                                  G4ThreeVector    , 
+                                                  const char      * );
+        static G4ThreeVector get_position_back  ( G4RotationMatrix*,
+                                                  G4ThreeVector    , 
+                                                  const char      * );
 
     protected:
         GeometricObjectBox          * m_surface              { new GeometricObjectBox()              };

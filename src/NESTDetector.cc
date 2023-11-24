@@ -11,11 +11,12 @@
 
 #include "NESTDetector.hh"
 
-NESTDetector::NESTDetector() {
+NESTDetector::NESTDetector( DetectorConstruction* t_detectorConstruction ) :
+    m_detectorConstruction( t_detectorConstruction ) {
     Initialization();
 }
 
-NESTDetector::Initialization() {
+void NESTDetector::Initialization() {
     // Primary Scintillation (S1) parameters
     double g1 = 0.0760;  // phd per S1 phot at dtCntr (not phe). Divide out 2-PE effect
     double sPEres = 0.58;  // single phe resolution (Gaussian assumed)

@@ -40,15 +40,16 @@ class DirectionSensitivePhotoDetector
         G4bool            get_isMany              ();
         G4ThreeVector     get_position_lensSystem ();
         G4ThreeVector     get_position_photoSensor();
-        G4ThreeVector     get_position            ( const char* );
-        G4ThreeVector     get_position_front      ();
-        G4ThreeVector     get_position_back       ();
-        G4ThreeVector     get_position_center     ();
+
+        G4ThreeVector     get_position       ( const char* );
+        G4ThreeVector     get_position_front (             );
+        G4ThreeVector     get_position_back  (             );
+        G4ThreeVector     get_position_center(             );
 
         static G4ThreeVector get_position_front (              G4RotationMatrix*, G4ThreeVector, const char* );
         static G4ThreeVector get_position_back  (              G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position_center(              G4RotationMatrix*, G4ThreeVector, const char* );
-        static G4ThreeVector get_position       ( const char*, G4RotationMatrix*, G4ThreeVector, const char* );
+        // static G4ThreeVector get_position_center(              G4RotationMatrix*, G4ThreeVector, const char* );
+        // static G4ThreeVector get_position       ( const char*, G4RotationMatrix*, G4ThreeVector, const char* );
 
         LensSystem * get_lensSystem ();
         PhotoSensor* get_photoSensor();

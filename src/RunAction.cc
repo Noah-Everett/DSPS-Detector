@@ -105,6 +105,17 @@ void RunAction::BeginOfRunAction( const G4Run* t_run ) {
 void RunAction::EndOfRunAction( const G4Run* run ) {
     G4cout << "RunAction::EndOfRunAction()" << G4endl;
     m_analysisManager = G4AnalysisManager::Instance();
+
+    G4int ID = m_outputManager->get_histogram_2D_ID( "photoSensor_0" );
+    if( ID != kInvalidId && m_analysisManager->GetH2Title( ID ) == "photoSensor_0" )
+        for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
+            G4cout << "Resetting histogram name : photoSensor_" << DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() 
+                   << " --> " << DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() << G4endl;
+            m_analysisManager->SetH2Title( m_outputManager->get_histogram_2D_ID( 
+                                           "photoSensor_" + to_string( DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() ) ),
+                                           DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() );
+        }
+
     m_analysisManager->Write();
     m_analysisManager->CloseFile( false );
 }

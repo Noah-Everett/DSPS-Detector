@@ -24,6 +24,8 @@
 #include "G4Colour.hh"
 #include "G4VisAttributes.hh"
 
+#include "ConstructionMessenger.hh"
+
 class PhotoSensorHit : public G4VHit
 {
     public:
@@ -72,7 +74,7 @@ class PhotoSensorHit : public G4VHit
         G4double          get_particle_energy           ();
         G4ThreeVector     get_particle_momentum         ();
 
-    private:
+    protected:
         G4ThreeVector     m_photoSensor_position      ;
         G4RotationMatrix* m_photoSensor_rotationMatrix;
         G4String          m_photoSensor_name          ;
@@ -84,6 +86,8 @@ class PhotoSensorHit : public G4VHit
         G4String          m_hit_process               ;
         G4double          m_particle_energy           ;
         G4ThreeVector     m_particle_momentum         ;
+
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };
 
 using PhotoSensorHitsCollection = G4THitsCollection< PhotoSensorHit >;
