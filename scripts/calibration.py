@@ -1,12 +1,12 @@
-grid_size = (3, 3, 3)
+grid_size = (5, 5, 5) # m
 world_size = (2.5, 2.5, 2.5) # m
 detector_wall_thickness = 0.1 # m
 calorimeter_height = 0.2 # m
 buffer_room = 0.1 # m
-FV_size = tuple(WS - 2 * detector_wall_thickness - 2 * calorimeter_height - 2 * buffer_room for WS in world_size) # m
-nParticles = 100
+nParticles = 1000
 
-grid_space = tuple(2* FV / GS for FV, GS in zip(FV_size, grid_size))
+FV_size = tuple(WS - 2 * detector_wall_thickness - 2 * calorimeter_height - 2 * buffer_room for WS in world_size)
+grid_space = tuple(FV / (GS-1) for FV, GS in zip(FV_size, grid_size))
 
 with open('calibration.mac', 'w') as f:
     f.write("##########################\n")

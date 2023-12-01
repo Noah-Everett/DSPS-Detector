@@ -16,6 +16,9 @@
 /output/primary/emission/electron/save                true
 /output/primary/process/save                          true
 /output/primary/time/save                             true
+/output/primary/energy/save                           true
+/output/primary/volume/save                           true
+/output/primary/pdg/save                              true
 
 /output/photon/length/save                            true
 /output/photon/process/save                           true

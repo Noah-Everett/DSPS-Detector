@@ -44,6 +44,9 @@ class OutputMessenger : public G4UImessenger
         G4bool   get_primary_emission_electron_save               () const;
         G4bool   get_primary_process_save                         () const;
         G4bool   get_primary_time_save                            () const;
+        G4bool   get_primary_energy_save                          () const;
+        G4bool   get_primary_volume_save                          () const;
+        G4bool   get_primary_pdg_save                             () const;
         G4bool   get_photon_length_save                           () const;
         G4bool   get_photon_process_save                          () const;
         G4bool   get_photon_time_save                             () const;
@@ -68,6 +71,9 @@ class OutputMessenger : public G4UImessenger
         void set_primary_emission_electron_save               ( G4bool   value );
         void set_primary_process_save                         ( G4bool   value );
         void set_primary_time_save                            ( G4bool   value );
+        void set_primary_energy_save                          ( G4bool   value );
+        void set_primary_volume_save                          ( G4bool   value );
+        void set_primary_pdg_save                             ( G4bool   value );
         void set_photon_length_save                           ( G4bool   value );
         void set_photon_process_save                          ( G4bool   value );
         void set_photon_time_save                             ( G4bool   value );
@@ -96,6 +102,9 @@ class OutputMessenger : public G4UImessenger
         G4UIcmdWithABool    * m_command_primary_emission_electron_save;
         G4UIcmdWithABool    * m_command_primary_process_save;
         G4UIcmdWithABool    * m_command_primary_time_save;
+        G4UIcmdWithABool    * m_command_primary_energy_save;
+        G4UIcmdWithABool    * m_command_primary_volume_save;
+        G4UIcmdWithABool    * m_command_primary_pdg_save;
         G4UIcmdWithABool    * m_command_photon_length_save;
         G4UIcmdWithABool    * m_command_photon_process_save;
         G4UIcmdWithABool    * m_command_photon_time_save;
@@ -120,6 +129,9 @@ class OutputMessenger : public G4UImessenger
         G4bool   m_variable_primary_emission_electron_save;
         G4bool   m_variable_primary_process_save;
         G4bool   m_variable_primary_time_save;
+        G4bool   m_variable_primary_energy_save;
+        G4bool   m_variable_primary_volume_save;
+        G4bool   m_variable_primary_pdg_save;
         G4bool   m_variable_photon_length_save;
         G4bool   m_variable_photon_process_save;
         G4bool   m_variable_photon_time_save;

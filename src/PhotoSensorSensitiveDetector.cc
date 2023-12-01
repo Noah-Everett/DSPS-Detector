@@ -43,7 +43,7 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
 
     m_photoSensorHitsCollection->insert( hit );
 
-    // G4cout << "Hit: " << hit << G4endl << G4endl;
+    t_step->GetTrack()->SetTrackStatus( fStopAndKill );
 
     return true;
 }

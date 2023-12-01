@@ -15,6 +15,19 @@
 #include "G4ParticleTable.hh"
 #include "G4OpticalPhysics.hh"
 #include "G4ProcessManager.hh"
+#include "G4Cerenkov.hh"
+#include "G4EmSaturation.hh"
+#include "G4LossTableManager.hh"
+#include "G4OpAbsorption.hh"
+#include "G4OpBoundaryProcess.hh"
+#include "G4OpRayleigh.hh"
+#include "G4OpMieHG.hh"
+#include "G4OpticalParameters.hh"
+#include "G4OpWLS.hh"
+#include "G4OpWLS2.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4ProcessManager.hh"
+#include "G4Scintillation.hh"
 
 #include "NESTProc.hh"
 
@@ -35,7 +48,7 @@ class OpticalPhysics : public G4OpticalPhysics
         void ConstructParticle();
 
     private:
-        NESTDetector* m_NESTDetector{ nullptr };
+        DetectorConstruction* m_detectorConstruction{ nullptr };
 };
 
 #endif

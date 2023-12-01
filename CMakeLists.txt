@@ -17,7 +17,8 @@ endif()
 
 #----------------------------------------------------------------------------
 # Find NEST package
-
+#
+set(CMAKE_PREFIX_PATH "/Users/noah-everett/Applications/nest-2.3.12_install")
 find_package(NEST REQUIRED)
 include_directories(${NEST_INCLUDE_DIRS})
 
@@ -35,7 +36,7 @@ file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 
 #----------------------------------------------------------------------------
-# Add the executable, and link it to the Geant4 libraries
+# Add the executable, and link it to the Geant4 and NEST libraries
 #
 add_executable(DSPD DSPD.cc ${sources} ${headers})
 target_link_libraries(DSPD ${Geant4_LIBRARIES} NEST::NESTCore NEST::NESTG4)

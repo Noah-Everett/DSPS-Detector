@@ -13,6 +13,7 @@
 #define NESTDetector_hh
 
 #include "VDetector.hh"
+#include "NEST.hh"
 
 #include "DetectorConstruction.hh"
 
@@ -26,8 +27,12 @@ class NESTDetector : public VDetector
 
         void Initialization() override;
 
-        double           FitEF   ( double, double, double ) override;
-        vector< double > FitDirEF( double, double, double ) override;
+        double           FitS1           ( double, double, double, LCE ) override;
+        double           FitS2           ( double, double        , LCE ) override;
+        double           FitEF           ( double, double, double      ) override;
+        vector< double > FitTBA          ( double, double, double      ) override;
+        double           OptTrans        ( double, double, double      ) override;
+        vector< double > SinglePEWaveForm( double, double              ) override;
 
     protected:
         DetectorConstruction* m_detectorConstruction{ nullptr };

@@ -56,7 +56,10 @@ int main(int argc, char** argv)
         ui = new G4UIExecutive( argc, argv );
 
     // Initialize the run manager
-    auto runManager = G4RunManagerFactory::CreateRunManager( G4RunManagerType::Default );
+    G4RunManager* runManager = G4RunManagerFactory::CreateRunManager( G4RunManagerType::Default );
+    runManager->SetVerboseLevel( 3 );
+
+    // G4Exception("main", "main", FatalException, "Fatal exception test.");
 
     // Build the detector and initialize SDs
     G4SDManager::GetSDMpointer()->SetVerboseLevel( 1 );
@@ -107,12 +110,19 @@ int main(int argc, char** argv)
         detectorConstruction->make_GDMLFile( outputMessenger->get_GDML_fileName() );
 
     // Terminate job
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     delete visManager;
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     delete runManager;
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     OutputMessenger      ::delete_instance();
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     ConstructionMessenger::delete_instance();
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     UIMessenger          ::delete_instance();
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     Materials            ::delete_instance();
+    G4cout << __FILE__ << " " << __LINE__ << G4endl;
 
     // DONE!
     G4cout << '\n' << "####################"

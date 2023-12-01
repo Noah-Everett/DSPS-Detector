@@ -20,7 +20,10 @@ UIMessenger::UIMessenger() {
 }
 
 UIMessenger::~UIMessenger() {
-    if( m_parameter_showGUI ) delete m_parameter_showGUI;
+    if( m_parameter_showGUI ) {
+        delete m_parameter_showGUI;
+        m_parameter_showGUI = nullptr;
+    }
 }
 
 UIMessenger* UIMessenger::get_instance() {

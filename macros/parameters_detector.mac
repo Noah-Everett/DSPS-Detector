@@ -1,4 +1,4 @@
-/geometry/world/size                             2.5 2.5 2.5 m
+/geometry/world/size                             5 5 5 m
 /geometry/world/material                         ANNIEWater_unDoped
 /geometry/world/visibility                       false
 /geometry/world/color                            gray

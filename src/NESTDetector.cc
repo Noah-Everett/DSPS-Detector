@@ -80,10 +80,26 @@ void NESTDetector::Initialization() {
     double molarMass = 131.293;  // molar mass, g/mol
 }
 
+double NESTDetector::FitS1( double t_xPos_mm, double t_yPos_mm, double t_zPos_mm, LCE t_map ) {
+    return 0;
+}
+
+double NESTDetector::FitS2( double t_xPos_mm, double t_yPos_mm, LCE t_map ) {
+    return 0;
+}
+
 double NESTDetector::FitEF( double t_xPos_mm, double t_yPos_mm, double t_zPos_mm ) {
     return 0;
 }
 
-vector< double > NESTDetector::FitDirEF( double t_xPos_mm, double t_yPos_mm, double t_zPos_mm ) {
-    return { 0, 0, 0 };
+vector< double > NESTDetector::FitTBA( double t_xPos_mm, double t_yPos_mm, double t_zPos_mm ) {
+    return { 0, 0 };
+}
+
+double NESTDetector::OptTrans( double t_xPos_mm, double t_yPos_mm, double t_zPos_mm ) {
+    return 0;
+}
+
+vector< double > NESTDetector::SinglePEWaveForm( double t_xPos_mm, double t_yPos_mm ) {
+    return vector< double >( 7 );
 }

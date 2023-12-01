@@ -15,33 +15,501 @@
 # Detector parameters
 /gun/position -0.85000 -0.85000 -0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_-0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_0.42500.root
+/run/beamOn 1000
 
 /gun/position -0.85000 -0.85000 0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.85000_0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 -0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_-0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.00000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.00000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.00000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.00000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.00000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.00000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.00000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.00000_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.00000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.00000_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.42500_0.85000.root
+/run/beamOn 1000
 
 /gun/position -0.85000 0.85000 -0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_-0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position -0.85000 0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.85000 0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_0.42500.root
+/run/beamOn 1000
 
 /gun/position -0.85000 0.85000 0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_-0.85000_0.85000_0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.85000_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 -0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_-0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.00000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.00000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.00000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.00000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.00000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.00000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.00000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.00000_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.00000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.00000_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position -0.42500 0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_-0.42500_0.85000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.85000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 -0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_-0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.00000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.00000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.00000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.00000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.00000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.00000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.00000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.00000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.00000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.00000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.00000 0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.00000_0.85000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.85000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 -0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_-0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.00000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.00000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.00000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.00000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.00000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.00000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.00000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.00000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.00000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.00000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.85000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.85000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.85000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.42500 0.85000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.42500_0.85000_0.85000.root
+/run/beamOn 1000
 
 /gun/position 0.85000 -0.85000 -0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_-0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_0.42500.root
+/run/beamOn 1000
 
 /gun/position 0.85000 -0.85000 0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_0.85000_-0.85000_0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 -0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_-0.42500_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.00000 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.00000_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.00000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.00000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.00000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.00000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.00000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.00000_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.00000 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.00000_0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.42500 -0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.42500_-0.85000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.42500 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.42500_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.42500 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.42500_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.42500 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.42500_0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.42500 0.85000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.42500_0.85000.root
+/run/beamOn 1000
 
 /gun/position 0.85000 0.85000 -0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_-0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
+
+/gun/position 0.85000 0.85000 -0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_-0.42500.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.85000 0.00000 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_0.00000.root
+/run/beamOn 1000
+
+/gun/position 0.85000 0.85000 0.42500 m
+/analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_0.42500.root
+/run/beamOn 1000
 
 /gun/position 0.85000 0.85000 0.85000 m
 /analysis/setFileName ../runs/calibration/calibration_0.85000_0.85000_0.85000.root
-/run/beamOn 100
+/run/beamOn 1000
 

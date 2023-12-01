@@ -22,8 +22,6 @@ class StackingAction : public NESTStackingAction
     public:
         StackingAction();
        ~StackingAction() override;
-
-        G4ClassificationOfNewTrack ClassifyNewTrack( const G4Track* ) override;
 };
 
 #endif

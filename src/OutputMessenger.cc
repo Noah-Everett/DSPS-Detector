@@ -44,6 +44,9 @@ OutputMessenger::OutputMessenger() {
     m_command_primary_emission_electron_save                = new G4UIcmdWithABool    ( "/output/primary/emission/electron/save"                , this );
     m_command_primary_process_save                          = new G4UIcmdWithABool    ( "/output/primary/process/save"                          , this );
     m_command_primary_time_save                             = new G4UIcmdWithABool    ( "/output/primary/time/save"                             , this );
+    m_command_primary_energy_save                           = new G4UIcmdWithABool    ( "/output/primary/energy/save"                           , this );
+    m_command_primary_volume_save                           = new G4UIcmdWithABool    ( "/output/primary/volume/save"                           , this );
+    m_command_primary_pdg_save                              = new G4UIcmdWithABool    ( "/output/primary/pdg/save"                              , this );
     m_command_photon_length_save                            = new G4UIcmdWithABool    ( "/output/photon/length/save"                            , this );
     m_command_photon_process_save                           = new G4UIcmdWithABool    ( "/output/photon/process/save"                           , this );
     m_command_photon_time_save                              = new G4UIcmdWithABool    ( "/output/photon/time/save"                              , this );
@@ -70,6 +73,9 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_primary_emission_electron_save                ) delete m_command_primary_emission_electron_save;
     if( m_command_primary_process_save                          ) delete m_command_primary_process_save;
     if( m_command_primary_time_save                             ) delete m_command_primary_time_save;
+    if( m_command_primary_energy_save                           ) delete m_command_primary_energy_save;
+    if( m_command_primary_volume_save                           ) delete m_command_primary_volume_save;
+    if( m_command_primary_pdg_save                              ) delete m_command_primary_pdg_save;
     if( m_command_photon_length_save                            ) delete m_command_photon_length_save;
     if( m_command_photon_process_save                           ) delete m_command_photon_process_save;
     if( m_command_photon_time_save                              ) delete m_command_photon_time_save;
@@ -128,6 +134,15 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_primary_time_save ) {
         set_primary_time_save( m_command_primary_time_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/time/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_primary_energy_save ) {
+        set_primary_energy_save( m_command_primary_energy_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/primary/energy/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_primary_volume_save ) {
+        set_primary_volume_save( m_command_primary_volume_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/primary/volume/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_primary_pdg_save ) {
+        set_primary_pdg_save( m_command_primary_pdg_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/primary/pdg/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photon_length_save ) {
         set_photon_length_save( m_command_photon_length_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photon/length/save' to " << t_newValue << G4endl;
@@ -202,6 +217,15 @@ G4bool OutputMessenger::get_primary_process_save() const {
 G4bool OutputMessenger::get_primary_time_save() const {
     return m_variable_primary_time_save;
 }
+G4bool OutputMessenger::get_primary_energy_save() const {
+    return m_variable_primary_energy_save;
+}
+G4bool OutputMessenger::get_primary_volume_save() const {
+    return m_variable_primary_volume_save;
+}
+G4bool OutputMessenger::get_primary_pdg_save() const {
+    return m_variable_primary_pdg_save;
+}
 G4bool OutputMessenger::get_photon_length_save() const {
     return m_variable_photon_length_save;
 }
@@ -271,6 +295,15 @@ void OutputMessenger::set_primary_process_save( G4bool t_newValue ) {
 }
 void OutputMessenger::set_primary_time_save( G4bool t_newValue ) {
     m_variable_primary_time_save = t_newValue;
+}
+void OutputMessenger::set_primary_energy_save( G4bool t_newValue ) {
+    m_variable_primary_energy_save = t_newValue;
+}
+void OutputMessenger::set_primary_volume_save( G4bool t_newValue ) {
+    m_variable_primary_volume_save = t_newValue;
+}
+void OutputMessenger::set_primary_pdg_save( G4bool t_newValue ) {
+    m_variable_primary_pdg_save = t_newValue;
 }
 void OutputMessenger::set_photon_length_save( G4bool t_newValue ) {
     m_variable_photon_length_save = t_newValue;

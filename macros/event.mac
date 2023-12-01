@@ -3,9 +3,11 @@
 /run/verbose 0
 /event/verbose 0
 /tracking/verbose 0
-/gun/particle PhotonCreator
-/gun/energy 24.12 eV
+/gun/particle mu-
+/gun/energy 1800 MeV
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/gun/position 0 0 0
-/run/beamOn 100
+/analysis/setFileName event.root
+/gun/position -1.6 -1.6 -1.6 m
+/gun/direction 1 1 1
+/run/beamOn 1

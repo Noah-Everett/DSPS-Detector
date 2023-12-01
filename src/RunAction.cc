@@ -69,6 +69,12 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
         m_outputManager->add_tuple_column_string( "primary_process", index_tuple );
     if( m_outputMessenger->get_primary_time_save() )
         m_outputManager->add_tuple_column_double( "primary_time", index_tuple );
+    if( m_outputMessenger->get_primary_energy_save() )
+        m_outputManager->add_tuple_column_double( "primary_energy", index_tuple );
+    if( m_outputMessenger->get_primary_volume_save() )
+        m_outputManager->add_tuple_column_string( "primary_volume", index_tuple );
+    if( m_outputMessenger->get_primary_pdg_save() )
+        m_outputManager->add_tuple_column_integer( "primary_pdg", index_tuple );
     m_outputManager->add_tuple_finalize();
 
     // Make photon tuple

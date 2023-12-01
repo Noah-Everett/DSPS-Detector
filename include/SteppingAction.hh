@@ -30,6 +30,7 @@
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "DetectorConstruction.hh"
+#include "ConstructionMessenger.hh"
 
 class SteppingAction : public G4UserSteppingAction
 {
@@ -40,10 +41,13 @@ class SteppingAction : public G4UserSteppingAction
         void UserSteppingAction( const G4Step* ) override;
         
     private:
-        RunAction        * m_runAction      { nullptr                           };
-        OutputManager    * m_outputManager  { nullptr                           };
-        OutputMessenger  * m_outputMessenger{ OutputMessenger  ::get_instance() };
-        G4AnalysisManager* m_analysisManager{ nullptr                           };
+        RunAction            * m_runAction            { nullptr                               };
+        OutputManager        * m_outputManager        { nullptr                               };
+        OutputMessenger      * m_outputMessenger      { OutputMessenger      ::get_instance() };
+        ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
+        G4AnalysisManager    * m_analysisManager      { nullptr                               };
+
+        G4ThreeVector m_world_size{ m_constructionMessenger->get_world_size() / 2 };
 
         G4int m_index_photon { -1 };
         G4int m_index_primary{ -1 };
