@@ -11,12 +11,12 @@ def get_PDF(data, nBins=100):
 
     return PDF, scaled_hist, bins
 
-def get_CSP(probability, data=None, PDF=None, scaled_hist=None, bins=None, nBins=100):
-    if PDF is None or scaled_hist is None or bins is None:
+def get_CSP(probability, data=None, PDF=None, bins=None, nBins=100):
+    if PDF is None or bins is None:
         if data is None:
-            raise ValueError('You can only pass data or PDF, scaled_hist and bins, not both.')
+            raise ValueError('Either data or PDF and bins must be provided.')
         else:
-            PDF, scaled_hist, bins = get_PDF(data, nBins=nBins)
+            PDF, _ = get_PDF(data, nBins=nBins)
 
     if probability == '1 sigma':
         probability = 0.682689492137086
