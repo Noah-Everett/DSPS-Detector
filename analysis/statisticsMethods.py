@@ -13,7 +13,7 @@ def get_PDF(data, nBins=100):
 
 def get_CSP(probability, data=None, PDF=None, scaled_hist=None, bins=None, nBins=100):
     if PDF is None or scaled_hist is None or bins is None:
-        if data is not None:
+        if data is None:
             raise ValueError('You can only pass data or PDF, scaled_hist and bins, not both.')
         else:
             PDF, scaled_hist, bins = get_PDF(data, nBins=nBins)
