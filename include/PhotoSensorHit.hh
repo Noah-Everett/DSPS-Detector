@@ -60,6 +60,7 @@ class PhotoSensorHit : public G4VHit
         void set_hit_process               ( const G4String&         );
         void set_particle_energy           (       G4double          );
         void set_particle_momentum         (       G4ThreeVector     );
+        void set_particle_position_initial (       G4ThreeVector     );
 
         G4ThreeVector     get_photoSensor_position      ();
         G4RotationMatrix* get_photoSensor_rotationMatrix();
@@ -73,6 +74,7 @@ class PhotoSensorHit : public G4VHit
         G4String          get_hit_process               ();
         G4double          get_particle_energy           ();
         G4ThreeVector     get_particle_momentum         ();
+        G4ThreeVector     get_particle_position_initial ();
 
     protected:
         G4ThreeVector     m_photoSensor_position      ;
@@ -86,6 +88,7 @@ class PhotoSensorHit : public G4VHit
         G4String          m_hit_process               ;
         G4double          m_particle_energy           ;
         G4ThreeVector     m_particle_momentum         ;
+        G4ThreeVector     m_particle_position_initial ;
 
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 };

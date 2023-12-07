@@ -5,6 +5,7 @@
 /output/photoSensor/hits/position/binned/nBinsPerSide 100
 /output/photoSensor/hits/position/absolute/save       true
 /output/photoSensor/hits/position/relative/save       true
+/output/photoSensor/hits/position/initial/save        true
 /output/photoSensor/hits/time/save                    true
 /output/photoSensor/hits/process/save                 true
 /output/photoSensor/hits/photoSensorID/save           true

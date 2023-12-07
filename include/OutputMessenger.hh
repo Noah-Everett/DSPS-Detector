@@ -34,6 +34,7 @@ class OutputMessenger : public G4UImessenger
         G4int    get_photoSensor_hits_position_binned_nBinsPerSide() const;
         G4bool   get_photoSensor_hits_position_absolute_save      () const;
         G4bool   get_photoSensor_hits_position_relative_save      () const;
+        G4bool   get_photoSensor_hits_position_initial_save       () const;
         G4bool   get_photoSensor_hits_time_save                   () const;
         G4bool   get_photoSensor_hits_process_save                () const;
         G4bool   get_photoSensor_hits_photoSensorID_save          () const;
@@ -61,6 +62,7 @@ class OutputMessenger : public G4UImessenger
         void set_photoSensor_hits_position_binned_nBinsPerSide( G4int    value );
         void set_photoSensor_hits_position_absolute_save      ( G4bool   value );
         void set_photoSensor_hits_position_relative_save      ( G4bool   value );
+        void set_photoSensor_hits_position_initial_save       ( G4bool   value );
         void set_photoSensor_hits_time_save                   ( G4bool   value );
         void set_photoSensor_hits_process_save                ( G4bool   value );
         void set_photoSensor_hits_photoSensorID_save          ( G4bool   value );
@@ -92,6 +94,7 @@ class OutputMessenger : public G4UImessenger
         G4UIcmdWithAnInteger* m_command_photoSensor_hits_position_binned_nBinsPerSide;
         G4UIcmdWithABool    * m_command_photoSensor_hits_position_absolute_save;
         G4UIcmdWithABool    * m_command_photoSensor_hits_position_relative_save;
+        G4UIcmdWithABool    * m_command_photoSensor_hits_position_initial_save;
         G4UIcmdWithABool    * m_command_photoSensor_hits_time_save;
         G4UIcmdWithABool    * m_command_photoSensor_hits_process_save;
         G4UIcmdWithABool    * m_command_photoSensor_hits_photoSensorID_save;
@@ -119,6 +122,7 @@ class OutputMessenger : public G4UImessenger
         G4int    m_variable_photoSensor_hits_position_binned_nBinsPerSide;
         G4bool   m_variable_photoSensor_hits_position_absolute_save;
         G4bool   m_variable_photoSensor_hits_position_relative_save;
+        G4bool   m_variable_photoSensor_hits_position_initial_save;
         G4bool   m_variable_photoSensor_hits_time_save;
         G4bool   m_variable_photoSensor_hits_process_save;
         G4bool   m_variable_photoSensor_hits_photoSensorID_save;

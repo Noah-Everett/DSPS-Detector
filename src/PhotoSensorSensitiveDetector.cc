@@ -33,13 +33,14 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     hit->set_photoSensor_rotationMatrix( m_rotationMatrix                                                      );
     hit->set_photoSensor_name          ( m_name                                                                );
     hit->set_photoSensor_ID            ( m_ID                                                                  );
-    hit->set_hit_position_absolute     ( t_step->GetPostStepPoint()->GetPosition     ()                        );
-    hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime   ()                        );
-    hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy()                        );
-    hit->set_hit_momentum              ( t_step->GetPostStepPoint()->GetMomentum     ()                        );
+    hit->set_hit_position_absolute     ( t_step->GetPostStepPoint()->GetPosition      ()                       );
+    hit->set_hit_time                  ( t_step->GetPostStepPoint()->GetGlobalTime    ()                       );
+    hit->set_hit_energy                ( t_step->GetPostStepPoint()->GetKineticEnergy ()                       );
+    hit->set_hit_momentum              ( t_step->GetPostStepPoint()->GetMomentum      ()                       );
     hit->set_hit_process               ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
-    hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy()                        );
-    hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum     ()                        );
+    hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy ()                       );
+    hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum      ()                       );
+    hit->set_particle_position_initial ( t_step->GetTrack        ()->GetVertexPosition()                                           );
 
     m_photoSensorHitsCollection->insert( hit );
 

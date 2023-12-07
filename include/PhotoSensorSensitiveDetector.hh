@@ -21,6 +21,7 @@
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
 #include "PhotoSensorHit.hh"
+#include "Track.hh"
 
 using std::to_string;
 

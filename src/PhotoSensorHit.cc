@@ -130,6 +130,10 @@ void PhotoSensorHit::set_particle_momentum( G4ThreeVector t_particle_momentum ) 
     m_particle_momentum = t_particle_momentum;
 }
 
+void PhotoSensorHit::set_particle_position_initial( G4ThreeVector t_particle_position_initial ) {
+    m_particle_position_initial = t_particle_position_initial;
+}
+
 void PhotoSensorHit::set_hit_process( const G4String& t_hit_process ) {
     m_hit_process = t_hit_process;
 }
@@ -193,6 +197,10 @@ G4ThreeVector PhotoSensorHit::get_hit_momentum() {
 
 G4ThreeVector PhotoSensorHit::get_particle_momentum() {
     return m_particle_momentum;
+}
+
+G4ThreeVector PhotoSensorHit::get_particle_position_initial() {
+    return m_particle_position_initial;
 }
 
 G4String PhotoSensorHit::get_hit_process() {

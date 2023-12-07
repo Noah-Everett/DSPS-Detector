@@ -44,12 +44,13 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
             m_outputManager->fill_histogram_2D( photoSensorHitHistogramName                    , 
                                                 photoSensorHit->get_hit_position_relative().x(), 
                                                 photoSensorHit->get_hit_position_relative().y(), 1 );
-            m_outputManager->fill_tuple_column_3vector( "photoSensor_hits_position_absolute", photoSensorHit->get_hit_position_absolute() );
-            m_outputManager->fill_tuple_column_3vector( "photoSensor_hits_position_relative", photoSensorHit->get_hit_position_relative() );
-            m_outputManager->fill_tuple_column_double ( "photoSensor_hits_time"             , photoSensorHit->get_hit_time             () );
-            m_outputManager->fill_tuple_column_string ( "photoSensor_hits_process"          , photoSensorHit->get_hit_process          () );
-            m_outputManager->fill_tuple_column_double ( "photoSensor_hits_energy"           , photoSensorHit->get_hit_energy           () );
-            m_outputManager->fill_tuple_column_string ( "photoSensor_hits_photoSensorID"    , photoSensorHit->get_photoSensor_name     () );
+            m_outputManager->fill_tuple_column_3vector( "photoSensor_hits_position_absolute", photoSensorHit->get_hit_position_absolute    () );
+            m_outputManager->fill_tuple_column_3vector( "photoSensor_hits_position_relative", photoSensorHit->get_hit_position_relative    () );
+            m_outputManager->fill_tuple_column_3vector( "photoSensor_hits_position_initial" , photoSensorHit->get_particle_position_initial() );
+            m_outputManager->fill_tuple_column_double ( "photoSensor_hits_time"             , photoSensorHit->get_hit_time                 () );
+            m_outputManager->fill_tuple_column_string ( "photoSensor_hits_process"          , photoSensorHit->get_hit_process              () );
+            m_outputManager->fill_tuple_column_double ( "photoSensor_hits_energy"           , photoSensorHit->get_hit_energy               () );
+            m_outputManager->fill_tuple_column_string ( "photoSensor_hits_photoSensorID"    , photoSensorHit->get_photoSensor_name         () );
             m_outputManager->fill_tuple_column        ( "photoSensor_hits" );
         }
 

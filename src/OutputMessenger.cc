@@ -34,6 +34,7 @@ OutputMessenger::OutputMessenger() {
     m_command_photoSensor_hits_position_binned_nBinsPerSide = new G4UIcmdWithAnInteger( "/output/photoSensor/hits/position/binned/nBinsPerSide" , this );
     m_command_photoSensor_hits_position_absolute_save       = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/absolute/save"       , this );
     m_command_photoSensor_hits_position_relative_save       = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/relative/save"       , this );
+    m_command_photoSensor_hits_position_initial_save        = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/initial/save"        , this );
     m_command_photoSensor_hits_time_save                    = new G4UIcmdWithABool    ( "/output/photoSensor/hits/time/save"                    , this );
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
     m_command_photoSensor_hits_photoSensorID_save           = new G4UIcmdWithABool    ( "/output/photoSensor/hits/photoSensorID/save"           , this );
@@ -63,6 +64,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photoSensor_hits_position_binned_nBinsPerSide ) delete m_command_photoSensor_hits_position_binned_nBinsPerSide;
     if( m_command_photoSensor_hits_position_absolute_save       ) delete m_command_photoSensor_hits_position_absolute_save;
     if( m_command_photoSensor_hits_position_relative_save       ) delete m_command_photoSensor_hits_position_relative_save;
+    if( m_command_photoSensor_hits_position_initial_save        ) delete m_command_photoSensor_hits_position_initial_save; 
     if( m_command_photoSensor_hits_time_save                    ) delete m_command_photoSensor_hits_time_save;
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
     if( m_command_photoSensor_hits_photoSensorID_save           ) delete m_command_photoSensor_hits_photoSensorID_save;
@@ -104,6 +106,9 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_photoSensor_hits_position_relative_save ) {
         set_photoSensor_hits_position_relative_save( m_command_photoSensor_hits_position_relative_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/position/relative/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photoSensor_hits_position_initial_save ) {
+        set_photoSensor_hits_position_initial_save( m_command_photoSensor_hits_position_initial_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photoSensor/hits/position/initial/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_photoSensor_hits_time_save ) {
         set_photoSensor_hits_time_save( m_command_photoSensor_hits_time_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/time/save' to " << t_newValue << G4endl;
@@ -187,6 +192,9 @@ G4bool OutputMessenger::get_photoSensor_hits_position_absolute_save() const {
 G4bool OutputMessenger::get_photoSensor_hits_position_relative_save() const {
     return m_variable_photoSensor_hits_position_relative_save;
 }
+G4bool OutputMessenger::get_photoSensor_hits_position_initial_save() const {
+    return m_variable_photoSensor_hits_position_initial_save;
+}
 G4bool OutputMessenger::get_photoSensor_hits_time_save() const {
     return m_variable_photoSensor_hits_time_save;
 }
@@ -265,6 +273,9 @@ void OutputMessenger::set_photoSensor_hits_position_absolute_save( G4bool t_newV
 }
 void OutputMessenger::set_photoSensor_hits_position_relative_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_position_relative_save = t_newValue;
+}
+void OutputMessenger::set_photoSensor_hits_position_initial_save( G4bool t_newValue ) {
+    m_variable_photoSensor_hits_position_initial_save = t_newValue;
 }
 void OutputMessenger::set_photoSensor_hits_time_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_time_save = t_newValue;

@@ -49,6 +49,8 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
         m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_absolute", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_position_relative_save() )
         m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_relative", index_tuple );
+    if( m_outputMessenger->get_photoSensor_hits_position_initial_save() )
+        m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_initial", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_time_save() )
         m_outputManager->add_tuple_column_double ( "photoSensor_hits_time", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_process_save() )
