@@ -1,11 +1,14 @@
-grid_size = (5, 5, 5) # m
-world_size = (2.5, 2.5, 2.5) # m
+grid_size = (10, 10, 10) # m
 detector_wall_thickness = 0.1 # m
-calorimeter_height = 0.2 # m
+calorimeter_size = (0.2, 0.02, 0.5) # m
+photoSensor_size = (0.2, 0.2, 0.05) # m
 buffer_room = 0.1 # m
 nParticles = 1000
 
-FV_size = tuple(WS - 2 * detector_wall_thickness - 2 * calorimeter_height - 2 * buffer_room for WS in world_size)
+PS = photoSensor_size[0]
+CS = calorimeter_size[1]
+FV_size = tuple(GS*PS + (GS+1)*CS - buffer_room for GS in grid_size)
+
 grid_space = tuple(FV / (GS-1) for FV, GS in zip(FV_size, grid_size))
 
 with open('calibration.mac', 'w') as f:
