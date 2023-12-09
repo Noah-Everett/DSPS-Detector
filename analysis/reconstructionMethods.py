@@ -35,6 +35,14 @@ def make_phi(df_hits):
     
     return df_hits
 
+def make_relativeVector(df_hits):
+    initialPositions = df_hits['initialPosition']
+    sensorPositions = df_hits['sensor_position']
+    df_hits['relativeVector'] = [np.array(ip) - np.array(sp) for ip, sp in zip(initialPositions, sensorPositions)]
+    df_hits['relativeVector_r'] = [np.linalg.norm(rv) for rv in df_hits['relativeVector']]
+
+    return df_hits
+
 def make_reconstructedVector_time(df_hits, C_XENON_MM_PER_NS=162.93068369565216):
     df_hits['reconstructedVector_time'] = df_hits['reconstructedVector_direction'] * df_hits['time'] * C_XENON_MM_PER_NS
     
