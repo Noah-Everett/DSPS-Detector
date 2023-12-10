@@ -282,17 +282,19 @@ void DetectorConstruction::ConstructSDandField() {
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
     G4VSensitiveDetector* sensitiveDetector = nullptr;
 
-    for( auto& calorimeter : m_calorimeters_full ) {
-        sensitiveDetector = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector" );
-        SDManager->AddNewDetector( sensitiveDetector );
-        calorimeter->get_logicalVolume()->SetSensitiveDetector( sensitiveDetector );
+    for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
+        auto& calorimeter = m_calorimeters_full[i];
+        CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i );
+        SDManager->AddNewDetector( cSD );
+        calorimeter->set_sensitiveDetector( cSD );
     }
-    for( auto& calorimeter : m_calorimeters_middle ) {
-        sensitiveDetector = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector" );
-        SDManager->AddNewDetector( sensitiveDetector );
-        calorimeter->get_logicalVolume()->SetSensitiveDetector( sensitiveDetector );
+    for( G4int i = 0; i < m_calorimeters_middle.size(); i++ ) {
+        auto& calorimeter = m_calorimeters_middle[i];
+        CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i + m_calorimeters_full.size() );
+        SDManager->AddNewDetector( cSD );
+        calorimeter->set_sensitiveDetector( cSD );
     }
-    for( int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
+    for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
         auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
         auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
         for( auto& lens : lensSystem->get_lenses() ) {
@@ -321,6 +323,13 @@ vector< Calorimeter* > DetectorConstruction::get_calorimeters_full() const {
 
 vector< Calorimeter* > DetectorConstruction::get_calorimeters_middle() const {
     return m_calorimeters_middle;
+}
+
+vector< Calorimeter* > DetectorConstruction::get_calorimeters() const {
+    vector< Calorimeter* > calorimeters( m_calorimeters_full.begin(), m_calorimeters_full.end() );
+    calorimeters.insert( calorimeters.end(), m_calorimeters_middle.begin(), m_calorimeters_middle.end() );
+
+    return calorimeters;
 }
 
 vector< DirectionSensitivePhotoDetector* > DetectorConstruction::get_directionSensitivePhotoDetectors() const {

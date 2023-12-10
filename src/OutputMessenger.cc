@@ -39,6 +39,13 @@ OutputMessenger::OutputMessenger() {
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
     m_command_photoSensor_hits_photoSensorID_save           = new G4UIcmdWithABool    ( "/output/photoSensor/hits/photoSensorID/save"           , this );
     m_command_photoSensor_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/photoSensor/hits/energy/save"                  , this );
+    m_command_calorimeter_hits_position_absolute_save       = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/absolute/save"       , this );
+    m_command_calorimeter_hits_position_relative_save       = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/relative/save"       , this );
+    m_command_calorimeter_hits_position_initial_save        = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/initial/save"        , this );
+    m_command_calorimeter_hits_time_save                    = new G4UIcmdWithABool    ( "/output/calorimeter/hits/time/save"                    , this );
+    m_command_calorimeter_hits_process_save                 = new G4UIcmdWithABool    ( "/output/calorimeter/hits/process/save"                 , this );
+    m_command_calorimeter_hits_calorimeterID_save           = new G4UIcmdWithABool    ( "/output/calorimeter/hits/calorimeterID/save"           , this );
+    m_command_calorimeter_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/calorimeter/hits/energy/save"                  , this );
     m_command_primary_position_save                         = new G4UIcmdWithABool    ( "/output/primary/position/save"                         , this );
     m_command_primary_direction_save                        = new G4UIcmdWithABool    ( "/output/primary/direction/save"                        , this );
     m_command_primary_emission_photon_save                  = new G4UIcmdWithABool    ( "/output/primary/emission/photon/save"                  , this );
@@ -69,6 +76,13 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
     if( m_command_photoSensor_hits_photoSensorID_save           ) delete m_command_photoSensor_hits_photoSensorID_save;
     if( m_command_photoSensor_hits_energy_save                  ) delete m_command_photoSensor_hits_energy_save;
+    if( m_command_calorimeter_hits_position_absolute_save       ) delete m_command_calorimeter_hits_position_absolute_save;
+    if( m_command_calorimeter_hits_position_relative_save       ) delete m_command_calorimeter_hits_position_relative_save;
+    if( m_command_calorimeter_hits_position_initial_save        ) delete m_command_calorimeter_hits_position_initial_save;
+    if( m_command_calorimeter_hits_time_save                    ) delete m_command_calorimeter_hits_time_save;
+    if( m_command_calorimeter_hits_process_save                 ) delete m_command_calorimeter_hits_process_save;
+    if( m_command_calorimeter_hits_calorimeterID_save           ) delete m_command_calorimeter_hits_calorimeterID_save;
+    if( m_command_calorimeter_hits_energy_save                  ) delete m_command_calorimeter_hits_energy_save;
     if( m_command_primary_position_save                         ) delete m_command_primary_position_save;
     if( m_command_primary_direction_save                        ) delete m_command_primary_direction_save;
     if( m_command_primary_emission_photon_save                  ) delete m_command_primary_emission_photon_save;
@@ -121,6 +135,26 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_photoSensor_hits_energy_save ) {
         set_photoSensor_hits_energy_save( m_command_photoSensor_hits_energy_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photoSensor/hits/energy/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_position_absolute_save ) {
+        set_calorimeter_hits_position_absolute_save( m_command_calorimeter_hits_position_absolute_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/position/absolute/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_position_relative_save ) {
+        set_calorimeter_hits_position_relative_save( m_command_calorimeter_hits_position_relative_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/position/relative/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_position_initial_save ) {
+        set_calorimeter_hits_position_initial_save( m_command_calorimeter_hits_position_initial_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/position/initial/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_time_save ) {
+        set_calorimeter_hits_time_save( m_command_calorimeter_hits_time_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/time/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_process_save ) {
+        set_calorimeter_hits_process_save( m_command_calorimeter_hits_process_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/process/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_calorimeterID_save ) {
+        set_calorimeter_hits_calorimeterID_save( m_command_calorimeter_hits_calorimeterID_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/calorimeter/hits/calorimeterID/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_calorimeter_hits_energy_save ) {
+        set_calorimeter_hits_energy_save( m_command_calorimeter_hits_energy_save->GetNewBoolValue( t_newValue ) );
     } else if( t_command == m_command_primary_position_save ) {
         set_primary_position_save( m_command_primary_position_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/position/save' to " << t_newValue << G4endl;
@@ -207,6 +241,27 @@ G4bool OutputMessenger::get_photoSensor_hits_photoSensorID_save() const {
 G4bool OutputMessenger::get_photoSensor_hits_energy_save() const {
     return m_variable_photoSensor_hits_energy_save;
 }
+G4bool OutputMessenger::get_calorimeter_hits_position_absolute_save() const {
+    return m_variable_calorimeter_hits_position_absolute_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_position_relative_save() const {
+    return m_variable_calorimeter_hits_position_relative_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_position_initial_save() const {
+    return m_variable_calorimeter_hits_position_initial_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_time_save() const {
+    return m_variable_calorimeter_hits_time_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_process_save() const {
+    return m_variable_calorimeter_hits_process_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_calorimeterID_save() const {
+    return m_variable_calorimeter_hits_calorimeterID_save;
+}
+G4bool OutputMessenger::get_calorimeter_hits_energy_save() const {
+    return m_variable_calorimeter_hits_energy_save;
+}
 G4bool OutputMessenger::get_primary_position_save() const {
     return m_variable_primary_position_save;
 }
@@ -288,6 +343,27 @@ void OutputMessenger::set_photoSensor_hits_photoSensorID_save( G4bool t_newValue
 }
 void OutputMessenger::set_photoSensor_hits_energy_save( G4bool t_newValue ) {
     m_variable_photoSensor_hits_energy_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_position_absolute_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_position_absolute_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_position_relative_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_position_relative_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_position_initial_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_position_initial_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_time_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_time_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_process_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_process_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_calorimeterID_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_calorimeterID_save = t_newValue;
+}
+void OutputMessenger::set_calorimeter_hits_energy_save( G4bool t_newValue ) {
+    m_variable_calorimeter_hits_energy_save = t_newValue;
 }
 void OutputMessenger::set_primary_position_save( G4bool t_newValue ) {
     m_variable_primary_position_save = t_newValue;

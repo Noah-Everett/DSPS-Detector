@@ -53,16 +53,28 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
             m_outputManager->fill_tuple_column_string ( "photoSensor_hits_photoSensorID"    , photoSensorHit->get_photoSensor_name         () );
             m_outputManager->fill_tuple_column        ( "photoSensor_hits" );
         }
-
-        // vector< LensSensitiveDetector* > lensSensitiveDetectors;
-        // for( Lens* lens : DSPD->get_lensSystem()->get_lenses() )
-        //     lensSensitiveDetectors.push_back( lens->get_sensitiveDetector() );
-
-        // vector< LensHitCollection* > lensHitCollections;
-        // for( LensSensitiveDetector* lensSensitiveDetector : lensSensitiveDetectors )
-        //     lensHitCollections.push_back( lensSensitiveDetector->get_hitCollection() );
-
-        // vector< G4String > lensHitHistogramNames;
     }
+
+    for( Calorimeter* cal : m_detectorConstruction->get_calorimeters() ) {
+        G4cout << "cal->get_name(): " << cal->get_name() << G4endl;
+        CalorimeterSensitiveDetector* calorimeterSensitiveDetector = cal->get_sensitiveDetector();
+        G4cout << "calorimeterSensitiveDetector->get_name(): " << calorimeterSensitiveDetector->get_name() << G4endl;
+        CalorimeterHitsCollection* calorimeterHitCollection = calorimeterSensitiveDetector->get_hitsCollection( t_event );
+
+        G4cout << "calorimeterHitCollection->GetSize(): " << calorimeterHitCollection->GetSize() << G4endl;
+        for( G4int i = 0; i < calorimeterHitCollection->GetSize(); i++ ) {
+            CalorimeterHit* calorimeterHit = static_cast< CalorimeterHit* >( calorimeterHitCollection->GetHit( i ) );
+
+            m_outputManager->fill_tuple_column_3vector( "calorimeter_hits_position_absolute", calorimeterHit->get_hit_position_absolute    () );
+            m_outputManager->fill_tuple_column_3vector( "calorimeter_hits_position_relative", calorimeterHit->get_hit_position_relative    () );
+            m_outputManager->fill_tuple_column_3vector( "calorimeter_hits_position_initial" , calorimeterHit->get_particle_position_initial() );
+            m_outputManager->fill_tuple_column_double ( "calorimeter_hits_time"             , calorimeterHit->get_hit_time                 () );
+            m_outputManager->fill_tuple_column_string ( "calorimeter_hits_process"          , calorimeterHit->get_hit_process              () );
+            m_outputManager->fill_tuple_column_double ( "calorimeter_hits_energy"           , calorimeterHit->get_hit_energy               () );
+            m_outputManager->fill_tuple_column_string ( "calorimeter_hits_calorimeterID"    , calorimeterHit->get_calorimeter_name         () );
+            m_outputManager->fill_tuple_column        ( "calorimeter_hits" );
+        }   
+    }
+
     G4cout << "EndOfEventAction" << G4endl;
 }

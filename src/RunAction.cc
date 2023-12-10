@@ -61,6 +61,24 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
         m_outputManager->add_tuple_column_double ( "photoSensor_hits_energy", index_tuple );
     m_outputManager->add_tuple_finalize();
 
+    // Make calorimeter_hits tuple
+    index_tuple = m_outputManager->add_tuple_initialize( "calorimeter_hits", "calorimeter_hits" );
+    if( m_outputMessenger->get_calorimeter_hits_position_absolute_save() )
+        m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_absolute", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_position_relative_save() )
+        m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_relative", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_position_initial_save() )
+        m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_initial", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_time_save() )
+        m_outputManager->add_tuple_column_double ( "calorimeter_hits_time", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_process_save() )
+        m_outputManager->add_tuple_column_string ( "calorimeter_hits_process", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_calorimeterID_save() )
+        m_outputManager->add_tuple_column_string ( "calorimeter_hits_calorimeterID", index_tuple );
+    if( m_outputMessenger->get_calorimeter_hits_energy_save() )
+        m_outputManager->add_tuple_column_double ( "calorimeter_hits_energy", index_tuple );
+    m_outputManager->add_tuple_finalize();
+
     // Make primary tuple
     index_tuple = m_outputManager->add_tuple_initialize( "primary", "primary" );
     if( m_outputMessenger->get_primary_position_save() )

@@ -35,6 +35,7 @@
 #include "PhotoSensor.hh"
 #include "DirectionSensitivePhotoDetector.hh"
 #include "Calorimeter.hh"
+#include "CalorimeterSensitiveDetector.hh"
 #include "OutputManager.hh"
 
 #include <vector>
@@ -60,6 +61,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         
         void make_GDMLFile( const G4String& );
 
+        vector< Calorimeter                    * > get_calorimeters                    () const;
         vector< Calorimeter                    * > get_calorimeters_full               () const;
         vector< Calorimeter                    * > get_calorimeters_middle             () const;
         vector< DirectionSensitivePhotoDetector* > get_directionSensitivePhotoDetectors() const;

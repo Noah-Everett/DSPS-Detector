@@ -30,8 +30,11 @@ class Calorimeter
         static G4double      get_height();
         static G4double      get_depth ();
         
-        G4String         get_name         ();
-        G4LogicalVolume* get_logicalVolume();
+        G4String                      get_name             ();
+        G4LogicalVolume             * get_logicalVolume    ();
+        CalorimeterSensitiveDetector* get_sensitiveDetector();
+
+        void set_sensitiveDetector( CalorimeterSensitiveDetector* );
 
         void place( G4RotationMatrix*, G4ThreeVector, G4LogicalVolume*, G4bool );
 

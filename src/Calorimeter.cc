@@ -57,3 +57,12 @@ G4String Calorimeter::get_name() {
 G4LogicalVolume* Calorimeter::get_logicalVolume() {
     return m_calorimeter->get_logicalVolume();
 }
+
+void Calorimeter::set_sensitiveDetector( CalorimeterSensitiveDetector* t_calorimeterSensitiveDetector ) {
+    m_calorimeterSensitiveDetector = t_calorimeterSensitiveDetector;
+    m_calorimeter->set_sensitiveDetector( m_calorimeterSensitiveDetector );
+}
+
+CalorimeterSensitiveDetector* Calorimeter::get_sensitiveDetector() {
+    return m_calorimeterSensitiveDetector;
+}
