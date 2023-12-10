@@ -31,6 +31,9 @@ Calorimeter::~Calorimeter() {
 }
 
 void Calorimeter::place( G4RotationMatrix* t_rotationMatrix, G4ThreeVector t_translationVector, G4LogicalVolume* t_parentLogicalVolume, G4bool t_isMany ) {
+    m_position = t_translationVector;
+    m_rotationMatrix = t_rotationMatrix;
+
     m_calorimeter->place( t_rotationMatrix, t_translationVector, t_parentLogicalVolume, t_isMany );
 }
 
@@ -65,4 +68,12 @@ void Calorimeter::set_sensitiveDetector( CalorimeterSensitiveDetector* t_calorim
 
 CalorimeterSensitiveDetector* Calorimeter::get_sensitiveDetector() {
     return m_calorimeterSensitiveDetector;
+}
+
+G4ThreeVector Calorimeter::get_position() {
+    return m_position;
+}
+
+G4RotationMatrix* Calorimeter::get_rotationMatrix() {
+    return m_rotationMatrix;
 }

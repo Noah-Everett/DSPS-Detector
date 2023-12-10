@@ -147,19 +147,19 @@ G4ThreeVector CalorimeterHit::get_hit_position_relative() {
     G4RotationMatrix inverse_rotation = m_calorimeter_rotationMatrix->inverse();
     G4ThreeVector rotated_relative_position = inverse_rotation * relative_position;
 
-    G4double epsilon = 1e-6;
-    if( abs( rotated_relative_position.z() ) > m_constructionMessenger->get_calorimeter_size_depth ()     + epsilon ||
-        abs( rotated_relative_position.x() ) > m_constructionMessenger->get_calorimeter_size_height() / 2 + epsilon ||
-        abs( rotated_relative_position.y() ) > m_constructionMessenger->get_calorimeter_size_width () / 2 + epsilon   ) {
-        G4cout << G4endl;
-        G4cout << "calorimeter = " << m_calorimeter_name << G4endl;
-        G4cout << "calorimeter position = " << m_calorimeter_position << G4endl;
-        G4cout << "calorimeter size = " << m_constructionMessenger->get_calorimeter_size_depth() << " x " << m_constructionMessenger->get_calorimeter_size_height() << " x " << m_constructionMessenger->get_calorimeter_size_width() << G4endl;
-        G4cout << "hit position = " << m_hit_position << G4endl;
-        G4cout << "relative_position = " << relative_position << G4endl;
-        G4cout << "rotated_relative_position = " << rotated_relative_position << G4endl;
-        G4Exception( "CalorimeterHit::get_hit_position_relative()", "Error", FatalException, "rotated_relative_position is out of range" );
-    }
+    // G4double epsilon = 1e-6;
+    // if( abs( rotated_relative_position.z() ) > m_constructionMessenger->get_calorimeter_size_depth ()     + epsilon ||
+    //     abs( rotated_relative_position.x() ) > m_constructionMessenger->get_calorimeter_size_height() / 2 + epsilon ||
+    //     abs( rotated_relative_position.y() ) > m_constructionMessenger->get_calorimeter_size_width () / 2 + epsilon   ) {
+    //     G4cout << G4endl;
+    //     G4cout << "calorimeter = " << m_calorimeter_name << G4endl;
+    //     G4cout << "calorimeter position = " << m_calorimeter_position << G4endl;
+    //     G4cout << "calorimeter size = " << m_constructionMessenger->get_calorimeter_size_depth() << " x " << m_constructionMessenger->get_calorimeter_size_height() << " x " << m_constructionMessenger->get_calorimeter_size_width() << G4endl;
+    //     G4cout << "hit position = " << m_hit_position << G4endl;
+    //     G4cout << "relative_position = " << relative_position << G4endl;
+    //     G4cout << "rotated_relative_position = " << rotated_relative_position << G4endl;
+    //     G4Exception( "CalorimeterHit::get_hit_position_relative()", "Error", FatalException, "rotated_relative_position is out of range" );
+    // }
     return rotated_relative_position;
 }
 

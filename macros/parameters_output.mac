@@ -11,6 +11,14 @@
 /output/photoSensor/hits/photoSensorID/save           true
 /output/photoSensor/hits/energy/save                  true
 
+/output/calorimeter/hits/position/absolute/save       true
+/output/calorimeter/hits/position/relative/save       true
+/output/calorimeter/hits/position/initial/save        true
+/output/calorimeter/hits/time/save                    true
+/output/calorimeter/hits/process/save                 true
+/output/calorimeter/hits/calorimeterID/save           true
+/output/calorimeter/hits/energy/save                  true
+
 /output/primary/position/save                         true
 /output/primary/direction/save                        true
 /output/primary/emission/photon/save                  true
@@ -28,3 +36,4 @@
 /output/photon/direction/save                         true
 /output/photon/energy/save                            true
 /output/photon/volume/save                            true
+/output/photon/stepNumber/save                        true

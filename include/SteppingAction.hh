@@ -13,6 +13,7 @@
 #define SteppingAction_hh
 
 #include <cmath>
+#include <string>
 
 #include "G4Step.hh"
 #include "G4UserSteppingAction.hh"
@@ -31,6 +32,9 @@
 #include "EventAction.hh"
 #include "DetectorConstruction.hh"
 #include "ConstructionMessenger.hh"
+
+using std::string;
+using G4StrUtil::to_lower;
 
 class SteppingAction : public G4UserSteppingAction
 {

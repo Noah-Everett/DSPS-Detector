@@ -19,6 +19,8 @@
 #include "G4Event.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "ParticleGunMessenger.hh"
+
 class ParticleGun : public G4ParticleGun 
 {
     public:
@@ -27,6 +29,9 @@ class ParticleGun : public G4ParticleGun
        ~ParticleGun(       );
 
         void GeneratePrimaries( G4Event* );
+
+    protected:
+        ParticleGunMessenger* m_particleGunMessenger{ ParticleGunMessenger::get_instance() };
 };
 
 #endif

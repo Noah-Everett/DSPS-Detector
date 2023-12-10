@@ -62,6 +62,7 @@ OutputMessenger::OutputMessenger() {
     m_command_photon_direction_save                         = new G4UIcmdWithABool    ( "/output/photon/direction/save"                         , this );
     m_command_photon_energy_save                            = new G4UIcmdWithABool    ( "/output/photon/energy/save"                            , this );
     m_command_photon_volume_save                            = new G4UIcmdWithABool    ( "/output/photon/volume/save"                            , this );
+    m_command_photon_stepNumber_save                        = new G4UIcmdWithABool    ( "/output/photon/stepNumber/save"                        , this );
 }
 
 OutputMessenger::~OutputMessenger() {
@@ -99,6 +100,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photon_direction_save                         ) delete m_command_photon_direction_save;
     if( m_command_photon_energy_save                            ) delete m_command_photon_energy_save;
     if( m_command_photon_volume_save                            ) delete m_command_photon_volume_save;
+    if( m_command_photon_stepNumber_save                        ) delete m_command_photon_stepNumber_save;
 }
 
 void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue ) {
@@ -203,6 +205,9 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_photon_volume_save ) {
         set_photon_volume_save( m_command_photon_volume_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/photon/volume/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_photon_stepNumber_save ) {
+        set_photon_stepNumber_save( m_command_photon_stepNumber_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/photon/stepNumber/save' to " << t_newValue << G4endl;
     } else {
         G4Exception( "OutputMessenger::SetNewValue()", "Invalid command", FatalErrorInArgument, "Command not found" );
     }
@@ -310,6 +315,9 @@ G4bool OutputMessenger::get_photon_energy_save() const {
 G4bool OutputMessenger::get_photon_volume_save() const {
     return m_variable_photon_volume_save;
 }
+G4bool OutputMessenger::get_photon_stepNumber_save() const {
+    return m_variable_photon_stepNumber_save;
+}
 
 void OutputMessenger::set_GDML_save( G4bool t_newValue ) {
     m_variable_GDML_save = t_newValue;
@@ -412,4 +420,7 @@ void OutputMessenger::set_photon_energy_save( G4bool t_newValue ) {
 }
 void OutputMessenger::set_photon_volume_save( G4bool t_newValue ) {
     m_variable_photon_volume_save = t_newValue;
+}
+void OutputMessenger::set_photon_stepNumber_save( G4bool t_newValue ) {
+    m_variable_photon_stepNumber_save = t_newValue;
 }

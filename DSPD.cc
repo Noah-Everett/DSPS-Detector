@@ -18,6 +18,7 @@
 #include "OutputManager.hh"
 #include "PhotonCreator.inl"
 #include "OpticalPhysics.hh"
+#include "ParticleGunMessenger.hh"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -37,6 +38,7 @@ int main(int argc, char** argv)
     ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
     UIMessenger          * UImessenger           = UIMessenger          ::get_instance();
     OutputMessenger      * outputMessenger       = OutputMessenger      ::get_instance();
+    ParticleGunMessenger * particleGunMessenger  = ParticleGunMessenger ::get_instance();
 
     // Execute parameter macros
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
@@ -110,19 +112,13 @@ int main(int argc, char** argv)
         detectorConstruction->make_GDMLFile( outputMessenger->get_GDML_fileName() );
 
     // Terminate job
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     delete visManager;
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     delete runManager;
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     OutputMessenger      ::delete_instance();
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     ConstructionMessenger::delete_instance();
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     UIMessenger          ::delete_instance();
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
+    ParticleGunMessenger ::delete_instance();
     Materials            ::delete_instance();
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
 
     // DONE!
     G4cout << '\n' << "####################"

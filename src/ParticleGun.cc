@@ -46,7 +46,10 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
             particle->SetCharge( G4OpticalPhoton::Definition()->GetPDGCharge() );
         } else {
             particle = new G4PrimaryParticle( particle_definition );
-            particle->SetMomentumDirection( particle_momentum_direction );
+            if( m_particleGunMessenger->get_momentum_random() )
+                particle->SetMomentumDirection( G4RandomDirection() );
+            else
+                particle->SetMomentumDirection( particle_momentum_direction );
             particle->SetKineticEnergy( particle_energy );
             particle->SetMass( mass );
             particle->SetCharge( particle_charge );

@@ -56,12 +56,9 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
     }
 
     for( Calorimeter* cal : m_detectorConstruction->get_calorimeters() ) {
-        G4cout << "cal->get_name(): " << cal->get_name() << G4endl;
         CalorimeterSensitiveDetector* calorimeterSensitiveDetector = cal->get_sensitiveDetector();
-        G4cout << "calorimeterSensitiveDetector->get_name(): " << calorimeterSensitiveDetector->get_name() << G4endl;
         CalorimeterHitsCollection* calorimeterHitCollection = calorimeterSensitiveDetector->get_hitsCollection( t_event );
 
-        G4cout << "calorimeterHitCollection->GetSize(): " << calorimeterHitCollection->GetSize() << G4endl;
         for( G4int i = 0; i < calorimeterHitCollection->GetSize(); i++ ) {
             CalorimeterHit* calorimeterHit = static_cast< CalorimeterHit* >( calorimeterHitCollection->GetHit( i ) );
 

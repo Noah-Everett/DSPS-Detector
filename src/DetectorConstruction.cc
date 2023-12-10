@@ -285,12 +285,16 @@ void DetectorConstruction::ConstructSDandField() {
     for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
         auto& calorimeter = m_calorimeters_full[i];
         CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i );
+        cSD->set_position( calorimeter->get_position() );
+        cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
         SDManager->AddNewDetector( cSD );
         calorimeter->set_sensitiveDetector( cSD );
     }
     for( G4int i = 0; i < m_calorimeters_middle.size(); i++ ) {
         auto& calorimeter = m_calorimeters_middle[i];
         CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i + m_calorimeters_full.size() );
+        cSD->set_position( calorimeter->get_position() );
+        cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
         SDManager->AddNewDetector( cSD );
         calorimeter->set_sensitiveDetector( cSD );
     }
@@ -300,7 +304,7 @@ void DetectorConstruction::ConstructSDandField() {
         for( auto& lens : lensSystem->get_lenses() ) {
             sensitiveDetector = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector" );
             SDManager->AddNewDetector( sensitiveDetector );
-            lens->get_logicalVolume()->SetSensitiveDetector( sensitiveDetector );
+            // lens->get_logicalVolume()->SetSensitiveDetector( sensitiveDetector );
         }
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
@@ -309,7 +313,7 @@ void DetectorConstruction::ConstructSDandField() {
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
         directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
-        photoSensorSurface->get_logicalVolume()->SetSensitiveDetector( psSD );
+        // photoSensorSurface->get_logicalVolume()->SetSensitiveDetector( psSD );
     }
 }
 

@@ -113,6 +113,8 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
         m_outputManager->add_tuple_column_double( "photon_energy", index_tuple );
     if( m_outputMessenger->get_photon_volume_save() )
         m_outputManager->add_tuple_column_string( "photon_volume", index_tuple );
+    if( m_outputMessenger->get_photon_stepNumber_save() )
+        m_outputManager->add_tuple_column_integer( "photon_stepNumber", index_tuple );
     m_outputManager->add_tuple_finalize();
 }
 
@@ -135,8 +137,8 @@ void RunAction::EndOfRunAction( const G4Run* run ) {
     G4int ID = m_outputManager->get_histogram_2D_ID( "photoSensor_0" );
     if( ID != kInvalidId && m_analysisManager->GetH2Title( ID ) == "photoSensor_0" )
         for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
-            G4cout << "Resetting histogram name : photoSensor_" << DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() 
-                   << " --> " << DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() << G4endl;
+            // G4cout << "Resetting histogram name : photoSensor_" << DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() 
+            //        << " --> " << DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() << G4endl;
             m_analysisManager->SetH2Title( m_outputManager->get_histogram_2D_ID( 
                                            "photoSensor_" + to_string( DSPD->get_photoSensor()->get_sensitiveDetector()->get_ID() ) ),
                                            DSPD->get_photoSensor()->get_sensitiveDetector()->get_name() );

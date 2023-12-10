@@ -33,6 +33,8 @@ class Calorimeter
         G4String                      get_name             ();
         G4LogicalVolume             * get_logicalVolume    ();
         CalorimeterSensitiveDetector* get_sensitiveDetector();
+        G4ThreeVector                 get_position         ();
+        G4RotationMatrix            * get_rotationMatrix   ();
 
         void set_sensitiveDetector( CalorimeterSensitiveDetector* );
 
@@ -44,7 +46,9 @@ class Calorimeter
         GeometricObjectBox* m_calorimeter{ nullptr };
         CalorimeterSensitiveDetector* m_calorimeterSensitiveDetector{ nullptr };
 
-        G4String m_name;
+        G4String          m_name;
+        G4ThreeVector     m_position;
+        G4RotationMatrix* m_rotationMatrix;
 };
 
 #endif
