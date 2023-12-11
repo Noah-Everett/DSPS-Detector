@@ -52,13 +52,13 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
     if( m_outputMessenger->get_photoSensor_hits_position_initial_save() )
         m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_initial", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_time_save() )
-        m_outputManager->add_tuple_column_double ( "photoSensor_hits_time", index_tuple );
+        m_outputManager->add_tuple_column_double( "photoSensor_hits_time", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_process_save() )
-        m_outputManager->add_tuple_column_string ( "photoSensor_hits_process", index_tuple );
+        m_outputManager->add_tuple_column_string( "photoSensor_hits_process", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_photoSensorID_save() )
-        m_outputManager->add_tuple_column_string ( "photoSensor_hits_photoSensorID", index_tuple );
+        m_outputManager->add_tuple_column_string( "photoSensor_hits_photoSensorID", index_tuple );
     if( m_outputMessenger->get_photoSensor_hits_energy_save() )
-        m_outputManager->add_tuple_column_double ( "photoSensor_hits_energy", index_tuple );
+        m_outputManager->add_tuple_column_double( "photoSensor_hits_energy", index_tuple );
     m_outputManager->add_tuple_finalize();
 
     // Make calorimeter_hits tuple
@@ -70,13 +70,33 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
     if( m_outputMessenger->get_calorimeter_hits_position_initial_save() )
         m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_initial", index_tuple );
     if( m_outputMessenger->get_calorimeter_hits_time_save() )
-        m_outputManager->add_tuple_column_double ( "calorimeter_hits_time", index_tuple );
+        m_outputManager->add_tuple_column_double( "calorimeter_hits_time", index_tuple );
     if( m_outputMessenger->get_calorimeter_hits_process_save() )
-        m_outputManager->add_tuple_column_string ( "calorimeter_hits_process", index_tuple );
+        m_outputManager->add_tuple_column_string( "calorimeter_hits_process", index_tuple );
     if( m_outputMessenger->get_calorimeter_hits_calorimeterID_save() )
-        m_outputManager->add_tuple_column_string ( "calorimeter_hits_calorimeterID", index_tuple );
+        m_outputManager->add_tuple_column_string( "calorimeter_hits_calorimeterID", index_tuple );
     if( m_outputMessenger->get_calorimeter_hits_energy_save() )
-        m_outputManager->add_tuple_column_double ( "calorimeter_hits_energy", index_tuple );
+        m_outputManager->add_tuple_column_double( "calorimeter_hits_energy", index_tuple );
+    m_outputManager->add_tuple_finalize();
+
+    // Make lens_hits tuple
+    index_tuple = m_outputManager->add_tuple_initialize( "lens_hits", "lens_hits" );
+    if( m_outputMessenger->get_lens_hits_position_absolute_save() )
+        m_outputManager->add_tuple_column_3vector( "lens_hits_position_absolute", index_tuple );
+    if( m_outputMessenger->get_lens_hits_position_relative_save() )
+        m_outputManager->add_tuple_column_3vector( "lens_hits_position_relative", index_tuple );
+    if( m_outputMessenger->get_lens_hits_position_initial_save() )
+        m_outputManager->add_tuple_column_3vector( "lens_hits_position_initial", index_tuple );
+    if( m_outputMessenger->get_lens_hits_time_save() )
+        m_outputManager->add_tuple_column_double( "lens_hits_time", index_tuple );
+    if( m_outputMessenger->get_lens_hits_process_save() )
+        m_outputManager->add_tuple_column_string( "lens_hits_process", index_tuple );
+    if( m_outputMessenger->get_lens_hits_lensID_save() )
+        m_outputManager->add_tuple_column_string( "lens_hits_lensID", index_tuple );
+    if( m_outputMessenger->get_lens_hits_energy_save() )
+        m_outputManager->add_tuple_column_double( "lens_hits_energy", index_tuple );
+    if( m_outputMessenger->get_lens_hits_transmittance_save() )
+        m_outputManager->add_tuple_column_boolean( "lens_hits_transmittance", index_tuple );
     m_outputManager->add_tuple_finalize();
 
     // Make primary tuple

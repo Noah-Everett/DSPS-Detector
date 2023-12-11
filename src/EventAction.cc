@@ -73,5 +73,27 @@ void EventAction::EndOfEventAction( const G4Event* t_event ) {
         }   
     }
 
+    for( DirectionSensitivePhotoDetector* DSPD : m_detectorConstruction->get_directionSensitivePhotoDetectors() ) {
+        LensSystem* lensSystem = DSPD->get_lensSystem();
+        for( Lens* lens : lensSystem->get_lenses() ) {
+            LensSensitiveDetector* lensSensitiveDetector = lens->get_sensitiveDetector();
+            LensHitsCollection* lensHitCollection = lensSensitiveDetector->get_hitsCollection( t_event );
+
+            for( G4int i = 0; i < lensHitCollection->GetSize(); i++ ) {
+                LensHit* lensHit = static_cast< LensHit* >( lensHitCollection->GetHit( i ) );
+
+                m_outputManager->fill_tuple_column_3vector( "lens_hits_position_absolute", lensHit->get_hit_position_absolute    () );
+                m_outputManager->fill_tuple_column_3vector( "lens_hits_position_relative", lensHit->get_hit_position_relative    () );
+                m_outputManager->fill_tuple_column_3vector( "lens_hits_position_initial" , lensHit->get_particle_position_initial() );
+                m_outputManager->fill_tuple_column_double ( "lens_hits_time"             , lensHit->get_hit_time                 () );
+                m_outputManager->fill_tuple_column_string ( "lens_hits_process"          , lensHit->get_hit_process              () );
+                m_outputManager->fill_tuple_column_double ( "lens_hits_energy"           , lensHit->get_hit_energy               () );
+                m_outputManager->fill_tuple_column_string ( "lens_hits_lensID"           , lensHit->get_lens_name                () );
+                m_outputManager->fill_tuple_column_boolean( "lens_hits_transmittance"    , lensHit->get_particle_transmittance   () );
+                m_outputManager->fill_tuple_column        ( "lens_hits" );
+            }
+        }
+    }
+
     G4cout << "EndOfEventAction" << G4endl;
 }

@@ -136,7 +136,7 @@ pair< G4int, G4int > OutputManager::add_tuple_column_boolean( const G4String& t_
     G4cout << "OutputManager::add_tuple_column_boolean: " << t_name << G4endl;
     if( m_tuple_column_IDs.find( t_name ) == m_tuple_column_IDs.end() ) {
         m_analysisManager = G4AnalysisManager::Instance();
-        G4int ID = m_analysisManager->CreateNtupleSColumn( t_name );
+        G4int ID = m_analysisManager->CreateNtupleIColumn( t_name );
         if( ID == kInvalidId )
             G4Exception( "OutputManager::add_tuple_column_boolean", "Error", FatalException, "Tuple column already exists but is not in map" );
         m_tuple_column_IDs.insert( { t_name, { t_index_tuple, ID } } );

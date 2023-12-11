@@ -32,6 +32,7 @@
 #include "GeometricObject.hh"
 #include "Lens.hh"
 #include "LensSystem.hh"
+#include "LensSensitiveDetector.hh"
 #include "PhotoSensor.hh"
 #include "DirectionSensitivePhotoDetector.hh"
 #include "Calorimeter.hh"

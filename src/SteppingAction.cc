@@ -67,5 +67,7 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
             static_cast< PhotoSensorSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
         else if( sensitiveDetector_current_name.find( "calorimeter" ) != string::npos )
             static_cast< CalorimeterSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
+        else if( sensitiveDetector_current_name.find( "lens" ) != string::npos )
+            static_cast< LensSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
     }
 }

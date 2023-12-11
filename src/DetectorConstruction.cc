@@ -280,7 +280,6 @@ void DetectorConstruction::ConstructSDandField() {
     if( !m_make_SDandField ) return;
 
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
-    G4VSensitiveDetector* sensitiveDetector = nullptr;
 
     for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
         auto& calorimeter = m_calorimeters_full[i];
@@ -302,9 +301,11 @@ void DetectorConstruction::ConstructSDandField() {
         auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
         auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
         for( auto& lens : lensSystem->get_lenses() ) {
-            sensitiveDetector = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector" );
-            SDManager->AddNewDetector( sensitiveDetector );
-            // lens->get_logicalVolume()->SetSensitiveDetector( sensitiveDetector );
+            LensSensitiveDetector* lSD = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector", i );
+            lSD->set_position( lens->get_position_center() );
+            lSD->set_rotationMatrix( lens->get_rotationMatrix() );
+            SDManager->AddNewDetector( lSD );
+            lens->set_sensitiveDetector( lSD );
         }
 
         auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
@@ -313,7 +314,6 @@ void DetectorConstruction::ConstructSDandField() {
         psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
         SDManager->AddNewDetector( psSD );
         directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
-        // photoSensorSurface->get_logicalVolume()->SetSensitiveDetector( psSD );
     }
 }
 

@@ -542,3 +542,12 @@ vector< G4ThreeVector > Lens::calculate_relativePositions( G4int t_nLens ) {
 
     return { relativePosition_front, relativePosition_back, relativePosition_center, relativePosition_avg };
 }
+
+G4RotationMatrix* Lens::get_rotationMatrix() {
+    return m_rotationMatrix;
+}
+
+void Lens::set_sensitiveDetector( LensSensitiveDetector* t_lensSensitiveDetector ) {
+    m_lensSensitiveDetector = t_lensSensitiveDetector;
+    m_lens->set_sensitiveDetector( t_lensSensitiveDetector );
+}

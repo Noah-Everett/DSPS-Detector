@@ -53,6 +53,7 @@ class Lens
         LensSensitiveDetector          * get_sensitiveDetector();
         G4int                            get_shape_int        ();
         G4String                         get_shape_string     ();
+        G4RotationMatrix               * get_rotationMatrix   ();
 
         G4ThreeVector get_position        ( const char      * );
         G4ThreeVector get_position_front  (                   );
@@ -76,7 +77,8 @@ class Lens
                                                    const char      *,
                                                    G4int             );
 
-        void set_name( const G4String& );
+        void set_name             ( const G4String&        );
+        void set_sensitiveDetector( LensSensitiveDetector* );
 
     protected:
         // GeometricObjectSubtractionSolid* m_lens                 { new GeometricObjectSubtractionSolid() };

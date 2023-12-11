@@ -27,9 +27,9 @@ class UIMessenger : public G4UImessenger
     
         void SetNewValue( G4UIcommand* command, G4String newValue );
 
-        G4bool get_showGUI(){ return m_variable_showGUI; }
+        G4bool get_showGUI();
 
-        void set_showGUI( G4bool t_variable_showGUI ){ m_variable_showGUI = t_variable_showGUI; }
+        void set_showGUI( G4bool );
 
     private:
         static UIMessenger* m_instance;

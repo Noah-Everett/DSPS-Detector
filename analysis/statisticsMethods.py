@@ -9,7 +9,7 @@ def get_PDF(data, nBins=100):
     scaled_hist = hist / cumulative_sum[-1]
     plt.clf()
 
-    return PDF, scaled_hist, bins
+    return PDF, hist, scaled_hist, bins
 
 def get_CSP(probability, data=None, PDF=None, bins=None, nBins=100):
     if PDF is None or bins is None:

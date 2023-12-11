@@ -20,10 +20,7 @@ UIMessenger::UIMessenger() {
 }
 
 UIMessenger::~UIMessenger() {
-    if( m_parameter_showGUI ) {
-        delete m_parameter_showGUI;
-        m_parameter_showGUI = nullptr;
-    }
+    if( m_parameter_showGUI ) delete m_parameter_showGUI;
 }
 
 UIMessenger* UIMessenger::get_instance() {
@@ -44,4 +41,12 @@ void UIMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue ) {
         set_showGUI( m_parameter_showGUI->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `showGUI' to " << t_newValue << G4endl;
     }
+}
+
+G4bool UIMessenger::get_showGUI(){ 
+    return m_variable_showGUI; 
+}
+
+void UIMessenger::set_showGUI( G4bool t_variable_showGUI ){ 
+    m_variable_showGUI = t_variable_showGUI; 
 }

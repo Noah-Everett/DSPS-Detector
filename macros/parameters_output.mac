@@ -19,6 +19,15 @@
 /output/calorimeter/hits/calorimeterID/save           true
 /output/calorimeter/hits/energy/save                  true
 
+/output/lens/hits/position/absolute/save              true
+/output/lens/hits/position/relative/save              true
+/output/lens/hits/position/initial/save               true
+/output/lens/hits/time/save                           true
+/output/lens/hits/process/save                        true
+/output/lens/hits/lensID/save                         true
+/output/lens/hits/energy/save                         true
+/output/lens/hits/transmittance/save                  true
+
 /output/primary/position/save                         true
 /output/primary/direction/save                        true
 /output/primary/emission/photon/save                  true

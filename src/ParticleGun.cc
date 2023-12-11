@@ -27,7 +27,20 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
         return;
 
     // create a new vertex
-    G4PrimaryVertex* vertex = new G4PrimaryVertex( particle_position, particle_time );
+    G4ThreeVector position = particle_position;
+    if( m_particleGunMessenger->get_position_x_random() )
+        position.setX( G4UniformRand() * ( m_particleGunMessenger->get_position_x_random_max() 
+                                         - m_particleGunMessenger->get_position_x_random_min() ) 
+                       + m_particleGunMessenger->get_position_x_random_min() );
+    if( m_particleGunMessenger->get_position_y_random() )
+        position.setY( G4UniformRand() * ( m_particleGunMessenger->get_position_y_random_max() 
+                                         - m_particleGunMessenger->get_position_y_random_min() ) 
+                       + m_particleGunMessenger->get_position_y_random_min() );
+    if( m_particleGunMessenger->get_position_z_random() )
+        position.setZ( G4UniformRand() * ( m_particleGunMessenger->get_position_z_random_max() 
+                                         - m_particleGunMessenger->get_position_z_random_min() ) 
+                       + m_particleGunMessenger->get_position_z_random_min() );
+    G4PrimaryVertex* vertex = new G4PrimaryVertex( position, particle_time );
 
     // create new primaries and set them to the vertex
     G4double mass =  particle_definition->GetPDGMass();
@@ -46,8 +59,9 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
             particle->SetCharge( G4OpticalPhoton::Definition()->GetPDGCharge() );
         } else {
             particle = new G4PrimaryParticle( particle_definition );
-            if( m_particleGunMessenger->get_momentum_random() )
+            if( m_particleGunMessenger->get_momentum_random() ) {
                 particle->SetMomentumDirection( G4RandomDirection() );
+            }
             else
                 particle->SetMomentumDirection( particle_momentum_direction );
             particle->SetKineticEnergy( particle_energy );
