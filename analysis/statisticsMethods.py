@@ -2,8 +2,12 @@ import numpy as np
 import tqdm
 import matplotlib.pyplot as plt
 
-def get_PDF(data, nBins=100):
-    hist, bins, _ = plt.hist(data, bins=nBins)
+def get_PDF(data, nBins=100, bins=None):
+    if bins is None:
+        bins = np.linspace(np.min(data), np.max(data), nBins)
+        hist, _ = np.histogram(data, bins=bins)
+    else:
+        hist, bins, _ = plt.hist(data, bins=nBins)
     cumulative_sum = np.cumsum(hist)
     PDF = cumulative_sum/cumulative_sum[-1]
     scaled_hist = hist / cumulative_sum[-1]

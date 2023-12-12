@@ -2,7 +2,7 @@ grid_size = (8, 8, 8) # m
 detector_wall_thickness = 0.1 # m
 calorimeter_size = (0.2, 0.02, 0.5) # m
 photoSensor_size = (0.2, 0.2, 0.05) # m
-buffer_room = 0.1 # m
+buffer_room = 0.0 # m
 nParticles = 1
 
 PS = photoSensor_size[0]
@@ -39,6 +39,8 @@ with open('calibration.mac', 'w') as f:
     f.write("/particleGun/position/z/max  {:.5f} m\n".format(FV_size[2] / 2))
     f.write("\n")
     f.write("/analysis/setHistoDirName photoSensor_hits_histograms\n")
+    f.write("\n")
+    f.write("/run/beamOn 300")
 
 # with open('calibration.mac', 'w') as f:
 #     f.write("##########################\n")

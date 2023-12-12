@@ -11,19 +11,19 @@
 /tracking/verbose 0
 
 /gun/particle e-
-/gun/energy 20 MeV
+/gun/energy 5 MeV
 
 /particleGun/momentum/random true
 /particleGun/position/x/random true
-/particleGun/position/x/min -0.84000 m
-/particleGun/position/x/max  0.84000 m
+/particleGun/position/x/min -0.89000 m
+/particleGun/position/x/max  0.89000 m
 /particleGun/position/y/random true
-/particleGun/position/y/min -0.84000 m
-/particleGun/position/y/max  0.84000 m
+/particleGun/position/y/min -0.89000 m
+/particleGun/position/y/max  0.89000 m
 /particleGun/position/z/random true
-/particleGun/position/z/min -0.84000 m
-/particleGun/position/z/max  0.84000 m
+/particleGun/position/z/min -0.89000 m
+/particleGun/position/z/max  0.89000 m
 
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/run/beamOn 300
+/run/beamOn 1000
