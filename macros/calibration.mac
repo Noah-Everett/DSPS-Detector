@@ -10,8 +10,8 @@
 /event/verbose 0
 /tracking/verbose 0
 
-/gun/particle e-
-/gun/energy 5 MeV
+/gun/particle mu-
+/gun/energy 1000 MeV
 
 /particleGun/momentum/random true
 /particleGun/position/x/random true
@@ -26,4 +26,4 @@
 
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/run/beamOn 1000
+/run/beamOn 2

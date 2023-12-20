@@ -4,10 +4,9 @@ import matplotlib.pyplot as plt
 
 def get_PDF(data, nBins=100, bins=None):
     if bins is None:
-        bins = np.linspace(np.min(data), np.max(data), nBins)
-        hist, _ = np.histogram(data, bins=bins)
+        hist, bins = np.histogram(data, bins=nBins)
     else:
-        hist, bins, _ = plt.hist(data, bins=nBins)
+        hist, bins, _ = plt.hist(data, bins=bins)
     cumulative_sum = np.cumsum(hist)
     PDF = cumulative_sum/cumulative_sum[-1]
     scaled_hist = hist / cumulative_sum[-1]

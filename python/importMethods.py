@@ -1,0 +1,155 @@
+import ROOT
+import uproot
+import numpy as np
+import pandas as pd
+import awkward as ak
+
+def get_histogram_names(fileName, directoryName=None, fullPath=False):
+    file = uproot.open(fileName)
+    keys = file.keys()
+    if directoryName is not None:
+        keys = file[directoryName].keys()
+    file.close()
+
+    if fullPath:
+        if directoryName is None:
+            directoryName = ''
+        if not directoryName.endswith('/'):
+            directoryName += '/'
+        keys = [directoryName + key for key in keys]
+
+    return keys
+
+def get_histogram_titles(fileName, directoryName=None):
+    file = ROOT.TFile(fileName)
+    names = get_histogram_names(fileName, directoryName)
+    names_withDir = [directoryName + '/' + name for name in names]
+    titles = [file.Get(name).GetTitle() for name in names_withDir]
+    file.Close()
+    return titles
+
+def get_histogram_positions(fileName, directoryName=None):
+    titles = get_histogram_titles(fileName, directoryName)
+    positions = [(float(title.split('_')[2]), float(title.split('_')[3]), float(title.split('_')[4])) for title in titles]
+    return positions
+
+def get_histogram_walls(fileName, directoryName=None):
+    titles = get_histogram_titles(fileName, directoryName)
+    walls = [title.split('_')[1] for title in titles]
+    return walls
+
+def get_tree_names(fileName, histDirectoryName=None):
+    file = uproot.open(fileName)
+    keys = file.keys()
+    if histDirectoryName is not None:
+        keys = [key for key in keys if histDirectoryName not in key]
+    file.close()
+    return keys
+
+def get_photosensor_hits_position_relative(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    photosensor_relative_x = tree['photoSensor_hits_position_relative_x'].array()
+    photosensor_relative_y = tree['photoSensor_hits_position_relative_y'].array()
+    photosensor_relative_z = tree['photoSensor_hits_position_relative_z'].array()
+    file.close()
+    return list(zip(photosensor_relative_x, photosensor_relative_y, photosensor_relative_z))
+
+def get_photosensor_hits_position_absolute(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    photosensor_absolute_x = tree['photoSensor_hits_position_absolute_x'].array()
+    photosensor_absolute_y = tree['photoSensor_hits_position_absolute_y'].array()
+    photosensor_absolute_z = tree['photoSensor_hits_position_absolute_z'].array()
+    file.close()
+    return list(zip(photosensor_absolute_x, photosensor_absolute_y, photosensor_absolute_z))
+
+import numpy as np
+
+def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+
+    photosensor_relative_x = tree['photoSensor_hits_position_relative_x'].array()
+    photosensor_relative_y = tree['photoSensor_hits_position_relative_y'].array()
+
+    histogram = file[get_histogram_names(fileName, histDirectoryName, fullPath=True)[0]]
+    _, x_edges, y_edges = np.histogram2d(photosensor_relative_x, photosensor_relative_y, bins=(histogram.axis(0).edges(), histogram.axis(1).edges()))
+
+    x_edges = ak.to_numpy(x_edges)
+    y_edges = ak.to_numpy(y_edges)
+    x_edges[ 0] -= 1e-9
+    y_edges[ 0] -= 1e-9
+    x_edges[-1] += 1e-9
+    y_edges[-1] += 1e-9
+
+    position_relative_x_bins = pd.Series(pd.cut(np.array(photosensor_relative_x), bins=x_edges, retbins=False))
+    position_relative_y_bins = pd.Series(pd.cut(np.array(photosensor_relative_y), bins=y_edges, retbins=False))
+
+    file.close()
+    return position_relative_x_bins, position_relative_y_bins
+
+def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName):
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName)
+
+    position_relative_x_binned = position_relative_x_bins.apply(lambda x: (x.right + x.left) / 2)
+    position_relative_y_binned = position_relative_y_bins.apply(lambda x: (x.right + x.left) / 2)
+
+    return list(zip(position_relative_x_binned, position_relative_y_binned))
+
+def get_photosensor_hits_position_absolute_nBin(fileName, treeName, histDirectoryName):
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName)
+
+    return list(zip(position_relative_x_bins.cat.codes, position_relative_y_bins.cat.codes))
+
+def get_photosensor_hits_position_initial(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    x = tree['photoSensor_hits_position_initial_x'].array()
+    y = tree['photoSensor_hits_position_initial_y'].array()
+    z = tree['photoSensor_hits_position_initial_z'].array()
+    file.close()
+    return list(zip(x, y, z))
+
+def get_photosensor_hits_time(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    hit_time = tree['photoSensor_hits_time'].array()
+    file.close()
+    return hit_time
+
+def get_photosensor_hits_photosensor_ID(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    photosensor_id = tree['photoSensor_hits_photoSensorID'].array()
+    file.close()
+    return photosensor_id
+
+def get_photosensor_hits_photosensor_position(fileName, treeName):
+    IDs = get_photosensor_hits_photosensor_ID(fileName, treeName)
+    positions = [(float(ID.split('_')[2]), float(ID.split('_')[3]), float(ID.split('_')[4])) for ID in IDs]
+
+def get_photosensor_hits_photosensor_wall(fileName, treeName):
+    IDs = get_photosensor_hits_photosensor_ID(fileName, treeName)
+    walls = [ID.split('_')[1] for ID in IDs]
+    return walls
+
+def get_photosensor_hits_photosensor_direction(fileName, treeName):
+    walls = get_photosensor_hits_photosensor_wall(fileName, treeName)
+
+    directions = []
+    for wall in walls:
+        if wall == '+x':
+            directions.append([-1, 0, 0])
+        elif wall == '-x':
+            directions.append([+1, 0, 0])
+        elif wall == '+y':
+            directions.append([0, -1, 0])
+        elif wall == '-y':
+            directions.append([0, +1, 0])
+        elif wall == '+z':
+            directions.append([0, 0, -1])
+        elif wall == '-z':
+            directions.append([0, 0, +1])
+
+    return directions
