@@ -74,12 +74,15 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
     photosensor_relative_y = tree['photoSensor_hits_position_relative_y'].array()
 
     histogram = file[get_histogram_names(fileName, histDirectoryName, fullPath=True)[0]]
-    _, x_edges, y_edges = np.histogram2d(photosensor_relative_x, photosensor_relative_y, bins=(histogram.axis(0).edges(), histogram.axis(1).edges()))
 
-    x_edges = ak.to_numpy(x_edges)
-    y_edges = ak.to_numpy(y_edges)
-    x_edges[ 0] -= 1e-9
-    y_edges[ 0] -= 1e-9
+    x_bins = histogram.axis(0).edges()
+    y_bins = histogram.axis(1).edges()
+
+    x_edges = np.linspace(x_bins.min(), x_bins.max(), len(x_bins))
+    y_edges = np.linspace(y_bins.min(), y_bins.max(), len(y_bins))
+
+    x_edges[0] -= 1e-9
+    y_edges[0] -= 1e-9
     x_edges[-1] += 1e-9
     y_edges[-1] += 1e-9
 
@@ -97,7 +100,7 @@ def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirect
 
     return list(zip(position_relative_x_binned, position_relative_y_binned))
 
-def get_photosensor_hits_position_absolute_nBin(fileName, treeName, histDirectoryName):
+def get_photosensor_hits_position_relative_nBin(fileName, treeName, histDirectoryName):
     position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName)
 
     return list(zip(position_relative_x_bins.cat.codes, position_relative_y_bins.cat.codes))
@@ -128,6 +131,7 @@ def get_photosensor_hits_photosensor_ID(fileName, treeName):
 def get_photosensor_hits_photosensor_position(fileName, treeName):
     IDs = get_photosensor_hits_photosensor_ID(fileName, treeName)
     positions = [(float(ID.split('_')[2]), float(ID.split('_')[3]), float(ID.split('_')[4])) for ID in IDs]
+    return positions
 
 def get_photosensor_hits_photosensor_wall(fileName, treeName):
     IDs = get_photosensor_hits_photosensor_ID(fileName, treeName)
@@ -153,3 +157,19 @@ def get_photosensor_hits_photosensor_direction(fileName, treeName):
             directions.append([0, 0, +1])
 
     return directions
+
+def get_primary_position(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    x = tree['primary_position_x'].array()
+    y = tree['primary_position_y'].array()
+    z = tree['primary_position_z'].array()
+    file.close()
+    return list(zip(x, y, z))
+
+def get_primary_time(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    time = tree['primary_time'].array()
+    file.close()
+    return time

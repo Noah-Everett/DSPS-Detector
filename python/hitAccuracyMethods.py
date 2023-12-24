@@ -4,7 +4,7 @@ import tqdm
 def make_r(df_hits):
     r_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y = row['relativePosition']
+        x, y, z = row['relativePosition']
         r = np.sqrt(x**2 + y**2)
         r_list.append(r)
     df_hits['r'] = r_list
@@ -17,7 +17,7 @@ def make_theta(df_hits, rToTheta):
 
     theta_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y = row['relativePosition']
+        x, y, z = row['relativePosition']
         r = row['r']
         theta = rToTheta(r)
         theta_list.append(theta)
@@ -28,7 +28,7 @@ def make_theta(df_hits, rToTheta):
 def make_phi(df_hits):
     phi_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y = row['relativePosition']
+        x, y, z = row['relativePosition']
         phi = np.arctan(y / x)
         phi_list.append(phi)
     df_hits['phi'] = phi_list

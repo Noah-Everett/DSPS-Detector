@@ -53,11 +53,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4int countIndex { 0 };
     place_surface(  m_axis_x, countIndex++ );
-    // place_surface( -m_axis_x, countIndex++ );
+    place_surface( -m_axis_x, countIndex++ );
     place_surface(  m_axis_y, countIndex++ );
-    // place_surface( -m_axis_y, countIndex++ );
+    place_surface( -m_axis_y, countIndex++ );
     place_surface(  m_axis_z, countIndex++ );
-    // place_surface( -m_axis_z, countIndex++ );
+    place_surface( -m_axis_z, countIndex++ );
 
     return m_world_physicalVolume;
 }

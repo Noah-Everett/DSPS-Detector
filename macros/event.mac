@@ -9,15 +9,13 @@
 /analysis/setHistoDirName photoSensor_hits_histograms
 
 
-/analysis/setFileName event.root
-
-#/analysis/setFileName event_111_2.root
+/analysis/setFileName event_111.root
 #/gun/position -1.6 -1.6 -1.6 m
 /gun/position 0 0 0 m
 /gun/direction 1 1 1
 /run/beamOn 1
 
-#/analysis/setFileName event_-111_2.root
+/analysis/setFileName event_-111.root
 /gun/position 0 0 0 m
 /gun/direction -1 -1 -1
 /run/beamOn 1
