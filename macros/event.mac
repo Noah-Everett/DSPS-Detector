@@ -5,7 +5,7 @@
 /tracking/verbose 0
 /gun/particle mu-
 #/gun/energy 1800 MeV
-/gun/energy 900 MeV
+/gun/energy 100 MeV
 /analysis/setHistoDirName photoSensor_hits_histograms
 
 

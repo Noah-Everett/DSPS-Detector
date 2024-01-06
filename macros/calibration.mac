@@ -10,20 +10,29 @@
 /event/verbose 0
 /tracking/verbose 0
 
-/gun/particle mu-
-/gun/energy 1000 MeV
+/gun/particle PhotonCreator
+#/gun/particle mu-
+#/gun/energy 1000 MeV
+
+/analysis/setFileName calibration.root
 
 /particleGun/momentum/random true
+
 /particleGun/position/x/random true
+/particleGun/position/x/nSteps 10
 /particleGun/position/x/min -0.89000 m
 /particleGun/position/x/max  0.89000 m
+
 /particleGun/position/y/random true
+/particleGun/position/y/nSteps 10
 /particleGun/position/y/min -0.89000 m
 /particleGun/position/y/max  0.89000 m
+
 /particleGun/position/z/random true
+/particleGun/position/z/nSteps 10
 /particleGun/position/z/min -0.89000 m
 /particleGun/position/z/max  0.89000 m
 
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/run/beamOn 2
+/run/beamOn 1000

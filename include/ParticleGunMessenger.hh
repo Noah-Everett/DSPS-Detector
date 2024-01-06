@@ -16,6 +16,7 @@
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWith3VectorAndUnit.hh"
+#include "G4UIcmdWithAnInteger.hh"
 #include "G4UImessenger.hh"
 #include "G4SystemOfUnits.hh"
 
@@ -31,6 +32,9 @@ class ParticleGunMessenger : public G4UImessenger
         G4bool   get_position_x_random    ();
         G4bool   get_position_y_random    ();
         G4bool   get_position_z_random    ();
+        G4int    get_position_x_nSteps    ();
+        G4int    get_position_y_nSteps    ();
+        G4int    get_position_z_nSteps    ();
         G4double get_position_x_random_min();
         G4double get_position_y_random_min();
         G4double get_position_z_random_min();
@@ -42,6 +46,9 @@ class ParticleGunMessenger : public G4UImessenger
         void set_position_x_random    ( G4bool   );
         void set_position_y_random    ( G4bool   );
         void set_position_z_random    ( G4bool   );
+        void set_position_x_nSteps    ( G4int    );
+        void set_position_y_nSteps    ( G4int    );
+        void set_position_z_nSteps    ( G4int    );
         void set_position_x_random_min( G4double );
         void set_position_y_random_min( G4double );
         void set_position_z_random_min( G4double );
@@ -60,6 +67,9 @@ class ParticleGunMessenger : public G4UImessenger
         G4UIcmdWithABool         * m_parameter_position_x_random    { nullptr };
         G4UIcmdWithABool         * m_parameter_position_y_random    { nullptr };
         G4UIcmdWithABool         * m_parameter_position_z_random    { nullptr };
+        G4UIcmdWithAnInteger     * m_parameter_position_x_nSteps    { nullptr };
+        G4UIcmdWithAnInteger     * m_parameter_position_y_nSteps    { nullptr };
+        G4UIcmdWithAnInteger     * m_parameter_position_z_nSteps    { nullptr };
         G4UIcmdWithADoubleAndUnit* m_parameter_position_x_random_min{ nullptr };
         G4UIcmdWithADoubleAndUnit* m_parameter_position_y_random_min{ nullptr };
         G4UIcmdWithADoubleAndUnit* m_parameter_position_z_random_min{ nullptr };
@@ -71,6 +81,9 @@ class ParticleGunMessenger : public G4UImessenger
         G4bool   m_variable_position_x_random    { false };
         G4bool   m_variable_position_y_random    { false };
         G4bool   m_variable_position_z_random    { false };
+        G4int    m_variable_position_x_nSteps    { -1    };
+        G4int    m_variable_position_y_nSteps    { -1    };
+        G4int    m_variable_position_z_nSteps    { -1    };
         G4double m_variable_position_x_random_min{ 0     };
         G4double m_variable_position_y_random_min{ 0     };
         G4double m_variable_position_z_random_min{ 0     };

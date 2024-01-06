@@ -31,6 +31,8 @@ class ParticleGun : public G4ParticleGun
         void GeneratePrimaries( G4Event* );
 
     protected:
+        G4double get_position_random( G4double, G4double, G4int );
+
         ParticleGunMessenger* m_particleGunMessenger{ ParticleGunMessenger::get_instance() };
 };
 

@@ -92,31 +92,34 @@ def get_voxelGrid_errors(grid):
     grid_copy = grid.copy()
 
     zeros = np.argwhere(grid_copy == 0)
-    print('zeros', zeros)
-    print('zeros.shape', zeros.shape)
+    # print('zeros', zeros)
+    # print('zeros.shape', zeros.shape)
     hit = np.argwhere(grid_copy > 0)
-    print('hit', hit)
-    print('hit.shape', hit.shape)
-    distances = cdist(zeros, hit, metric='chebyshev')
-    print('distances.shape', distances.shape)
+    # print('hit', hit)
+    # print('hit.shape', hit.shape)
+    # print('len(hit)', len(hit))
+    if len(hit) == 0:
+        return grid_copy
+    distances = cdist(zeros, hit, metric='euclidean')
+    # print('distances.shape', distances.shape)
     closestHit = np.argmin(distances, axis=1)
-    print('closestHit', closestHit)
-    print('closestHit.shape', closestHit.shape)
+    # print('closestHit', closestHit)
+    # print('closestHit.shape', closestHit.shape)
     distances = distances[np.arange(len(distances)), closestHit]
-    print('distances', distances)
-    print('distances.shape', distances.shape)
+    # print('distances', distances)
+    # print('distances.shape', distances.shape)
     closestHit_ind = hit[closestHit]
-    print('closestHit_ind', closestHit_ind)
-    print('closestHit_ind.shape', closestHit_ind.shape)
+    # print('closestHit_ind', closestHit_ind)
+    # print('closestHit_ind.shape', closestHit_ind.shape)
     hitValues = grid_copy[closestHit_ind[:, 0], closestHit_ind[:, 1], closestHit_ind[:, 2]]
-    print('hitValues', hitValues)
-    print('hitValues.shape', hitValues.shape)
+    # print('hitValues', hitValues)
+    # print('hitValues.shape', hitValues.shape)
     p = np.exp(-distances)
-    print('p', p)
-    print('p.shape', p.shape)
-    print('grid_copy.shape', grid_copy.shape)
-    print('p * hitValues', p * hitValues)
-    print('(p * hitValues).shape', (p * hitValues).shape)
+    # print('p', p)
+    # print('p.shape', p.shape)
+    # print('grid_copy.shape', grid_copy.shape)
+    # print('p * hitValues', p * hitValues)
+    # print('(p * hitValues).shape', (p * hitValues).shape)
     grid_copy[zeros[:, 0], zeros[:, 1], zeros[:, 2]] = p * hitValues
 
     return grid_copy
@@ -169,7 +172,7 @@ def get_voxelGrid(shape, detectorDimensions,
     starts = (sensorPositions * scale).astype(int)
     ends = (starts + recoDirections * scale * np.max(shape)**2 / np.max(scale)).astype(int)
 
-    for start, end, weight in zip(starts, ends, hitWeights):
+    for start, end, weight in tqdm.tqdm(zip(starts, ends, hitWeights), total=len(starts)):
         grid += get_voxelGrid_hitVector(shape, start, end, weight, verbose=verbose)
 
     if make_errors:
