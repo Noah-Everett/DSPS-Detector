@@ -1,8 +1,0 @@
-# [ (r_x, r_y, y_min, y_max), d, n, (r_x, r_y, y_min, y_max), x_l ], materialName, visible, color, alpha, forceSolid
-# r_x, r_y, y_min, y_max, d, n, r_x, r_y, y_min, y_max, x_l, materialName, visible, color, alpha, forceSolid
-
-  [ ( -50.0, 25.0, -5, 5 ), 5.0, 1.98, (  100.0, 25.0, -5, 5 ), 30.0 ], SNPH2, true, blue, 0.2, true
-  [ ( -50.0, 25.0, -5, 5 ), 5.0, 1.98, (  100.0, 25.0, -5, 5 ), 22.0 ], SNPH2, true, blue, 0.2, true
-# [ (  80.0, 25.0, -5, 5 ), 2.5, 1.98, ( -80.0 , 25.0, -5, 5 ), 20.0 ], SNPH2, true, blue, 0.2, true
-# [ (  80.0, 25.0, -5, 5 ), 0.5, 1.98, ( -80.0 , 25.0, -5, 5 ), 19.5 ], SNPH2, true, blue, 0.2, true
-# [ (  80.0, 25.0, -5, 5 ), 0.5, 1.98, ( -80.0 , 25.0, -5, 5 ), 15.0 ], SNPH2, true, blue, 0.2, true

@@ -49,7 +49,6 @@ target_link_libraries(DSPD ${Geant4_LIBRARIES} NEST::NESTCore NEST::NESTG4)
 set(DSPD_SCRIPTS
     macros/parameters_detector.mac
     macros/parameters_GUI.mac
-    macros/parameters_lens.mac
     macros/parameters_output.mac
     macros/event.mac
     macros/calibration.mac

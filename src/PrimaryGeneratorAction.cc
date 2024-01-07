@@ -20,7 +20,8 @@
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 {
-    m_particleGun = new ParticleGun( 1000 );
+    m_particleGun = new ParticleGun( 1 );
+    // m_particleGun = new ParticleGun( 1000 );
 
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
 
