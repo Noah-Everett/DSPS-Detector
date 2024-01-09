@@ -36,4 +36,4 @@
 
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/run/beamOn 10 #10000
+/run/beamOn 100

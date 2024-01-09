@@ -195,14 +195,15 @@ void ParticleGunMessenger::set_position_z_random_max( G4double t_variable_positi
 void ParticleGunMessenger::set_nParticles( G4int t_variable_nParticles ) { 
     m_variable_nParticles = t_variable_nParticles; 
 
-    if( m_particleGun )
-        m_particleGun->SetNumberOfParticles( m_variable_nParticles );
+    if( m_primaryGeneratorActions.size() > 0 )
+        for( ParticleGun* particleGun : m_particleGuns )
+            particleGun->SetNumberOfParticles( m_variable_nParticles );
 }
 
-void ParticleGunMessenger::set_primaryGeneratorAction( PrimaryGeneratorAction* t_primaryGeneratorAction ) {
-    m_primaryGeneratorAction = t_primaryGeneratorAction;
+void ParticleGunMessenger::add_primaryGeneratorAction( PrimaryGeneratorAction* t_primaryGeneratorAction ) {
+    m_primaryGeneratorActions.push_back( t_primaryGeneratorAction );
 }
 
-void ParticleGunMessenger::set_particleGun( ParticleGun* t_particleGun ) {
-    m_particleGun = t_particleGun;
+void ParticleGunMessenger::add_particleGun( ParticleGun* t_particleGun ) {
+    m_particleGuns.push_back( t_particleGun );
 }

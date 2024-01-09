@@ -23,6 +23,8 @@
 class ParticleGun;
 class PrimaryGeneratorAction;
 
+using std::vector;
+
 class ParticleGunMessenger : public G4UImessenger
 {
     public:
@@ -61,8 +63,8 @@ class ParticleGunMessenger : public G4UImessenger
         void set_position_z_random_max( G4double );
         void set_nParticles           ( G4int    );
 
-        void set_primaryGeneratorAction( PrimaryGeneratorAction* );
-        void set_particleGun           ( ParticleGun           * );
+        void add_primaryGeneratorAction( PrimaryGeneratorAction* );
+        void add_particleGun           ( ParticleGun           * );
 
     private:
         static ParticleGunMessenger* m_instance;
@@ -101,8 +103,8 @@ class ParticleGunMessenger : public G4UImessenger
         G4double m_variable_position_z_random_max{ 0     };
         G4int    m_variable_nParticles           { 1     };
 
-        PrimaryGeneratorAction* m_primaryGeneratorAction{ nullptr };
-        ParticleGun           * m_particleGun           { nullptr };
+        vector< PrimaryGeneratorAction* > m_primaryGeneratorActions;
+        vector< ParticleGun           * > m_particleGuns           ;
 };
 
 #endif

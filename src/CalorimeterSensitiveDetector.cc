@@ -43,7 +43,7 @@ G4bool CalorimeterSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
 
     m_calorimeterHitsCollection->insert( hit );
 
-    t_step->GetTrack()->SetTrackStatus( fStopAndKill );
+    t_step->GetTrack()->SetTrackStatus( fKillTrackAndSecondaries );
 
     return true;
 }

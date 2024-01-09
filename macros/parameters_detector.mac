@@ -18,7 +18,7 @@
 /geometry/detector/medium/alpha                  0
 /geometry/detector/medium/forceSolid             false
 
-/geometry/calorimeter/size                       20.0 2.00 78.0 cm
+/geometry/calorimeter/size                       20.0 2.00 48.0 cm
 /geometry/calorimeter/material                   aluminum
 /geometry/calorimeter/visibility                 true
 /geometry/calorimeter/color                      red

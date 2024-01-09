@@ -35,6 +35,7 @@
 /output/medium/hits/process/save                      false
 /output/medium/hits/time/save                         false
 /output/medium/hits/mediumID/save                     false
+/output/medium/hits/process/save                      false
 /output/medium/hits/transmittance/save                true
 
 /output/primary/position/save                         false

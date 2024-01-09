@@ -63,7 +63,7 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
     }
 
     G4VSensitiveDetector* sensitiveDetector_current = t_step->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSensitiveDetector();
-    if( sensitiveDetector_current ) {
+    if( sensitiveDetector_current && t_step->GetTotalEnergyDeposit() == 0 ) {
         G4String sensitiveDetector_current_name = sensitiveDetector_current->GetName();
         to_lower( sensitiveDetector_current_name );
         if( sensitiveDetector_current_name.find( "photosensor" ) != string::npos )
@@ -72,5 +72,7 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
             static_cast< CalorimeterSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
         else if( sensitiveDetector_current_name.find( "lens" ) != string::npos )
             static_cast< LensSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
+        else if( sensitiveDetector_current_name.find( "medium" ) != string::npos )
+            static_cast< MediumSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
     }
 }

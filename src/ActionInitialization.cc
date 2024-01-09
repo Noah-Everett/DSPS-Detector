@@ -26,8 +26,8 @@ void ActionInitialization::BuildForMaster() const {
 void ActionInitialization::Build() const {
     PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
     SetUserAction( primaryGeneratorAction );
-    ParticleGunMessenger::get_instance()->set_primaryGeneratorAction( primaryGeneratorAction                    );
-    ParticleGunMessenger::get_instance()->set_particleGun           ( primaryGeneratorAction->get_particleGun() );
+    ParticleGunMessenger::get_instance()->add_primaryGeneratorAction( primaryGeneratorAction                    );
+    ParticleGunMessenger::get_instance()->add_particleGun           ( primaryGeneratorAction->get_particleGun() );
 
     RunAction* runAction = new RunAction( m_detectorConstruction );
 
