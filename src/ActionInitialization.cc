@@ -10,11 +10,6 @@
 //*/////////////////////////////////////////////////////////////////////////*//
 
 #include "ActionInitialization.hh"
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
-#include "StackingAction.hh"
 
 ActionInitialization::ActionInitialization( DetectorConstruction* t_detectorConstruction ) 
     : m_detectorConstruction( t_detectorConstruction ) {
@@ -31,6 +26,8 @@ void ActionInitialization::BuildForMaster() const {
 void ActionInitialization::Build() const {
     PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
     SetUserAction( primaryGeneratorAction );
+    ParticleGunMessenger::get_instance()->set_primaryGeneratorAction( primaryGeneratorAction                    );
+    ParticleGunMessenger::get_instance()->set_particleGun           ( primaryGeneratorAction->get_particleGun() );
 
     RunAction* runAction = new RunAction( m_detectorConstruction );
 

@@ -38,6 +38,8 @@
 #include "Calorimeter.hh"
 #include "CalorimeterSensitiveDetector.hh"
 #include "OutputManager.hh"
+#include "MediumSensitiveDetector.hh"
+#include "Medium.hh"
 
 #include <vector>
 #include <string>
@@ -66,6 +68,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
         vector< Calorimeter                    * > get_calorimeters_full               () const;
         vector< Calorimeter                    * > get_calorimeters_middle             () const;
         vector< DirectionSensitivePhotoDetector* > get_directionSensitivePhotoDetectors() const;
+        vector< Medium                         * > get_mediums                         () const;
         G4bool                                     get_make_SDandField                 () const;
 
     protected:
@@ -87,11 +90,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
         GeometricObjectBox* m_world             { new GeometricObjectBox() };
         GeometricObjectBox* m_detector_wall     { new GeometricObjectBox() };
-        GeometricObjectBox* m_detector_medium   { new GeometricObjectBox() };
 
         vector< Calorimeter                    * > m_calorimeters_full;
         vector< Calorimeter                    * > m_calorimeters_middle;
         vector< DirectionSensitivePhotoDetector* > m_directionSensitivePhotoDetectors;
+        vector< Medium                         * > m_mediums;
 
     private: 
         void make_world   ();

@@ -30,6 +30,7 @@ void OutputMessenger::delete_instance() {
 OutputMessenger::OutputMessenger() {
     m_command_GDML_save                                     = new G4UIcmdWithABool    ( "/GDML/save"                                            , this );
     m_command_GDML_fileName                                 = new G4UIcmdWithAString  ( "/GDML/fileName"                                        , this );
+
     m_command_photoSensor_hits_position_binned_save         = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/binned/save"         , this );
     m_command_photoSensor_hits_position_binned_nBinsPerSide = new G4UIcmdWithAnInteger( "/output/photoSensor/hits/position/binned/nBinsPerSide" , this );
     m_command_photoSensor_hits_position_absolute_save       = new G4UIcmdWithABool    ( "/output/photoSensor/hits/position/absolute/save"       , this );
@@ -39,6 +40,7 @@ OutputMessenger::OutputMessenger() {
     m_command_photoSensor_hits_process_save                 = new G4UIcmdWithABool    ( "/output/photoSensor/hits/process/save"                 , this );
     m_command_photoSensor_hits_photoSensorID_save           = new G4UIcmdWithABool    ( "/output/photoSensor/hits/photoSensorID/save"           , this );
     m_command_photoSensor_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/photoSensor/hits/energy/save"                  , this );
+
     m_command_calorimeter_hits_position_absolute_save       = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/absolute/save"       , this );
     m_command_calorimeter_hits_position_relative_save       = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/relative/save"       , this );
     m_command_calorimeter_hits_position_initial_save        = new G4UIcmdWithABool    ( "/output/calorimeter/hits/position/initial/save"        , this );
@@ -46,6 +48,7 @@ OutputMessenger::OutputMessenger() {
     m_command_calorimeter_hits_process_save                 = new G4UIcmdWithABool    ( "/output/calorimeter/hits/process/save"                 , this );
     m_command_calorimeter_hits_calorimeterID_save           = new G4UIcmdWithABool    ( "/output/calorimeter/hits/calorimeterID/save"           , this );
     m_command_calorimeter_hits_energy_save                  = new G4UIcmdWithABool    ( "/output/calorimeter/hits/energy/save"                  , this );
+
     m_command_lens_hits_position_absolute_save              = new G4UIcmdWithABool    ( "/output/lens/hits/position/absolute/save"              , this );
     m_command_lens_hits_position_relative_save              = new G4UIcmdWithABool    ( "/output/lens/hits/position/relative/save"              , this );
     m_command_lens_hits_position_initial_save               = new G4UIcmdWithABool    ( "/output/lens/hits/position/initial/save"               , this );
@@ -54,6 +57,16 @@ OutputMessenger::OutputMessenger() {
     m_command_lens_hits_lensID_save                         = new G4UIcmdWithABool    ( "/output/lens/hits/lensID/save"                         , this );
     m_command_lens_hits_energy_save                         = new G4UIcmdWithABool    ( "/output/lens/hits/energy/save"                         , this );
     m_command_lens_hits_transmittance_save                  = new G4UIcmdWithABool    ( "/output/lens/hits/transmittance/save"                  , this );
+
+    m_command_medium_hits_position_absolute_save            = new G4UIcmdWithABool    ( "/output/medium/hits/position/absolute/save"            , this );
+    m_command_medium_hits_position_initial_save             = new G4UIcmdWithABool    ( "/output/medium/hits/position/initial/save"             , this );
+    m_command_medium_hits_direction_save                    = new G4UIcmdWithABool    ( "/output/medium/hits/direction/save"                    , this );
+    m_command_medium_hits_energy_save                       = new G4UIcmdWithABool    ( "/output/medium/hits/energy/save"                       , this );
+    m_command_medium_hits_process_save                      = new G4UIcmdWithABool    ( "/output/medium/hits/process/save"                      , this );
+    m_command_medium_hits_time_save                         = new G4UIcmdWithABool    ( "/output/medium/hits/time/save"                         , this );
+    m_command_medium_hits_mediumID_save                     = new G4UIcmdWithABool    ( "/output/medium/hits/mediumID/save"                     , this );
+    m_command_medium_hits_transmittance_save                = new G4UIcmdWithABool    ( "/output/medium/hits/transmittance/save"                , this );
+
     m_command_primary_position_save                         = new G4UIcmdWithABool    ( "/output/primary/position/save"                         , this );
     m_command_primary_direction_save                        = new G4UIcmdWithABool    ( "/output/primary/direction/save"                        , this );
     m_command_primary_emission_photon_save                  = new G4UIcmdWithABool    ( "/output/primary/emission/photon/save"                  , this );
@@ -63,6 +76,7 @@ OutputMessenger::OutputMessenger() {
     m_command_primary_energy_save                           = new G4UIcmdWithABool    ( "/output/primary/energy/save"                           , this );
     m_command_primary_volume_save                           = new G4UIcmdWithABool    ( "/output/primary/volume/save"                           , this );
     m_command_primary_pdg_save                              = new G4UIcmdWithABool    ( "/output/primary/pdg/save"                              , this );
+
     m_command_photon_length_save                            = new G4UIcmdWithABool    ( "/output/photon/length/save"                            , this );
     m_command_photon_process_save                           = new G4UIcmdWithABool    ( "/output/photon/process/save"                           , this );
     m_command_photon_time_save                              = new G4UIcmdWithABool    ( "/output/photon/time/save"                              , this );
@@ -76,6 +90,7 @@ OutputMessenger::OutputMessenger() {
 OutputMessenger::~OutputMessenger() {
     if( m_command_GDML_save                                     ) delete m_command_GDML_save;
     if( m_command_GDML_fileName                                 ) delete m_command_GDML_fileName;
+
     if( m_command_photoSensor_hits_position_binned_save         ) delete m_command_photoSensor_hits_position_binned_save;
     if( m_command_photoSensor_hits_position_binned_nBinsPerSide ) delete m_command_photoSensor_hits_position_binned_nBinsPerSide;
     if( m_command_photoSensor_hits_position_absolute_save       ) delete m_command_photoSensor_hits_position_absolute_save;
@@ -85,6 +100,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_photoSensor_hits_process_save                 ) delete m_command_photoSensor_hits_process_save;
     if( m_command_photoSensor_hits_photoSensorID_save           ) delete m_command_photoSensor_hits_photoSensorID_save;
     if( m_command_photoSensor_hits_energy_save                  ) delete m_command_photoSensor_hits_energy_save;
+
     if( m_command_calorimeter_hits_position_absolute_save       ) delete m_command_calorimeter_hits_position_absolute_save;
     if( m_command_calorimeter_hits_position_relative_save       ) delete m_command_calorimeter_hits_position_relative_save;
     if( m_command_calorimeter_hits_position_initial_save        ) delete m_command_calorimeter_hits_position_initial_save;
@@ -92,6 +108,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_calorimeter_hits_process_save                 ) delete m_command_calorimeter_hits_process_save;
     if( m_command_calorimeter_hits_calorimeterID_save           ) delete m_command_calorimeter_hits_calorimeterID_save;
     if( m_command_calorimeter_hits_energy_save                  ) delete m_command_calorimeter_hits_energy_save;
+
     if( m_command_lens_hits_position_absolute_save              ) delete m_command_lens_hits_position_absolute_save;
     if( m_command_lens_hits_position_relative_save              ) delete m_command_lens_hits_position_relative_save;
     if( m_command_lens_hits_position_initial_save               ) delete m_command_lens_hits_position_initial_save;
@@ -100,6 +117,16 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_lens_hits_lensID_save                         ) delete m_command_lens_hits_lensID_save;
     if( m_command_lens_hits_energy_save                         ) delete m_command_lens_hits_energy_save;
     if( m_command_lens_hits_transmittance_save                  ) delete m_command_lens_hits_transmittance_save;
+
+    if( m_command_medium_hits_position_absolute_save            ) delete m_command_medium_hits_position_absolute_save;
+    if( m_command_medium_hits_position_initial_save             ) delete m_command_medium_hits_position_initial_save;
+    if( m_command_medium_hits_direction_save                    ) delete m_command_medium_hits_direction_save;
+    if( m_command_medium_hits_energy_save                       ) delete m_command_medium_hits_energy_save;
+    if( m_command_medium_hits_process_save                      ) delete m_command_medium_hits_process_save;
+    if( m_command_medium_hits_time_save                         ) delete m_command_medium_hits_time_save;
+    if( m_command_medium_hits_mediumID_save                     ) delete m_command_medium_hits_mediumID_save;
+    if( m_command_medium_hits_transmittance_save                ) delete m_command_medium_hits_transmittance_save;
+
     if( m_command_primary_position_save                         ) delete m_command_primary_position_save;
     if( m_command_primary_direction_save                        ) delete m_command_primary_direction_save;
     if( m_command_primary_emission_photon_save                  ) delete m_command_primary_emission_photon_save;
@@ -109,6 +136,7 @@ OutputMessenger::~OutputMessenger() {
     if( m_command_primary_energy_save                           ) delete m_command_primary_energy_save;
     if( m_command_primary_volume_save                           ) delete m_command_primary_volume_save;
     if( m_command_primary_pdg_save                              ) delete m_command_primary_pdg_save;
+
     if( m_command_photon_length_save                            ) delete m_command_photon_length_save;
     if( m_command_photon_process_save                           ) delete m_command_photon_process_save;
     if( m_command_photon_time_save                              ) delete m_command_photon_time_save;
@@ -198,6 +226,30 @@ void OutputMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newValue )
     } else if( t_command == m_command_lens_hits_transmittance_save ) {
         set_lens_hits_transmittance_save( m_command_lens_hits_transmittance_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/lens/hits/transmittance/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_position_absolute_save ) {
+        set_medium_hits_position_absolute_save( m_command_medium_hits_position_absolute_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/position/absolute/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_position_initial_save ) {
+        set_medium_hits_position_initial_save( m_command_medium_hits_position_initial_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/position/initial/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_direction_save ) {
+        set_medium_hits_direction_save( m_command_medium_hits_direction_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/direction/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_energy_save ) {
+        set_medium_hits_energy_save( m_command_medium_hits_energy_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/energy/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_process_save ) {
+        set_medium_hits_process_save( m_command_medium_hits_process_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/process/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_time_save ) {
+        set_medium_hits_time_save( m_command_medium_hits_time_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/time/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_mediumID_save ) {
+        set_medium_hits_mediumID_save( m_command_medium_hits_mediumID_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/mediumID/save' to " << t_newValue << G4endl;
+    } else if( t_command == m_command_medium_hits_transmittance_save ) {
+        set_medium_hits_transmittance_save( m_command_medium_hits_transmittance_save->GetNewBoolValue( t_newValue ) );
+        G4cout << "Setting `/output/medium/hits/transmittance/save' to " << t_newValue << G4endl;
     } else if( t_command == m_command_primary_position_save ) {
         set_primary_position_save( m_command_primary_position_save->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `/output/primary/position/save' to " << t_newValue << G4endl;
@@ -332,6 +384,30 @@ G4bool OutputMessenger::get_lens_hits_energy_save() const {
 G4bool OutputMessenger::get_lens_hits_transmittance_save() const {
     return m_variable_lens_hits_transmittance_save;
 }
+G4bool OutputMessenger::get_medium_hits_position_absolute_save() const {
+    return m_variable_medium_hits_position_absolute_save;
+}
+G4bool OutputMessenger::get_medium_hits_position_initial_save() const {
+    return m_variable_medium_hits_position_initial_save;
+}
+G4bool OutputMessenger::get_medium_hits_direction_save() const {
+    return m_variable_medium_hits_direction_save;
+}
+G4bool OutputMessenger::get_medium_hits_energy_save() const {
+    return m_variable_medium_hits_energy_save;
+}
+G4bool OutputMessenger::get_medium_hits_process_save() const {
+    return m_variable_medium_hits_process_save;
+}
+G4bool OutputMessenger::get_medium_hits_time_save() const {
+    return m_variable_medium_hits_time_save;
+}
+G4bool OutputMessenger::get_medium_hits_mediumID_save() const {
+    return m_variable_medium_hits_mediumID_save;
+}
+G4bool OutputMessenger::get_medium_hits_transmittance_save() const {
+    return m_variable_medium_hits_transmittance_save;
+}
 G4bool OutputMessenger::get_primary_position_save() const {
     return m_variable_primary_position_save;
 }
@@ -382,6 +458,66 @@ G4bool OutputMessenger::get_photon_volume_save() const {
 }
 G4bool OutputMessenger::get_photon_stepNumber_save() const {
     return m_variable_photon_stepNumber_save;
+}
+G4bool OutputMessenger::get_photoSensor_hits_save() const {
+    return m_variable_photoSensor_hits_position_binned_save   ||
+           m_variable_photoSensor_hits_position_absolute_save ||
+           m_variable_photoSensor_hits_position_relative_save ||
+           m_variable_photoSensor_hits_position_initial_save  ||
+           m_variable_photoSensor_hits_time_save              ||
+           m_variable_photoSensor_hits_process_save           ||
+           m_variable_photoSensor_hits_photoSensorID_save     ||
+           m_variable_photoSensor_hits_energy_save              ;
+}
+G4bool OutputMessenger::get_calorimeter_hits_save() const {
+    return m_variable_calorimeter_hits_position_absolute_save ||
+           m_variable_calorimeter_hits_position_relative_save ||
+           m_variable_calorimeter_hits_position_initial_save  ||
+           m_variable_calorimeter_hits_time_save              ||
+           m_variable_calorimeter_hits_process_save           ||
+           m_variable_calorimeter_hits_calorimeterID_save     ||
+           m_variable_calorimeter_hits_energy_save              ;
+}
+G4bool OutputMessenger::get_lens_hits_save() const {
+    return m_variable_lens_hits_position_absolute_save ||
+           m_variable_lens_hits_position_relative_save ||
+           m_variable_lens_hits_position_initial_save  ||
+           m_variable_lens_hits_time_save              ||
+           m_variable_lens_hits_process_save           ||
+           m_variable_lens_hits_lensID_save            ||
+           m_variable_lens_hits_energy_save            ||
+           m_variable_lens_hits_transmittance_save       ;
+}
+G4bool OutputMessenger::get_medium_hits_save() const {
+    return m_variable_medium_hits_position_absolute_save ||
+           m_variable_medium_hits_position_initial_save  ||
+           m_variable_medium_hits_direction_save         ||
+           m_variable_medium_hits_energy_save            ||
+           m_variable_medium_hits_process_save           ||
+           m_variable_medium_hits_time_save              ||
+           m_variable_medium_hits_mediumID_save          ||
+           m_variable_medium_hits_transmittance_save       ;
+}
+G4bool OutputMessenger::get_primary_save() const {
+    return m_variable_primary_position_save          ||
+           m_variable_primary_direction_save         ||
+           m_variable_primary_emission_photon_save   ||
+           m_variable_primary_emission_electron_save ||
+           m_variable_primary_process_save           ||
+           m_variable_primary_time_save              ||
+           m_variable_primary_energy_save            ||
+           m_variable_primary_volume_save            ||
+           m_variable_primary_pdg_save                 ;
+}
+G4bool OutputMessenger::get_photon_save() const {
+    return m_variable_photon_length_save     ||
+           m_variable_photon_process_save    ||
+           m_variable_photon_time_save       ||
+           m_variable_photon_position_save   ||
+           m_variable_photon_direction_save  ||
+           m_variable_photon_energy_save     ||
+           m_variable_photon_volume_save     ||
+           m_variable_photon_stepNumber_save   ;
 }
 
 void OutputMessenger::set_GDML_save( G4bool t_newValue ) {
@@ -461,6 +597,30 @@ void OutputMessenger::set_lens_hits_energy_save( G4bool t_newValue ) {
 }
 void OutputMessenger::set_lens_hits_transmittance_save( G4bool t_newValue ) {
     m_variable_lens_hits_transmittance_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_position_absolute_save( G4bool t_newValue ) {
+    m_variable_medium_hits_position_absolute_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_position_initial_save( G4bool t_newValue ) {
+    m_variable_medium_hits_position_initial_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_direction_save( G4bool t_newValue ) {
+    m_variable_medium_hits_direction_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_energy_save( G4bool t_newValue ) {
+    m_variable_medium_hits_energy_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_process_save( G4bool t_newValue ) {
+    m_variable_medium_hits_process_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_time_save( G4bool t_newValue ) {
+    m_variable_medium_hits_time_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_mediumID_save( G4bool t_newValue ) {
+    m_variable_medium_hits_mediumID_save = t_newValue;
+}
+void OutputMessenger::set_medium_hits_transmittance_save( G4bool t_newValue ) {
+    m_variable_medium_hits_transmittance_save = t_newValue;
 }
 void OutputMessenger::set_primary_position_save( G4bool t_newValue ) {
     m_variable_primary_position_save = t_newValue;

@@ -2,11 +2,21 @@ import numpy as np
 import tqdm
 import matplotlib.pyplot as plt
 
-def get_PDF(data, nBins=100, bins=None):
+def get_PDF(data, nBins=100, bins=None, addStart=False, addEnd=False):
     if bins is None:
         hist, bins = np.histogram(data, bins=nBins)
     else:
         hist, bins, _ = plt.hist(data, bins=bins)
+
+    if addStart:
+        bins = np.insert(bins, 0, 0)
+        bins = np.insert(bins, 1, bins[1] - bins[2] + bins[1])
+        hist = np.insert(hist, 0, 0)
+        hist = np.insert(hist, 1, 0)
+    if addEnd:
+        bins = np.insert(bins, len(bins), bins[-1] + bins[1] - bins[0])
+        hist = np.insert(hist, len(hist), 0)
+        
     cumulative_sum = np.cumsum(hist)
     PDF = cumulative_sum/cumulative_sum[-1]
     scaled_hist = hist / cumulative_sum[-1]

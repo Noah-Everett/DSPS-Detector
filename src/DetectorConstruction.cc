@@ -22,7 +22,6 @@ DetectorConstruction::DetectorConstruction( G4bool t_make_SDandField ) :
 DetectorConstruction::~DetectorConstruction() {
     if( m_world           ) delete m_world              ;
     if( m_detector_wall   ) delete m_detector_wall      ;
-    if( m_detector_medium ) delete m_detector_medium    ;
     if( m_GDMLParser      ) delete m_GDMLParser         ;
 
     for( auto& calorimeter : m_calorimeters_full )
@@ -34,6 +33,9 @@ DetectorConstruction::~DetectorConstruction() {
     for( auto& directionSensitivePhotoDetector : m_directionSensitivePhotoDetectors )
         if( directionSensitivePhotoDetector ) 
             delete directionSensitivePhotoDetector;
+    for( auto& medium : m_mediums )
+        if( medium ) 
+            delete medium;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -47,9 +49,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     make_detector                       ();
     
     m_world_physicalVolume = 
-    m_world          ->place( nullptr, G4ThreeVector(0,0,0), nullptr                              );
-    m_detector_wall  ->place( nullptr, G4ThreeVector(0,0,0), m_world        ->get_logicalVolume() );
-    m_detector_medium->place( nullptr, G4ThreeVector(0,0,0), m_detector_wall->get_logicalVolume() );
+    m_world        ->place( nullptr, G4ThreeVector(0,0,0), nullptr                              );
+    m_detector_wall->place( nullptr, G4ThreeVector(0,0,0), m_world        ->get_logicalVolume() );
+    m_mediums.at(0)->place( nullptr, G4ThreeVector(0,0,0), m_detector_wall->get_logicalVolume() );
 
     G4int countIndex { 0 };
     place_surface(  m_axis_x, countIndex++ );
@@ -116,10 +118,8 @@ void DetectorConstruction::make_detector() {
     G4double detector_medium_size_x = detector_wall_size_x - 2 * detector_wall_thickness ;
     G4double detector_medium_size_y = detector_wall_size_y - 2 * detector_wall_thickness ;
     G4double detector_medium_size_z = detector_wall_size_z - 2 * detector_wall_thickness ;
-    m_detector_medium->set_material( m_constructionMessenger->get_detector_medium_material() );
-    m_detector_medium->set_solid( new G4Box( "detector_medium", detector_medium_size_x / 2, detector_medium_size_y / 2, detector_medium_size_z / 2 ) );
-    m_detector_medium->set_visAttributes( m_constructionMessenger->get_detector_medium_visAttributes() );
-    m_detector_medium->make_logicalVolume();
+    G4ThreeVector detector_medium_size( detector_medium_size_x, detector_medium_size_y, detector_medium_size_z );
+    m_mediums.push_back( new Medium( "detector_medium", 0, detector_medium_size ) );
 }
 
 Calorimeter* DetectorConstruction::make_calorimeter_full( const G4String& t_name, const G4String& t_index ) {
@@ -156,9 +156,9 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
 
     t_axis_normal = t_axis_normal.unit();
 
-    G4double detector_medium_x  = m_detector_medium->get_solid()->GetXHalfLength();
-    G4double detector_medium_y  = m_detector_medium->get_solid()->GetYHalfLength();
-    G4double detector_medium_z  = m_detector_medium->get_solid()->GetZHalfLength();
+    G4double detector_medium_x  = m_mediums.at(0)->get_size_x() / 2;
+    G4double detector_medium_y  = m_mediums.at(0)->get_size_y() / 2;
+    G4double detector_medium_z  = m_mediums.at(0)->get_size_z() / 2;
     G4double calorimeter_width  = Calorimeter::get_width () / 2;
     G4double calorimeter_height = Calorimeter::get_height() / 2;
     G4double calorimeter_depth  = Calorimeter::get_depth () / 2;
@@ -204,7 +204,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
                                        + to_string( position.y() ) + "_" 
                                        + to_string( position.z() ) + "_" 
                                        + to_string( count++ ) 
-                                 )->place( rotationMatrix, position, m_detector_medium->get_logicalVolume(), true );
+                                 )->place( rotationMatrix, position, m_mediums.at(0)->get_logicalVolume(), true );
         }
     }
 
@@ -226,7 +226,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
                                        + to_string( position.y() ) + "_" 
                                        + to_string( position.z() ) + "_" 
                                        + to_string( count++ ) 
-                                 )->place( rotationMatrix_calorimeterFull, position, m_detector_medium->get_logicalVolume(), true );
+                                 )->place( rotationMatrix_calorimeterFull, position, m_mediums.at(0)->get_logicalVolume(), true );
         }
     }
 
@@ -248,7 +248,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
                                          + to_string( position.y() ) + "_" 
                                          + to_string( position.z() ) + "_" 
                                          + to_string( count++ ) 
-                                    )->place( rotationMatrix, position, m_detector_medium->get_logicalVolume(), true );
+                                    )->place( rotationMatrix, position, m_mediums.at(0)->get_logicalVolume(), true );
         }
     }
 
@@ -271,7 +271,7 @@ void DetectorConstruction::place_surface( G4ThreeVector t_axis_normal, G4int t_c
                                                         + to_string( position_front.y() ) + "_" 
                                                         + to_string( position_front.z() ) + "_" 
                                                         + to_string( count++ ) 
-                                                )->place( rotationMatrix_DSPD, position, m_detector_medium->get_logicalVolume(), true, "back" );
+                                                )->place( rotationMatrix_DSPD, position, m_mediums.at(0)->get_logicalVolume(), true, "back" );
         }
     }
 }
@@ -280,40 +280,58 @@ void DetectorConstruction::ConstructSDandField() {
     if( !m_make_SDandField ) return;
 
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
+    OutputMessenger* outputMessenger = OutputMessenger::get_instance();
 
-    for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
-        auto& calorimeter = m_calorimeters_full[i];
-        CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i );
-        cSD->set_position( calorimeter->get_position() );
-        cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
-        SDManager->AddNewDetector( cSD );
-        calorimeter->set_sensitiveDetector( cSD );
-    }
-    for( G4int i = 0; i < m_calorimeters_middle.size(); i++ ) {
-        auto& calorimeter = m_calorimeters_middle[i];
-        CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i + m_calorimeters_full.size() );
-        cSD->set_position( calorimeter->get_position() );
-        cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
-        SDManager->AddNewDetector( cSD );
-        calorimeter->set_sensitiveDetector( cSD );
-    }
-    for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
-        auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
-        auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
-        for( auto& lens : lensSystem->get_lenses() ) {
-            LensSensitiveDetector* lSD = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector", i );
-            lSD->set_position( lens->get_position_center() );
-            lSD->set_rotationMatrix( lens->get_rotationMatrix() );
-            SDManager->AddNewDetector( lSD );
-            lens->set_sensitiveDetector( lSD );
+    if( outputMessenger->get_calorimeter_hits_save() )
+        for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
+            auto& calorimeter = m_calorimeters_full[i];
+            CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i );
+            cSD->set_position( calorimeter->get_position() );
+            cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
+            SDManager->AddNewDetector( cSD );
+            calorimeter->set_sensitiveDetector( cSD );
+        }
+    
+    if( outputMessenger->get_calorimeter_hits_save() )
+        for( G4int i = 0; i < m_calorimeters_middle.size(); i++ ) {
+            auto& calorimeter = m_calorimeters_middle[i];
+            CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i + m_calorimeters_full.size() );
+            cSD->set_position( calorimeter->get_position() );
+            cSD->set_rotationMatrix( calorimeter->get_rotationMatrix() );
+            SDManager->AddNewDetector( cSD );
+            calorimeter->set_sensitiveDetector( cSD );
         }
 
-        auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
-        PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
-        psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_photoSensor()->get_position_front() );
-        psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
-        SDManager->AddNewDetector( psSD );
-        directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
+    if( outputMessenger->get_photoSensor_hits_save() )
+        for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
+            auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
+            auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
+            PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
+            psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_photoSensor()->get_position_front() );
+            psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
+            SDManager->AddNewDetector( psSD );
+            directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
+        }
+
+    if( outputMessenger->get_lens_hits_save() )
+        for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
+            auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
+            auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
+            for( auto& lens : lensSystem->get_lenses() ) {
+                LensSensitiveDetector* lSD = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector", i );
+                lSD->set_position( lens->get_position_center() );
+                lSD->set_rotationMatrix( lens->get_rotationMatrix() );
+                SDManager->AddNewDetector( lSD );
+                lens->set_sensitiveDetector( lSD );
+            }
+        }
+
+    if( outputMessenger->get_medium_hits_save() ) {
+        MediumSensitiveDetector* mSD = new MediumSensitiveDetector( m_mediums.at(0)->get_name() + "_sensitiveDetector", 0 );
+        mSD->set_position( m_mediums.at(0)->get_position() );
+        mSD->set_rotationMatrix( m_mediums.at(0)->get_rotationMatrix() );
+        SDManager->AddNewDetector( mSD );
+        m_mediums.at(0)->set_sensitiveDetector( mSD );
     }
 }
 
@@ -342,4 +360,8 @@ vector< DirectionSensitivePhotoDetector* > DetectorConstruction::get_directionSe
 
 G4bool DetectorConstruction::get_make_SDandField() const {
     return m_make_SDandField;
+}
+
+vector< Medium* > DetectorConstruction::get_mediums() const {
+    return m_mediums;
 }

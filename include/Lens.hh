@@ -35,6 +35,7 @@ using std      ::stringstream;
 using std      ::map;
 using std      ::swap;
 using G4StrUtil::to_lower ;
+
 class Lens
 {
     public:

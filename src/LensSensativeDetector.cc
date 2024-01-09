@@ -28,19 +28,17 @@ void LensSensitiveDetector::Initialize( G4HCofThisEvent* t_hitCollectionOfThisEv
 G4bool LensSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
     LensHit* hit = new LensHit();
 
-    hit->set_lens_position            ( m_position                                                             );
-    hit->set_lens_rotationMatrix      ( m_rotationMatrix                                                       );
-    hit->set_lens_name                ( m_name                                                                 );
-    hit->set_lens_ID                  ( m_ID                                                                   );
-    hit->set_hit_position_absolute    ( t_step->GetPostStepPoint()->GetPosition      ()                        );
-    hit->set_hit_time                 ( t_step->GetPostStepPoint()->GetGlobalTime    ()                        );
-    hit->set_hit_energy               ( t_step->GetPostStepPoint()->GetKineticEnergy ()                        );
-    hit->set_hit_momentum             ( t_step->GetPostStepPoint()->GetMomentum      ()                        );
-    hit->set_hit_process              ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()  );
-    hit->set_particle_energy          ( t_step->GetTrack        ()->GetKineticEnergy ()                        );
-    hit->set_particle_momentum        ( t_step->GetTrack        ()->GetMomentum      ()                        );
-    hit->set_particle_position_initial( t_step->GetTrack        ()->GetVertexPosition()                        );
-    hit->set_particle_transmittance   ( ( t_step->GetTrack()->GetTrackStatus() == fStopAndKill) ? false : true );
+    hit->set_lens_position            ( m_position                                                              );
+    hit->set_lens_rotationMatrix      ( m_rotationMatrix                                                        );
+    hit->set_lens_name                ( m_name                                                                  );
+    hit->set_lens_ID                  ( m_ID                                                                    );
+    hit->set_hit_position_absolute    ( t_step->GetPostStepPoint()->GetPosition      ()                         );
+    hit->set_hit_time                 ( t_step->GetPostStepPoint()->GetGlobalTime    ()                         );
+    hit->set_hit_energy               ( t_step->GetPostStepPoint()->GetKineticEnergy ()                         );
+    hit->set_hit_momentum             ( t_step->GetPostStepPoint()->GetMomentum      ()                         );
+    hit->set_hit_process              ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()   );
+    hit->set_particle_position_initial( t_step->GetTrack        ()->GetVertexPosition()                         );
+    hit->set_particle_transmittance   ( ( t_step->GetTrack()->GetTrackStatus() == fStopAndKill ) ? false : true );
 
     m_lensHitsCollection->insert( hit );
 

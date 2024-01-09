@@ -29,14 +29,13 @@
 class LensHit : public G4VHit
 {
     public:
-        LensHit(                                                    );
-        LensHit( const G4ThreeVector    &,       G4RotationMatrix* , 
-                        const G4String         &,       G4int             ,
-                        const G4ThreeVector    &, const G4double         &, 
-                        const G4double         &, const G4double         &, 
-                        const G4ThreeVector    &, const G4ThreeVector    & );
-        LensHit( const LensHit   &                           );
-       ~LensHit(                                                    ) override = default;
+        LensHit(                                            );
+        LensHit( const G4ThreeVector&, G4RotationMatrix  * ,
+                 const G4String     &, G4int               ,
+                 const G4ThreeVector&, const G4double     &,
+                 const G4double     &, const G4ThreeVector& );
+        LensHit( const LensHit      &                       );
+       ~LensHit(                                            ) override = default;
 
        inline void* operator new   ( size_t );
        inline void  operator delete( void*  );
@@ -58,8 +57,6 @@ class LensHit : public G4VHit
         void set_hit_energy                (       G4double          );
         void set_hit_momentum              (       G4ThreeVector     );
         void set_hit_process               ( const G4String&         );
-        void set_particle_energy           (       G4double          );
-        void set_particle_momentum         (       G4ThreeVector     );
         void set_particle_position_initial (       G4ThreeVector     );
         void set_particle_transmittance    (       G4bool            );
 
@@ -73,8 +70,6 @@ class LensHit : public G4VHit
         G4double          get_hit_energy                ();
         G4ThreeVector     get_hit_momentum              ();
         G4String          get_hit_process               ();
-        G4double          get_particle_energy           ();
-        G4ThreeVector     get_particle_momentum         ();
         G4ThreeVector     get_particle_position_initial ();
         G4bool            get_particle_transmittance    ();
 
@@ -88,8 +83,6 @@ class LensHit : public G4VHit
         G4double          m_hit_energy                ;
         G4ThreeVector     m_hit_momentum              ;
         G4String          m_hit_process               ;
-        G4double          m_particle_energy           ;
-        G4ThreeVector     m_particle_momentum         ;
         G4ThreeVector     m_particle_position_initial ;
         G4bool            m_particle_transmittance    ;
 

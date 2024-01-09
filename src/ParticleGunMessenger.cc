@@ -10,6 +10,7 @@
 //*/////////////////////////////////////////////////////////////////////////*//
 
 #include "ParticleGunMessenger.hh"
+#include "ParticleGun.hh"
 
 ParticleGunMessenger* ParticleGunMessenger::m_instance{ nullptr };
 
@@ -27,6 +28,7 @@ ParticleGunMessenger::ParticleGunMessenger() {
     m_parameter_position_x_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/position/x/max"   , this );
     m_parameter_position_y_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/position/y/max"   , this );
     m_parameter_position_z_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/position/z/max"   , this );
+    m_parameter_nParticles            = new G4UIcmdWithAnInteger     ( "/particleGun/nParticles"       , this );
 
     m_parameter_momentum_random->SetDefaultValue( false );
 }
@@ -45,6 +47,7 @@ ParticleGunMessenger::~ParticleGunMessenger() {
     if( m_parameter_position_x_random_max ) delete m_parameter_position_x_random_max;
     if( m_parameter_position_y_random_max ) delete m_parameter_position_y_random_max;
     if( m_parameter_position_z_random_max ) delete m_parameter_position_z_random_max;
+    if( m_parameter_nParticles            ) delete m_parameter_nParticles           ;
 }
 
 ParticleGunMessenger* ParticleGunMessenger::get_instance() {
@@ -99,6 +102,10 @@ void ParticleGunMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newVa
         G4cout << "Setting `position_y_max' to " << t_newValue << G4endl;
     } else if( t_command == m_parameter_position_z_random_max ) {
         set_position_z_random_max( m_parameter_position_z_random_max->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `position_z_max' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_nParticles ) {
+        set_nParticles( m_parameter_nParticles->GetNewIntValue( t_newValue ) );
+        G4cout << "Setting `nParticles' to " << t_newValue << G4endl;
     } else
         G4Exception( "ParticleGunMessenger::SetNewValue", "Unknown command", FatalErrorInArgument, t_newValue );
 }
@@ -142,6 +149,9 @@ G4double ParticleGunMessenger::get_position_y_random_max() {
 G4double ParticleGunMessenger::get_position_z_random_max() { 
     return m_variable_position_z_random_max; 
 }
+G4int ParticleGunMessenger::get_nParticles() { 
+    return m_variable_nParticles; 
+}
 
 void ParticleGunMessenger::set_momentum_random( G4bool t_variable_momentum_random ) { 
     m_variable_momentum_random = t_variable_momentum_random; 
@@ -181,4 +191,18 @@ void ParticleGunMessenger::set_position_y_random_max( G4double t_variable_positi
 }
 void ParticleGunMessenger::set_position_z_random_max( G4double t_variable_position_z_random_max ) { 
     m_variable_position_z_random_max = t_variable_position_z_random_max; 
+}
+void ParticleGunMessenger::set_nParticles( G4int t_variable_nParticles ) { 
+    m_variable_nParticles = t_variable_nParticles; 
+
+    if( m_particleGun )
+        m_particleGun->SetNumberOfParticles( m_variable_nParticles );
+}
+
+void ParticleGunMessenger::set_primaryGeneratorAction( PrimaryGeneratorAction* t_primaryGeneratorAction ) {
+    m_primaryGeneratorAction = t_primaryGeneratorAction;
+}
+
+void ParticleGunMessenger::set_particleGun( ParticleGun* t_particleGun ) {
+    m_particleGun = t_particleGun;
 }

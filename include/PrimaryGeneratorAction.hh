@@ -23,6 +23,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         PrimaryGeneratorAction();
        ~PrimaryGeneratorAction();
 
+        ParticleGun* get_particleGun();
+
     void GeneratePrimaries( G4Event* ) override;
 
     private:

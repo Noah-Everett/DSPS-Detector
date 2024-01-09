@@ -23,9 +23,7 @@ LensHit::LensHit( const G4ThreeVector    & t_lens_position      ,
                   const G4ThreeVector    & t_hit_position       ,
                   const G4double         & t_hit_time           ,
                   const G4double         & t_hit_energy         ,
-                  const G4double         & t_particle_energy    ,
-                  const G4ThreeVector    & t_hit_momentum       ,
-                  const G4ThreeVector    & t_particle_momentum   ) {
+                  const G4ThreeVector    & t_hit_momentum        ) {
     m_lens_position       = t_lens_position      ;
     m_lens_rotationMatrix = t_lens_rotationMatrix;
     m_lens_name           = t_lens_name          ;
@@ -34,8 +32,6 @@ LensHit::LensHit( const G4ThreeVector    & t_lens_position      ,
     m_hit_time            = t_hit_time           ;
     m_hit_energy          = t_hit_energy         ;
     m_hit_momentum        = t_hit_momentum       ;
-    m_particle_energy     = t_particle_energy    ;
-    m_particle_momentum   = t_particle_momentum  ;
 }
 
 LensHit::LensHit( const LensHit& t_hit ) {
@@ -47,8 +43,6 @@ LensHit::LensHit( const LensHit& t_hit ) {
     m_hit_time            = t_hit.m_hit_time           ;
     m_hit_energy          = t_hit.m_hit_energy         ;
     m_hit_momentum        = t_hit.m_hit_momentum       ;
-    m_particle_energy     = t_hit.m_particle_energy    ;
-    m_particle_momentum   = t_hit.m_particle_momentum  ;
 }
 
 void LensHit::Draw() {
@@ -77,9 +71,7 @@ std::ostream& operator<<( std::ostream& t_os, const LensHit& t_lensHit ) {
                 << "hit_position="        <<  t_lensHit.m_hit_position        << ", \n"
                 << "hit_time="            <<  t_lensHit.m_hit_time            << ", \n"
                 << "hit_energy="          <<  t_lensHit.m_hit_energy          << ", \n"
-                << "hit_momentum="        <<  t_lensHit.m_hit_momentum        << ", \n"
-                << "particle_energy="     <<  t_lensHit.m_particle_energy     << ", \n"
-                << "particle_momentum="   <<  t_lensHit.m_particle_momentum   << "]";
+                << "hit_momentum="        <<  t_lensHit.m_hit_momentum        << "]" << G4endl;
 
     return t_os;
 }
@@ -118,16 +110,8 @@ void LensHit::set_hit_energy( G4double t_hit_energy ) {
     m_hit_energy = t_hit_energy;
 }
 
-void LensHit::set_particle_energy( G4double t_particle_energy ) {
-    m_particle_energy = t_particle_energy;
-}
-
 void LensHit::set_hit_momentum( G4ThreeVector t_hit_momentum ) {
     m_hit_momentum = t_hit_momentum;
-}
-
-void LensHit::set_particle_momentum( G4ThreeVector t_particle_momentum ) {
-    m_particle_momentum = t_particle_momentum;
 }
 
 void LensHit::set_particle_position_initial( G4ThreeVector t_particle_position_initial ) {
@@ -195,16 +179,8 @@ G4double LensHit::get_hit_energy() {
     return m_hit_energy;
 }
 
-G4double LensHit::get_particle_energy() {
-    return m_particle_energy;
-}
-
 G4ThreeVector LensHit::get_hit_momentum() {
     return m_hit_momentum;
-}
-
-G4ThreeVector LensHit::get_particle_momentum() {
-    return m_particle_momentum;
 }
 
 G4ThreeVector LensHit::get_particle_position_initial() {

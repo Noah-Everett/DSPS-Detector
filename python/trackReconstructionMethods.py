@@ -2,93 +2,7 @@ import numpy as np
 import tqdm
 from scipy.spatial.distance import cdist
 
-def get_voxelGrid_hitVector(shape, start, end, weight, verbose=False):
-    if weight == None:
-        weight = 1
-    elif weight > 1 or weight <= 0:
-        raise ValueError('weight must be None or a value between 0 and 1')
-
-    grid = np.zeros(shape, dtype=float)
-    x1, y1, z1 = start
-    x2, y2, z2 = end
-
-    dx = abs(x2 - x1)
-    dy = abs(y2 - y1)
-    dz = abs(z2 - z1)
-
-    sx = 1 if x1 < x2 else -1
-    sy = 1 if y1 < y2 else -1
-    sz = 1 if z1 < z2 else -1
-
-    possiblePositions = np.argwhere(grid == 0).tolist()
-    possiblePositions = [tuple(position) for position in possiblePositions]
-
-    if dx >= dy and dx >= dz:
-        # X is the dominant axis
-        d1 = dy - dx
-        d2 = dz - dx
-        while x1 != x2:
-            if (x1, y1, z1) in possiblePositions:
-                grid[x1, y1, z1] += weight
-            elif verbose:
-                print('Warning: Non-endpoint out of bounds')
-            x1 += sx
-            if d1 >= 0:
-                y1 += sy
-                d1 -= dx
-            if d2 >= 0:
-                z1 += sz
-                d2 -= dx
-            d1 += dy
-            d2 += dz
-
-    elif dy >= dx and dy >= dz:
-        # Y is the dominant axis
-        d1 = dx - dy
-        d2 = dz - dy
-        while y1 != y2:
-            if (x1, y1, z1) in possiblePositions:
-                grid[x1, y1, z1] += weight
-            elif verbose:
-                print('Warning: Non-endpoint out of bounds')
-            y1 += sy
-            if d1 >= 0:
-                x1 += sx
-                d1 -= dy
-            if d2 >= 0:
-                z1 += sz
-                d2 -= dy
-            d1 += dx
-            d2 += dz
-
-    else:
-        # Z is the dominant axis
-        d1 = dx - dz
-        d2 = dy - dz
-        while z1 != z2:
-            if (x1, y1, z1) in possiblePositions:
-                grid[x1, y1, z1] += weight
-            elif verbose:
-                print('Warning: Non-endpoint out of bounds')
-            z1 += sz
-            if d1 >= 0:
-                x1 += sx
-                d1 -= dz
-            if d2 >= 0:
-                y1 += sy
-                d2 -= dz
-            d1 += dx
-            d2 += dy
-
-    # Add the last point
-    if (x2, y2, z2) in possiblePositions:
-        grid[x2, y2, z2] += weight
-    elif verbose:
-        print('Warning: Endpoint out of bounds')
-
-    return grid
-
-def get_voxelGrid_hitVector_batch(shape, starts, ends, weights, verbose=False):
+def get_voxelGrid_hitVector(shape, starts, ends, weights):
     if weights is None:
         weights = np.ones(len(starts))
     elif len(weights) != len(starts):
@@ -130,15 +44,11 @@ def get_voxelGrid_hitVector_batch(shape, starts, ends, weights, verbose=False):
     Y_ind = Y_ind[~np.isin(Y_ind, X_ind)]
     Z_ind = np.linspace(0, len(starts)-1, len(starts), dtype=int)
     Z_ind = Z_ind[~np.isin(Z_ind, np.concatenate((X_ind, Y_ind)))]
-    print('X_ind', X_ind)
-    print('Y_ind', Y_ind)
-    print('Z_ind', Z_ind)
 
     # if X is the dominant axis
     d1 = dy - dx
     d2 = dz - dx
     x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(X_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    print('starting X')
     while np.where(x1 != x2)[0].size > 0:
         X_ind = np.where(x1 != x2)[0]
         x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(X_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
@@ -166,7 +76,6 @@ def get_voxelGrid_hitVector_batch(shape, starts, ends, weights, verbose=False):
     d1 = dx - dy
     d2 = dz - dy
     x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Y_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    print('starting Y')
     while np.where(y1 != y2)[0].size > 0:
         Y_ind = np.where(y1 != y2)[0]
         x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Y_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
@@ -194,7 +103,6 @@ def get_voxelGrid_hitVector_batch(shape, starts, ends, weights, verbose=False):
     d1 = dx - dz
     d2 = dy - dz
     x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Z_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    print('starting Z')
     while np.where(z1 != z2)[0].size > 0:
         Z_ind = np.where(z1 != z2)[0]
         x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Z_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
@@ -217,93 +125,13 @@ def get_voxelGrid_hitVector_batch(shape, starts, ends, weights, verbose=False):
         d1 += dx
         d2 += dy
 
-    print('starting last')
     x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w = initializeVariables()
     ind_cur = np.where((x2 >= 0) & (x2 < shape[0]) &
                        (y2 >= 0) & (y2 < shape[1]) &
                        (z2 >= 0) & (z2 < shape[2]))[0]
     np.add.at(grid, (x2[ind_cur], y2[ind_cur], z2[ind_cur]), weights[ind_cur])
 
-    # for start, end, weight in tqdm.tqdm(zip(starts, ends, weights), total=len(starts)):
-    #     x1, y1, z1 = start
-    #     x2, y2, z2 = end
-
-    #     dx = abs(x2 - x1)
-    #     dy = abs(y2 - y1)
-    #     dz = abs(z2 - z1)
-
-    #     sx = 1 if x1 < x2 else -1
-    #     sy = 1 if y1 < y2 else -1
-    #     sz = 1 if z1 < z2 else -1
-
-    #     possible_positions = np.argwhere(grid == 0).tolist()
-    #     possible_positions = [tuple(position) for position in possible_positions]
-
-    #     if dx >= dy and dx >= dz:
-    #         # X is the dominant axis
-    #         d1 = dy - dx
-    #         d2 = dz - dx
-    #         while x1 != x2:
-    #             if (x1, y1, z1) in possible_positions:
-    #                 grid[x1, y1, z1] += weight
-    #             elif verbose:
-    #                 print('Warning: Non-endpoint out of bounds')
-    #             x1 += sx
-    #             if d1 >= 0:
-    #                 y1 += sy
-    #                 d1 -= dx
-    #             if d2 >= 0:
-    #                 z1 += sz
-    #                 d2 -= dx
-    #             d1 += dy
-    #             d2 += dz
-
-    #     elif dy >= dx and dy >= dz:
-    #         # Y is the dominant axis
-    #         d1 = dx - dy
-    #         d2 = dz - dy
-    #         while y1 != y2:
-    #             if (x1, y1, z1) in possible_positions:
-    #                 grid[x1, y1, z1] += weight
-    #             elif verbose:
-    #                 print('Warning: Non-endpoint out of bounds')
-    #             y1 += sy
-    #             if d1 >= 0:
-    #                 x1 += sx
-    #                 d1 -= dy
-    #             if d2 >= 0:
-    #                 z1 += sz
-    #                 d2 -= dy
-    #             d1 += dx
-    #             d2 += dz
-
-    #     else:
-    #         # Z is the dominant axis
-    #         d1 = dx - dz
-    #         d2 = dy - dz
-    #         while z1 != z2:
-    #             if (x1, y1, z1) in possible_positions:
-    #                 grid[x1, y1, z1] += weight
-    #             elif verbose:
-    #                 print('Warning: Non-endpoint out of bounds')
-    #             z1 += sz
-    #             if d1 >= 0:
-    #                 x1 += sx
-    #                 d1 -= dz
-    #             if d2 >= 0:
-    #                 y1 += sy
-    #                 d2 -= dz
-    #             d1 += dx
-    #             d2 += dy
-
-    #     # Add the last point
-    #     if (x2, y2, z2) in possible_positions:
-    #         grid[x2, y2, z2] += weight
-    #     elif verbose:
-    #         print('Warning: Endpoint out of bounds')
-
     return grid
-
 
 def get_voxelGrid_errors(grid):
     grid_copy = grid.copy()
@@ -341,41 +169,10 @@ def get_voxelGrid_errors(grid):
 
     return grid_copy
 
-# def get_voxelGrid_errors(grid, max_distance=10):
-#     grid_copy = grid.copy()
-
-#     points = np.argwhere(grid_copy >= 0).tolist()
-#     points = [tuple(point) for point in points]
-
-#     points_hit = np.argwhere(grid_copy > 0).tolist()
-#     points_hit = [tuple(point) for point in points_hit]
-    
-#     for i in tqdm.tqdm(range(max_distance+1)):
-#         p = np.exp(-i)
-        
-#         for point in points_hit:
-#             x, y, z = point
-            
-#             # Generate all possible new points within the distance
-#             new_points = [(x + dx, y + dy, z + dz) for dx in range(-i, i + 1)
-#                           for dy in range(-i, i + 1) 
-#                           for dz in range(-i, i + 1)]
-            
-#             # Filter new points that are in the list of existing points
-#             valid_new_points = filter(lambda np: np in points, new_points)
-#             valid_new_points = [(x, y, z) for x, y, z in valid_new_points if (x, y, z) != point]
-
-#             # Update grid_copy for valid new points
-#             for new_point in valid_new_points:
-#                 if grid_copy[new_point] < p * grid_copy[point]:
-#                     grid_copy[new_point] = p * grid_copy[point]
-
-#     return grid_copy
-
 def get_voxelGrid(shape, detectorDimensions, 
                   sensorPositions, recoDirections, 
                   hitWeights=None, max_distance=10, 
-                  make_errors=False, verbose=False):
+                  make_errors=False):
     shape = np.array(shape).reshape(3)
     detectorDimensions = np.array(detectorDimensions).reshape(3)
     sensorPositions = np.array(sensorPositions).reshape(-1, 3)
@@ -391,7 +188,7 @@ def get_voxelGrid(shape, detectorDimensions,
 
     # for start, end, weight in tqdm.tqdm(zip(starts, ends, hitWeights), total=len(starts)):
     #     grid += get_voxelGrid_hitVector(shape, start, end, weight, verbose=verbose)
-    grid = get_voxelGrid_hitVector_batch(shape, starts, ends, hitWeights, verbose=verbose)
+    grid = get_voxelGrid_hitVector(shape, starts, ends, hitWeights)
 
     if make_errors:
         grid = get_voxelGrid_errors(grid)#, max_distance=max_distance)

@@ -20,6 +20,9 @@
 #include "G4UImessenger.hh"
 #include "G4SystemOfUnits.hh"
 
+class ParticleGun;
+class PrimaryGeneratorAction;
+
 class ParticleGunMessenger : public G4UImessenger
 {
     public:
@@ -41,6 +44,7 @@ class ParticleGunMessenger : public G4UImessenger
         G4double get_position_x_random_max();
         G4double get_position_y_random_max();
         G4double get_position_z_random_max();
+        G4int    get_nParticles           ();
 
         void set_momentum_random      ( G4bool   );
         void set_position_x_random    ( G4bool   );
@@ -55,6 +59,10 @@ class ParticleGunMessenger : public G4UImessenger
         void set_position_x_random_max( G4double );
         void set_position_y_random_max( G4double );
         void set_position_z_random_max( G4double );
+        void set_nParticles           ( G4int    );
+
+        void set_primaryGeneratorAction( PrimaryGeneratorAction* );
+        void set_particleGun           ( ParticleGun           * );
 
     private:
         static ParticleGunMessenger* m_instance;
@@ -76,6 +84,7 @@ class ParticleGunMessenger : public G4UImessenger
         G4UIcmdWithADoubleAndUnit* m_parameter_position_x_random_max{ nullptr };
         G4UIcmdWithADoubleAndUnit* m_parameter_position_y_random_max{ nullptr };
         G4UIcmdWithADoubleAndUnit* m_parameter_position_z_random_max{ nullptr };
+        G4UIcmdWithAnInteger     * m_parameter_nParticles           { nullptr };
 
         G4bool   m_variable_momentum_random      { false };
         G4bool   m_variable_position_x_random    { false };
@@ -90,6 +99,10 @@ class ParticleGunMessenger : public G4UImessenger
         G4double m_variable_position_x_random_max{ 0     };
         G4double m_variable_position_y_random_max{ 0     };
         G4double m_variable_position_z_random_max{ 0     };
+        G4int    m_variable_nParticles           { 1     };
+
+        PrimaryGeneratorAction* m_primaryGeneratorAction{ nullptr };
+        ParticleGun           * m_particleGun           { nullptr };
 };
 
 #endif
