@@ -16,6 +16,12 @@ ParticleGunMessenger* ParticleGunMessenger::m_instance{ nullptr };
 
 ParticleGunMessenger::ParticleGunMessenger() {
     m_parameter_momentum_random       = new G4UIcmdWithABool         ( "/particleGun/momentum/random"  , this );
+    m_parameter_momentum_x_random_min = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/x/min"   , this );
+    m_parameter_momentum_y_random_min = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/y/min"   , this );
+    m_parameter_momentum_z_random_min = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/z/min"   , this );
+    m_parameter_momentum_x_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/x/max"   , this );
+    m_parameter_momentum_y_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/y/max"   , this );
+    m_parameter_momentum_z_random_max = new G4UIcmdWithADoubleAndUnit( "/particleGun/momentum/z/max"   , this );
     m_parameter_position_x_random     = new G4UIcmdWithABool         ( "/particleGun/position/x/random", this );
     m_parameter_position_y_random     = new G4UIcmdWithABool         ( "/particleGun/position/y/random", this );
     m_parameter_position_z_random     = new G4UIcmdWithABool         ( "/particleGun/position/z/random", this );
@@ -35,6 +41,12 @@ ParticleGunMessenger::ParticleGunMessenger() {
 
 ParticleGunMessenger::~ParticleGunMessenger() {
     if( m_parameter_momentum_random       ) delete m_parameter_momentum_random      ;
+    if( m_parameter_momentum_x_random_min ) delete m_parameter_momentum_x_random_min;
+    if( m_parameter_momentum_y_random_min ) delete m_parameter_momentum_y_random_min;
+    if( m_parameter_momentum_z_random_min ) delete m_parameter_momentum_z_random_min;
+    if( m_parameter_momentum_x_random_max ) delete m_parameter_momentum_x_random_max;
+    if( m_parameter_momentum_y_random_max ) delete m_parameter_momentum_y_random_max;
+    if( m_parameter_momentum_z_random_max ) delete m_parameter_momentum_z_random_max;
     if( m_parameter_position_x_random     ) delete m_parameter_position_x_random    ;
     if( m_parameter_position_y_random     ) delete m_parameter_position_y_random    ;
     if( m_parameter_position_z_random     ) delete m_parameter_position_z_random    ;
@@ -67,6 +79,24 @@ void ParticleGunMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newVa
     if( t_command == m_parameter_momentum_random ) {
         set_momentum_random( m_parameter_momentum_random->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `momentum_random' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_x_random_min ) {
+        set_momentum_x_random_min( m_parameter_momentum_x_random_min->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_x_min' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_y_random_min ) {
+        set_momentum_y_random_min( m_parameter_momentum_y_random_min->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_y_min' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_z_random_min ) {
+        set_momentum_z_random_min( m_parameter_momentum_z_random_min->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_z_min' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_x_random_max ) {
+        set_momentum_x_random_max( m_parameter_momentum_x_random_max->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_x_max' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_y_random_max ) {
+        set_momentum_y_random_max( m_parameter_momentum_y_random_max->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_y_max' to " << t_newValue << G4endl;
+    } else if( t_command == m_parameter_momentum_z_random_max ) {
+        set_momentum_z_random_max( m_parameter_momentum_z_random_max->GetNewDoubleValue( t_newValue ) );
+        G4cout << "Setting `momentum_z_max' to " << t_newValue << G4endl;
     } else if( t_command == m_parameter_position_x_random ) {
         set_position_x_random( m_parameter_position_x_random->GetNewBoolValue( t_newValue ) );
         G4cout << "Setting `position_x_random' to " << t_newValue << G4endl;
@@ -113,6 +143,24 @@ void ParticleGunMessenger::SetNewValue( G4UIcommand* t_command, G4String t_newVa
 G4bool ParticleGunMessenger::get_momentum_random() { 
     return m_variable_momentum_random; 
 }
+G4double ParticleGunMessenger::get_momentum_x_random_min() { 
+    return m_variable_momentum_x_random_min; 
+}
+G4double ParticleGunMessenger::get_momentum_y_random_min() { 
+    return m_variable_momentum_y_random_min; 
+}
+G4double ParticleGunMessenger::get_momentum_z_random_min() { 
+    return m_variable_momentum_z_random_min; 
+}
+G4double ParticleGunMessenger::get_momentum_x_random_max() { 
+    return m_variable_momentum_x_random_max; 
+}
+G4double ParticleGunMessenger::get_momentum_y_random_max() { 
+    return m_variable_momentum_y_random_max; 
+}
+G4double ParticleGunMessenger::get_momentum_z_random_max() { 
+    return m_variable_momentum_z_random_max; 
+}
 G4bool ParticleGunMessenger::get_position_x_random() { 
     return m_variable_position_x_random; 
 }
@@ -155,6 +203,24 @@ G4int ParticleGunMessenger::get_nParticles() {
 
 void ParticleGunMessenger::set_momentum_random( G4bool t_variable_momentum_random ) { 
     m_variable_momentum_random = t_variable_momentum_random; 
+}
+void ParticleGunMessenger::set_momentum_x_random_min( G4double t_variable_momentum_x_random_min ) { 
+    m_variable_momentum_x_random_min = t_variable_momentum_x_random_min; 
+}
+void ParticleGunMessenger::set_momentum_y_random_min( G4double t_variable_momentum_y_random_min ) { 
+    m_variable_momentum_y_random_min = t_variable_momentum_y_random_min; 
+}
+void ParticleGunMessenger::set_momentum_z_random_min( G4double t_variable_momentum_z_random_min ) { 
+    m_variable_momentum_z_random_min = t_variable_momentum_z_random_min; 
+}
+void ParticleGunMessenger::set_momentum_x_random_max( G4double t_variable_momentum_x_random_max ) { 
+    m_variable_momentum_x_random_max = t_variable_momentum_x_random_max; 
+}
+void ParticleGunMessenger::set_momentum_y_random_max( G4double t_variable_momentum_y_random_max ) { 
+    m_variable_momentum_y_random_max = t_variable_momentum_y_random_max; 
+}
+void ParticleGunMessenger::set_momentum_z_random_max( G4double t_variable_momentum_z_random_max ) { 
+    m_variable_momentum_z_random_max = t_variable_momentum_z_random_max; 
 }
 void ParticleGunMessenger::set_position_x_random( G4bool t_variable_position_x_random ) { 
     m_variable_position_x_random = t_variable_position_x_random; 

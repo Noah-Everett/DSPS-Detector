@@ -17,7 +17,7 @@
 /analysis/setFileName calibration.root
 
 /particleGun/momentum/random true
-/particleGun/nParticles      1000
+/particleGun/nParticles      10000
 
 /particleGun/position/x/random true
 /particleGun/position/x/nSteps 0
@@ -36,4 +36,4 @@
 
 /analysis/setHistoDirName photoSensor_hits_histograms
 
-/run/beamOn 100
+/run/beamOn 1000

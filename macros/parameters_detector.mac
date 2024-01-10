@@ -1,12 +1,12 @@
 /geometry/world/size                             5 5 5 m
-/geometry/world/material                         ANNIEWater_unDoped
+/geometry/world/material                         veryInteractive
 /geometry/world/visibility                       false
 /geometry/world/color                            gray
 /geometry/world/alpha                            0
 /geometry/world/forceSolid                       true
 
 /geometry/detector/wall/thickness                10 cm
-/geometry/detector/wall/material                 ANNIEWater_unDoped #G4StainlessSteel
+/geometry/detector/wall/material                 veryInteractive
 /geometry/detector/wall/visibility               true
 /geometry/detector/wall/color                    black
 /geometry/detector/wall/alpha                    0
@@ -18,22 +18,22 @@
 /geometry/detector/medium/alpha                  0
 /geometry/detector/medium/forceSolid             false
 
-/geometry/calorimeter/size                       20.0 2.00 48.0 cm
-/geometry/calorimeter/material                   aluminum
+/geometry/calorimeter/size                       20.0 2.00 50.0 cm # 78.0 cm
+/geometry/calorimeter/material                   nonInteractive
 /geometry/calorimeter/visibility                 true
 /geometry/calorimeter/color                      red
 /geometry/calorimeter/alpha                      0.01
 /geometry/calorimeter/forceSolid                 true
 
 /geometry/photoSensor/surface/size               20.0 20.0 0.50 cm
-/geometry/photoSensor/surface/material           ANNIEWater_unDoped
+/geometry/photoSensor/surface/material           nonInteractive
 /geometry/photoSensor/surface/visibility         true
 /geometry/photoSensor/surface/color              blue
 /geometry/photoSensor/surface/alpha              1
 /geometry/photoSensor/surface/forceSolid         true
 
 /geometry/photoSensor/body/size                  20.0 20.0 5.00 cm
-/geometry/photoSensor/body/material              ANNIEWater_unDoped
+/geometry/photoSensor/body/material              nonInteractive
 /geometry/photoSensor/body/visibility            true
 /geometry/photoSensor/body/color                 green
 /geometry/photoSensor/body/alpha                 0.5

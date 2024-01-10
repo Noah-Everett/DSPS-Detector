@@ -54,6 +54,8 @@ void Materials::constructMaterials() {
     constructMaterial_ANNIEWater_GdDoped ();
     constructMaterial_aluminum           ();
     constructMaterial_SNPH2              ();
+    constructMaterial_nonInteractive     ();
+    constructMaterial_veryInteractive    ();
 }
 
 void Materials::constructMaterial_ANNIEWater_unDoped() {
@@ -182,4 +184,24 @@ void Materials::constructMaterial_SNPH2() {
 
 void Materials::constructMaterial_G4Vacuum() {
     m_material_G4Vacuum = new G4Material( "G4Vacuum", 1.0, 1.01 * CLHEP::g / CLHEP::mole, 1.e-25 * CLHEP::g / CLHEP::cm3, kStateGas, 2.73 * CLHEP::kelvin, 3.e-18 * CLHEP::pascal );
+}
+
+void Materials::constructMaterial_nonInteractive() {
+    m_material_nonInteractive = new G4Material( "nonInteractive", 1, 1, zero, kStateGas, inf, zero );
+
+    std::fill_n( infs, m_size_mpt_water, inf );
+    m_materialPropertiesTable_nonInteractive->AddProperty( "RINDEX"   , lxe_Energy          , lxe_RIND, 3                );
+    m_materialPropertiesTable_nonInteractive->AddProperty( "ABSLENGTH", m_water_mpt_energies, infs    , m_size_mpt_water );
+    m_materialPropertiesTable_nonInteractive->AddProperty( "RAYLEIGH" , m_water_mpt_energies, infs    , m_size_mpt_water );
+    m_material_nonInteractive->SetMaterialPropertiesTable( m_materialPropertiesTable_nonInteractive );
+}
+
+void Materials::constructMaterial_veryInteractive() {
+    m_material_veryInteractive = new G4Material( "veryInteractive", 1, 1, inf, kStateGas, zero, inf );
+
+    std::fill_n( zeros, m_size_mpt_water, zero );
+    m_materialPropertiesTable_veryInteractive->AddProperty( "RINDEX"   , lxe_Energy          , lxe_RIND, 3                );
+    m_materialPropertiesTable_veryInteractive->AddProperty( "ABSLENGTH", m_water_mpt_energies, zeros   , m_size_mpt_water );
+    m_materialPropertiesTable_veryInteractive->AddProperty( "RAYLEIGH" , m_water_mpt_energies, zeros   , m_size_mpt_water );
+    m_material_veryInteractive->SetMaterialPropertiesTable( m_materialPropertiesTable_veryInteractive );
 }

@@ -50,6 +50,8 @@ class Materials
         void constructMaterial_ANNIEWater_GdDoped ();
         void constructMaterial_aluminum           ();
         void constructMaterial_SNPH2              ();
+        void constructMaterial_nonInteractive     ();
+        void constructMaterial_veryInteractive    ();
 
         ConstructionMessenger* m_constructionMessenger{ ConstructionMessenger::get_instance() };
 
@@ -67,6 +69,8 @@ class Materials
         G4Material* m_material_ANNIEWater_GdDoped { nullptr };
         G4Material* m_material_aluminum           { nullptr };
         G4Material* m_material_SNPH2              { nullptr };
+        G4Material* m_material_nonInteractive     { nullptr };
+        G4Material* m_material_veryInteractive    { nullptr };
 
         G4Isotope* m_isotope_Gd152{ new G4Isotope( "Gd152", 64, 152, 152.0 * g / mole ) };
         G4Isotope* m_isotope_Gd154{ new G4Isotope( "Gd154", 64, 154, 154.0 * g / mole ) };
@@ -95,7 +99,8 @@ class Materials
         G4MaterialPropertiesTable* m_materialPropertiesTable_ANNIEWater         { new G4MaterialPropertiesTable() };
         G4MaterialPropertiesTable* m_materialPropertiesTable_ANNIEMRDScintilator{ new G4MaterialPropertiesTable() };
         G4MaterialPropertiesTable* m_materialPropertiesTable_SNPH2              { new G4MaterialPropertiesTable() };
-
+        G4MaterialPropertiesTable* m_materialPropertiesTable_nonInteractive     { new G4MaterialPropertiesTable() };
+        G4MaterialPropertiesTable* m_materialPropertiesTable_veryInteractive    { new G4MaterialPropertiesTable() };
 
         //////////////////////////////////////////////////////////////////
         //////////////////     MATERIAL PROPERTIES     ///////////////////
@@ -185,6 +190,10 @@ class Materials
         vector< G4double > SNPH2_AbsLength = { 420. * cm, 420. * cm, 420. * cm };
         vector< G4double > SNPH2_RIND      = { 1.98     , 1.98     , 1.98      };
 
+        G4double inf{ 1.e25 };
+        G4double zero{ 1.e-25 };
+        G4double infs [m_size_mpt_water];
+        G4double zeros[m_size_mpt_water];
 };
 
 #endif

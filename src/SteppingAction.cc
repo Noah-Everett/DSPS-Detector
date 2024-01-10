@@ -61,18 +61,4 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
         m_outputManager->fill_tuple_column_integer( "primary_pdg"        , t_step->GetTrack()->GetDefinition()->GetPDGEncoding()                 );
         m_outputManager->fill_tuple_column        ( "primary" );
     }
-
-    G4VSensitiveDetector* sensitiveDetector_current = t_step->GetPostStepPoint()->GetPhysicalVolume()->GetLogicalVolume()->GetSensitiveDetector();
-    if( sensitiveDetector_current && t_step->GetTotalEnergyDeposit() == 0 ) {
-        G4String sensitiveDetector_current_name = sensitiveDetector_current->GetName();
-        to_lower( sensitiveDetector_current_name );
-        if( sensitiveDetector_current_name.find( "photosensor" ) != string::npos )
-            static_cast< PhotoSensorSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
-        else if( sensitiveDetector_current_name.find( "calorimeter" ) != string::npos )
-            static_cast< CalorimeterSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
-        else if( sensitiveDetector_current_name.find( "lens" ) != string::npos )
-            static_cast< LensSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
-        else if( sensitiveDetector_current_name.find( "medium" ) != string::npos )
-            static_cast< MediumSensitiveDetector* >( sensitiveDetector_current )->ProcessHits( const_cast< G4Step* >( t_step ), nullptr );
-    }
 }

@@ -34,6 +34,19 @@ G4double ParticleGun::get_position_random( G4double t_min, G4double t_max , G4in
     }
 }
 
+G4ThreeVector ParticleGun::get_momentum_random( G4double t_x_min, G4double t_x_max, 
+                                                G4double t_y_min, G4double t_y_max, 
+                                                G4double t_z_min, G4double t_z_max ) {
+    G4ThreeVector momentum = G4RandomDirection();
+    while ( momentum.x() < t_x_min || momentum.x() > t_x_max ||
+            momentum.y() < t_y_min || momentum.y() > t_y_max ||
+            momentum.z() < t_z_min || momentum.z() > t_z_max   ) {
+        momentum = G4RandomDirection();
+    }
+
+    return momentum;
+}
+
 void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
     if( particle_definition == 0 )
         return;
@@ -60,7 +73,6 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
         G4PrimaryParticle* particle{ nullptr };
         if( particle_definition->GetParticleName() == "PhotonCreator" ) {
             particle = new G4PrimaryParticle( G4OpticalPhoton::Definition() );
-            particle->SetMomentumDirection( G4RandomDirection() );
             particle->SetKineticEnergy( 24.12 * eV );
             // G4double energy = G4RandGauss::shoot( 24.12 * eV, 1979. * eV );
             // if( energy > 24.12 * eV / 2. )
@@ -71,18 +83,25 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
             particle->SetCharge( G4OpticalPhoton::Definition()->GetPDGCharge() );
         } else {
             particle = new G4PrimaryParticle( particle_definition );
-            if( m_particleGunMessenger->get_momentum_random() ) {
-                particle->SetMomentumDirection( G4RandomDirection() );
-            }
-            else
-                particle->SetMomentumDirection( particle_momentum_direction );
             particle->SetKineticEnergy( particle_energy );
             particle->SetMass( mass );
             particle->SetCharge( particle_charge );
         }
+
+        if( m_particleGunMessenger->get_momentum_random() )
+            particle->SetMomentumDirection( get_momentum_random( m_particleGunMessenger->get_momentum_x_random_min(),
+                                                                 m_particleGunMessenger->get_momentum_x_random_max(),
+                                                                 m_particleGunMessenger->get_momentum_y_random_min(),
+                                                                 m_particleGunMessenger->get_momentum_y_random_max(),
+                                                                 m_particleGunMessenger->get_momentum_z_random_min(),
+                                                                 m_particleGunMessenger->get_momentum_z_random_max() ) );
+        else
+            particle->SetMomentumDirection( particle_momentum_direction );
+
         particle->SetPolarization( particle_polarization.x(),
                                    particle_polarization.y(),
                                    particle_polarization.z() );
+
         vertex->SetPrimary( particle );
     }
     t_event->AddPrimaryVertex( vertex );
