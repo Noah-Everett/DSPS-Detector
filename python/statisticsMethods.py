@@ -18,8 +18,12 @@ def get_PDF(data, nBins=100, bins=None, addStart=False, addEnd=False):
         hist = np.insert(hist, len(hist), 0)
         
     cumulative_sum = np.cumsum(hist)
-    PDF = cumulative_sum/cumulative_sum[-1]
-    scaled_hist = hist / cumulative_sum[-1]
+    if cumulative_sum[-1] == 0:
+        PDF = np.nan
+        scaled_hist = np.nan
+    else:
+        PDF = cumulative_sum/cumulative_sum[-1]
+        scaled_hist = hist / cumulative_sum[-1]
     plt.clf()
 
     return PDF, hist, scaled_hist, bins

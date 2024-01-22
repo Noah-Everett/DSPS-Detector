@@ -1,37 +1,46 @@
-void visulization() {
-    auto temp = gGeoManager->FindVolumeFast("calorimeter");
-    if( temp )
-        temp->SetLineColor(kRed);
-    else
-        cout << "calorimeter not found" << endl;
+void visulization(string filename = "geometry.gdml") {
+    // Import geometry from the GDML file
+    TGeoManager::Import(filename.c_str());
+    TGeoVolume *top = gGeoManager->GetTopVolume();
 
-    temp = gGeoManager->FindVolumeFast("calorimeter_middle");
-    if( temp )
-        temp->SetLineColor(kRed);
-    else
-        cout << "calorimeter_middle not found" << endl;
+    // Set visualization properties for different volumes
+    TObjArray *allVolumes = gGeoManager->GetListOfVolumes();
+    std::map<std::string, TGeoVolume*> volumeNames;
+    for (int i = 0; i < allVolumes->GetEntries(); ++i) {
+        TGeoVolume *vol = (TGeoVolume*)allVolumes->At(i);
+        volumeNames[vol->GetName()] = vol;
+    }
 
-    temp = gGeoManager->FindVolumeFast("surface");
-    if( temp )
-        temp->SetLineColor(kWhite);
-    else
-        cout << "surface not found" << endl;
+    for (auto &vol : volumeNames) {
+        if (vol.first.find("lens") != std::string::npos) {
+            vol.second->SetLineColor(kBlue);
+            vol.second->SetTransparency(kMaxUChar);
+            vol.second->SetFillColorAlpha(kBlue, 100);
+            std::cout << "Setting " << vol.first << " to blue" << std::endl;
+        }
+        else if (vol.first.find("calorimeter") != std::string::npos) {
+            vol.second->SetLineColor(kRed);
+            vol.second->SetTransparency(kMaxUChar);
+            vol.second->SetFillColorAlpha(kRed, 100);
+            std::cout << "Setting " << vol.first << " to red" << std::endl;
+        }
+        else if (vol.first.find("surface") != std::string::npos || vol.first.find("body") != std::string::npos) {
+            vol.second->SetLineColor(kWhite);
+            vol.second->SetTransparency(kMaxUChar);
+            vol.second->SetFillColorAlpha(kWhite, 100);
+            std::cout << "Setting " << vol.first << " to white" << std::endl;
+        }
+        else {
+            vol.second->SetInvisible();
+            std::cout << "Setting " << vol.first << " to invisible" << std::endl;
+        }
+    }
 
-    temp = gGeoManager->FindVolumeFast("body");
-    if( temp )
-        temp->SetLineColor(kWhite);
-    else
-        cout << "body not found" << endl;
+    double origin[3] = {100, 100 , 75};
+    TGeoBBox* clipBox = new TGeoBBox(145, 145, 165, origin);
+    gGeoManager->SetClippingShape(clipBox);
+    gGeoManager->GetTopVolume()->Raytrace();
 
-    temp = gGeoManager->FindVolumeFast("lens_0");
-    if( temp )
-        temp->SetLineColor(kBlue);
-    else
-        cout << "lens_0 not found" << endl;
-
-    temp = gGeoManager->FindVolumeFast("lens_1");
-    if( temp )
-        temp->SetLineColor(kBlue);
-    else
-        cout << "lens_1 not found" << endl;
+    // J/K = zoom out and in respectively
+    // U/I = move view up and down respectively
 }

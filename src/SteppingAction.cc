@@ -45,9 +45,10 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
         m_outputManager->fill_tuple_column_integer( "photon_stepNumber" , t_step->GetTrack()->GetCurrentStepNumber()                            );
         m_outputManager->fill_tuple_column        ( "photon" );
     } 
-    if( t_step->GetTrack()->GetParentID()                            == 0 || 
-        abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 0 || 
-        abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 22   ) {
+    // if( t_step->GetTrack()->GetParentID()                            == 0 || 
+    //     abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 0 || 
+    //     abs( t_step->GetTrack()->GetDefinition()->GetPDGEncoding() ) == 22   ) {
+    if( t_step->GetTrack()->GetParentID() == 0 ) {
         m_outputManager->fill_tuple_column_double ( "primary_position_x" , t_step->GetPostStepPoint()->GetPosition().x()                         );
         m_outputManager->fill_tuple_column_double ( "primary_position_y" , t_step->GetPostStepPoint()->GetPosition().y()                         );
         m_outputManager->fill_tuple_column_double ( "primary_position_z" , t_step->GetPostStepPoint()->GetPosition().z()                         );

@@ -1,34 +1,47 @@
 import numpy as np
 import tqdm
 
-def make_r(df_hits):
+def make_r(df_hits, binned=True):
     r_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y, z = row['relativePosition']
+        if binned:
+            x, y = row['relativePosition_binned']
+            z    = row['relativePosition'][2]
+        else:
+            x, y, z = row['relativePosition']
         r = np.sqrt(x**2 + y**2)
         r_list.append(r)
     df_hits['r'] = r_list
 
     return df_hits
 
-def make_theta(df_hits, rToTheta):
+def make_theta(df_hits, rToTheta, binned=True):
     if 'r' not in df_hits.columns:
-        make_r(df_hits)
+        make_r(df_hits, binned=binned)
 
     theta_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y, z = row['relativePosition']
+        if binned:
+            x, y = row['relativePosition_binned']
+            z    = row['relativePosition'][2]
+        else:
+            x, y, z = row['relativePosition']
         r = row['r']
         theta = rToTheta(r)
         theta_list.append(theta)
+
     df_hits['theta'] = theta_list
     
     return df_hits
 
-def make_phi(df_hits):
+def make_phi(df_hits, binned=True):
     phi_list = []
     for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        x, y, z = row['relativePosition']
+        if binned:
+            x, y = row['relativePosition_binned']
+            z    = row['relativePosition'][2]
+        else:
+            x, y, z = row['relativePosition']
         phi = np.arctan(y / x)
         phi_list.append(phi)
     df_hits['phi'] = phi_list

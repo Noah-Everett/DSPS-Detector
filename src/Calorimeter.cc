@@ -19,7 +19,7 @@ Calorimeter::Calorimeter( G4String t_name, G4String t_index, G4ThreeVector t_siz
     if( t_size == G4ThreeVector() )
         t_size = G4ThreeVector( get_width(), get_height(), get_depth() );
 
-    m_calorimeter->set_solid            ( new G4Box( t_name + "_G4Box", t_size.x()/2, t_size.y()/2, t_size.z()/2 ) );
+    m_calorimeter->set_solid            ( new G4Box( m_name + "_G4Box", t_size.x()/2, t_size.y()/2, t_size.z()/2 ) );
     m_calorimeter->set_material         ( m_constructionMessenger->get_calorimeter_material                         () );
     m_calorimeter->set_visAttributes    ( m_constructionMessenger->get_calorimeter_visAttributes                    () );
     m_calorimeter->set_visibility       ( m_constructionMessenger->get_calorimeter_visibility                       () );
