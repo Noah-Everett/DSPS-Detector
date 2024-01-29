@@ -24,7 +24,9 @@ void SteppingAction::UserSteppingAction( const G4Step* t_step ) {
     if( !t_step->GetPostStepPoint()->GetPhysicalVolume()                ||
         abs( t_step->GetTrack()->GetPosition().x() ) > m_world_size.x() ||
         abs( t_step->GetTrack()->GetPosition().y() ) > m_world_size.y() ||
-        abs( t_step->GetTrack()->GetPosition().z() ) > m_world_size.z()    ) {
+        abs( t_step->GetTrack()->GetPosition().z() ) > m_world_size.z() ||
+        t_step->GetTrack()->GetVolume()->GetName() == "world"           ||
+        t_step->GetTrack()->GetVolume()->GetName() == "detector_wall"      ) {
         t_step->GetTrack()->SetTrackStatus( fKillTrackAndSecondaries );
         return;
     }

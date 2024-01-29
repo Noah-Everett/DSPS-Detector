@@ -22,7 +22,13 @@ params = {
     'xtick.labelsize'    : 20                    ,
     'ytick.labelsize'    : 20                    ,
     'text.usetex'        : True                  ,
-    'text.latex.preamble': r"\usepackage{amsbsy}",
+    'text.latex.preamble': r"""
+        \usepackage{amsbsy}
+        \usepackage{amsmath}
+
+        \providecommand{\abs}[1]{\lvert#1\rvert} 
+        \providecommand{\norm}[1]{\lVert#1\rVert}
+    """                                          ,
     'figure.figsize'     : (5,5)                 ,
     'savefig.directory'  : '../figures'          ,
     'axes.unicode_minus' : True

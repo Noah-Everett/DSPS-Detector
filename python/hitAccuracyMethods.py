@@ -2,57 +2,40 @@ import numpy as np
 import tqdm
 
 def make_r(df_hits, binned=True):
-    r_list = []
-    for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        if binned:
-            x, y = row['relativePosition_binned']
-            z    = row['relativePosition'][2]
-        else:
-            x, y, z = row['relativePosition']
-        r = np.sqrt(x**2 + y**2)
-        r_list.append(r)
-    df_hits['r'] = r_list
+    if binned:
+        x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
+    else:
+        x, y = np.array(row['relativePosition'].tolist()).reshape(-1,2).T
+
+    r = np.sqrt(x**2 + y**2)
+    df_hits['r'] = r.tolist()
 
     return df_hits
 
 def make_theta(df_hits, rToTheta, binned=True):
-    if 'r' not in df_hits.columns:
-        make_r(df_hits, binned=binned)
+    r = df_hits['r'].values
+    theta = rToTheta(r)
+    df_hits['theta'] = theta.tolist()
 
-    theta_list = []
-    for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        if binned:
-            x, y = row['relativePosition_binned']
-            z    = row['relativePosition'][2]
-        else:
-            x, y, z = row['relativePosition']
-        r = row['r']
-        theta = rToTheta(r)
-        theta_list.append(theta)
-
-    df_hits['theta'] = theta_list
-    
     return df_hits
 
 def make_phi(df_hits, binned=True):
-    phi_list = []
-    for index, row in tqdm.tqdm(df_hits.iterrows(), total=len(df_hits)):
-        if binned:
-            x, y = row['relativePosition_binned']
-            z    = row['relativePosition'][2]
-        else:
-            x, y, z = row['relativePosition']
-        phi = np.arctan(y / x)
-        phi_list.append(phi)
-    df_hits['phi'] = phi_list
-    
+    if binned:
+        x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
+    else:
+        x, y = np.array(row['relativePosition'].tolist()).reshape(-1,2).T
+
+    phi = np.arctan2(y, x)
+    df_hits['phi'] = phi.tolist()
+
     return df_hits
 
 def make_relativeVector(df_hits):
     initialPositions = df_hits['initialPosition']
     sensorPositions = df_hits['sensor_position']
-    df_hits['relativeVector'] = [np.array(ip) - np.array(sp) for ip, sp in zip(initialPositions, sensorPositions)]
-    df_hits['relativeVector_r'] = [np.linalg.norm(rv) for rv in df_hits['relativeVector']]
+
+    df_hits['relativeVector'] = (np.array(initialPositions.to_list()) - np.array(sensorPositions.to_list())).tolist()
+    df_hits['relativeVector_r'] = np.linalg.norm(df_hits['relativeVector'].to_list(), axis=1).tolist()
 
     return df_hits
 

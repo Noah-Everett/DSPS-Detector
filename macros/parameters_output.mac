@@ -38,15 +38,15 @@
 /output/medium/hits/process/save                      false
 /output/medium/hits/transmittance/save                false
 
-/output/primary/position/save                         false
-/output/primary/direction/save                        false
-/output/primary/emission/photon/save                  false
-/output/primary/emission/electron/save                false
-/output/primary/process/save                          false
-/output/primary/time/save                             false
-/output/primary/energy/save                           false
-/output/primary/volume/save                           false
-/output/primary/pdg/save                              false
+/output/primary/position/save                         true
+/output/primary/direction/save                        true
+/output/primary/emission/photon/save                  true
+/output/primary/emission/electron/save                true
+/output/primary/process/save                          true
+/output/primary/time/save                             true
+/output/primary/energy/save                           true
+/output/primary/volume/save                           true
+/output/primary/pdg/save                              true
 
 /output/photon/length/save                            false
 /output/photon/process/save                           false

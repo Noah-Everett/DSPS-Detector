@@ -4,11 +4,11 @@
 /event/verbose 0
 /tracking/verbose 0
 /gun/particle mu-
-/gun/energy 900 MeV
+/gun/energy 700 MeV
 /analysis/setHistoDirName photoSensor_hits_histograms
 
 
-/analysis/setFileName 1800MeV_mu_-1.21x3_1x3.root
-/gun/position .5 -.5 -1 m
-/gun/direction -1 1 2
+/analysis/setFileName event.root
+/gun/position -0.5 -0.5 -0.5 m
+/gun/direction 1 1 1 m
 /run/beamOn 1
