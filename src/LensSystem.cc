@@ -100,6 +100,14 @@ vector< G4int > LensSystem::calculate_lensOrder() {
     return lensOrder;
 }
 
+void LensSystem::sort_lenses() {
+    vector< G4int > lensOrder = calculate_lensOrder();
+    vector< Lens* > sortedLenses;
+    for( G4int nLens = 0; nLens < lensOrder.size(); nLens++ )
+        sortedLenses.push_back( m_lenses[ lensOrder[ nLens ] ] );
+    m_lenses = sortedLenses;
+}
+
 vector< G4ThreeVector > LensSystem::calculate_relativePositions() {
     return calculate_relativePositions( calculate_lensOrder() );
 }

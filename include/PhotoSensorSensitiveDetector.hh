@@ -22,6 +22,7 @@
 #include "OutputManager.hh"
 #include "PhotoSensorHit.hh"
 #include "Track.hh"
+#include "LensSensitiveDetector.hh"
 
 using std::to_string;
 
@@ -42,14 +43,16 @@ class PhotoSensorSensitiveDetector : public G4VSensitiveDetector
         G4String                   get_hitsCollection_name(                );
         G4int                      get_hitsCollection_ID  (                );
 
-        void set_position         ( G4ThreeVector     );
-        void set_rotationMatrix   ( G4RotationMatrix* );
-        void set_hitsCollection_ID( G4int             );
+        void set_position              ( G4ThreeVector                     );
+        void set_rotationMatrix        ( G4RotationMatrix                * );
+        void set_hitsCollection_ID     ( G4int                             );
+        void set_lensSensitiveDetectors( vector< LensSensitiveDetector* >  );
     
     protected:
-        G4String          m_name;
-        G4ThreeVector     m_position;
-        G4RotationMatrix* m_rotationMatrix;
+        G4String                          m_name                             ;
+        G4ThreeVector                     m_position                         ;
+        G4RotationMatrix                * m_rotationMatrix        { nullptr };
+        vector< LensSensitiveDetector* >  m_lensSensitiveDetectors           ;
 
         PhotoSensorHitsCollection* m_photoSensorHitsCollection   { nullptr };
         G4int                      m_photoSensorHitsCollection_ID{ -1      };

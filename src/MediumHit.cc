@@ -22,8 +22,8 @@ MediumHit::MediumHit( const G4ThreeVector    & t_medium_position          ,
                             G4int              t_medium_ID                ,
                       const G4ThreeVector    & t_hit_position_absolute    ,
                       const G4double         & t_hit_time                 ,
-                      const G4double         & t_hit_energy               ,
-                      const G4ThreeVector    & t_hit_momentum             ,
+                      const G4double         & t_particle_energy          ,
+                      const G4ThreeVector    & t_particle_momentum        ,
                       const G4ThreeVector    & t_particle_position_initial,
                             G4bool             t_particle_transmittance    ) {
     m_medium_position           = t_medium_position          ;
@@ -32,8 +32,8 @@ MediumHit::MediumHit( const G4ThreeVector    & t_medium_position          ,
     m_medium_ID                 = t_medium_ID                ;
     m_hit_position_absolute     = t_hit_position_absolute    ;
     m_hit_time                  = t_hit_time                 ;
-    m_hit_energy                = t_hit_energy               ;
-    m_hit_momentum              = t_hit_momentum             ;
+    m_particle_energy           = t_particle_energy          ;
+    m_particle_momentum         = t_particle_momentum        ;
     m_particle_position_initial = t_particle_position_initial;
     m_particle_transmittance    = t_particle_transmittance   ;
 }
@@ -45,8 +45,8 @@ MediumHit::MediumHit( const MediumHit& t_hit ) {
     m_medium_ID                 = t_hit.m_medium_ID                ;
     m_hit_position_absolute     = t_hit.m_hit_position_absolute    ;
     m_hit_time                  = t_hit.m_hit_time                 ;
-    m_hit_energy                = t_hit.m_hit_energy               ;
-    m_hit_momentum              = t_hit.m_hit_momentum             ;
+    m_particle_energy           = t_hit.m_particle_energy          ;
+    m_particle_momentum         = t_hit.m_particle_momentum        ;
     m_particle_position_initial = t_hit.m_particle_position_initial;
     m_particle_transmittance    = t_hit.m_particle_transmittance   ;
 }
@@ -76,8 +76,8 @@ std::ostream& operator<<( std::ostream& t_os, const MediumHit& t_mediumHit ) {
                 << "medium_ID="             <<  t_mediumHit.m_medium_ID                    << ", \n"
                 << "hit_position_absolute=" <<  t_mediumHit.m_hit_position_absolute        << ", \n"
                 << "hit_time="              <<  t_mediumHit.m_hit_time                     << ", \n"
-                << "hit_energy="            <<  t_mediumHit.m_hit_energy                   << ", \n"
-                << "hit_momentum="          <<  t_mediumHit.m_hit_momentum                 << ", \n"
+                << "particle_energy="       <<  t_mediumHit.m_particle_energy              << ", \n"
+                << "particle_momentum="     <<  t_mediumHit.m_particle_momentum            << ", \n"
                 << "particle_position_initial=" << t_mediumHit.m_particle_position_initial << ", \n"
                 << "particle_transmittance=" <<  t_mediumHit.m_particle_transmittance      << "]" << G4endl;
 
@@ -114,12 +114,12 @@ void MediumHit::set_hit_time( G4double t_hit_time ) {
     m_hit_time = t_hit_time;
 }   
 
-void MediumHit::set_hit_energy( G4double t_hit_energy ) {
-    m_hit_energy = t_hit_energy;
+void MediumHit::set_particle_energy( G4double t_particle_energy ) {
+    m_particle_energy = t_particle_energy;
 }
 
-void MediumHit::set_hit_momentum( G4ThreeVector t_hit_momentum ) {
-    m_hit_momentum = t_hit_momentum;
+void MediumHit::set_particle_momentum( G4ThreeVector t_particle_momentum ) {
+    m_particle_momentum = t_particle_momentum;
 }
 
 void MediumHit::set_particle_position_initial( G4ThreeVector t_particle_position_initial ) {
@@ -170,6 +170,10 @@ G4String MediumHit::get_hit_process() {
     return m_hit_process;
 }
 
-G4double MediumHit::get_hit_energy() {
-    return m_hit_energy;
+G4double MediumHit::get_particle_energy() {
+    return m_particle_energy;
+}
+
+G4ThreeVector MediumHit::get_particle_momentum() {
+    return m_particle_momentum;
 }

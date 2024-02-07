@@ -155,7 +155,7 @@ void Materials::constructMaterial_LXe() {
     G4double z;  // atomic number
     G4double density;
 
-    m_material_LXe = new G4Material( "LXe", z = 54., a = 131.29 * g / mole, density = 3.020 * g / cm3 );
+    m_material_LXe = new G4Material( "LXe", z = 54., a = 131.29 * g / mole, density = 2.950 * g / cm3 );
 
     m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT1", lxe_Energy, lxe_SCINT );
     m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT2", lxe_Energy, lxe_SCINT );
@@ -171,6 +171,28 @@ void Materials::constructMaterial_LXe() {
     m_material_LXe->SetMaterialPropertiesTable( m_materialPropertiesTable_LXe );
     m_material_LXe->GetIonisation()->SetBirksConstant( 0.126 * mm / MeV );
 }
+
+// Would need to redesign lens to use this material --> not worth it at the moment
+// void Materials::constructMaterial_GXe() {
+//     G4double a;  // atomic mass
+//     G4double z;  // atomic number
+//     G4double density;
+
+//     m_material_GXe = new G4Material( "GXe", z = 54., a = 131.29 * g / mole, density = 5.485 * g / cm3 );
+
+//     m_materialPropertiesTable_GXe->AddProperty( "RINDEX"                 , lxe_Energy, lxe_RIND  );
+//     m_materialPropertiesTable_GXe->AddProperty( "ABSLENGTH"              , lxe_Energy, lxe_ABSL  );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "SCINTILLATIONYIELD"        , 12000. / MeV );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "RESOLUTIONSCALE"           , 1.0          );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT1", 20. * ns     );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT2", 45. * ns     );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "SCINTILLATIONYIELD1"       , 1.0          );
+//     m_materialPropertiesTable_GXe->AddConstProperty( "SCINTILLATIONYIELD2"       , 0.0          );
+
+//     m_material_GXe->SetMaterialPropertiesTable( m_materialPropertiesTable_GXe );
+//     m_material_GXe->GetIonisation()->SetBirksConstant( 0.126 * mm / MeV );
+
+// }
 
 void Materials::constructMaterial_SNPH2() {
     m_material_SNPH2 = new G4Material( "SNPH2", 0.0000899 * CLHEP::g / CLHEP::cm3, 2 );

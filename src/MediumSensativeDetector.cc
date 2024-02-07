@@ -35,8 +35,8 @@ G4bool MediumSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory*
     hit->set_hit_position_absolute    ( t_step->GetPostStepPoint()->GetPosition      ()                         );
     hit->set_hit_time                 ( t_step->GetPostStepPoint()->GetGlobalTime    ()                         );
     hit->set_hit_process              ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()   );
-    hit->set_hit_energy               ( t_step->GetPostStepPoint()->GetKineticEnergy ()                         );
-    hit->set_hit_momentum             ( t_step->GetPostStepPoint()->GetMomentum      ()                         );
+    hit->set_particle_energy          ( t_step->GetPostStepPoint()->GetKineticEnergy ()                         );
+    hit->set_particle_momentum        ( t_step->GetPostStepPoint()->GetMomentum      ()                         );
     hit->set_particle_position_initial( t_step->GetTrack        ()->GetVertexPosition()                         );
     hit->set_particle_transmittance   ( ( t_step->GetTrack()->GetTrackStatus() == fStopAndKill ) ? false : true );
     

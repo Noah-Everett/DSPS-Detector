@@ -48,41 +48,43 @@ class LensHit : public G4VHit
         friend std::ostream& operator<<( std::ostream&, const LensHit& );
         friend std::ostream& operator<<( std::ostream&, const LensHit* );
 
-        void set_lens_position      (       G4ThreeVector     );
-        void set_lens_rotationMatrix(       G4RotationMatrix* );
-        void set_lens_name          ( const G4String&         );
-        void set_lens_ID            (       G4int             );
+        void set_lens_position             (       G4ThreeVector     );
+        void set_lens_rotationMatrix       (       G4RotationMatrix* );
+        void set_lens_name                 ( const G4String&         );
+        void set_lens_ID                   (       G4int             );
         void set_hit_position_absolute     (       G4ThreeVector     );
         void set_hit_time                  (       G4double          );
-        void set_hit_energy                (       G4double          );
-        void set_hit_momentum              (       G4ThreeVector     );
         void set_hit_process               ( const G4String&         );
+        void set_particle_energy           (       G4double          );
+        void set_particle_momentum         (       G4ThreeVector     );
         void set_particle_position_initial (       G4ThreeVector     );
         void set_particle_transmittance    (       G4bool            );
 
-        G4ThreeVector     get_lens_position      ();
-        G4RotationMatrix* get_lens_rotationMatrix();
-        G4String          get_lens_name          ();
-        G4int             get_lens_ID            ();
-        G4ThreeVector     get_hit_position_absolute     ();
-        G4ThreeVector     get_hit_position_relative     ();
-        G4double          get_hit_time                  ();
-        G4double          get_hit_energy                ();
-        G4ThreeVector     get_hit_momentum              ();
-        G4String          get_hit_process               ();
-        G4ThreeVector     get_particle_position_initial ();
-        G4bool            get_particle_transmittance    ();
+        G4ThreeVector     get_lens_position              ();
+        G4RotationMatrix* get_lens_rotationMatrix        ();
+        G4String          get_lens_name                  ();
+        G4int             get_lens_ID                    ();
+        G4ThreeVector     get_hit_position_absolute      ();
+        G4ThreeVector     get_hit_position_relative      ();
+        G4double          get_hit_time                   ();
+        G4String          get_hit_process                ();
+        G4double          get_particle_energy            ();
+        G4ThreeVector     get_particle_momentum          ();
+        G4ThreeVector     get_particle_position_initial  ();
+        G4bool            get_particle_transmittance     ();
+        G4ThreeVector     get_particle_direction         ();
+        G4ThreeVector     get_particle_direction_relative();
 
     protected:
-        G4ThreeVector     m_lens_position      ;
-        G4RotationMatrix* m_lens_rotationMatrix;
-        G4String          m_lens_name          ;
-        G4int             m_lens_ID            ;
+        G4ThreeVector     m_lens_position             ;
+        G4RotationMatrix* m_lens_rotationMatrix       ;
+        G4String          m_lens_name                 ;
+        G4int             m_lens_ID                   ;
         G4ThreeVector     m_hit_position              ;
         G4double          m_hit_time                  ;
-        G4double          m_hit_energy                ;
-        G4ThreeVector     m_hit_momentum              ;
         G4String          m_hit_process               ;
+        G4double          m_particle_energy           ;
+        G4ThreeVector     m_particle_momentum         ;
         G4ThreeVector     m_particle_position_initial ;
         G4bool            m_particle_transmittance    ;
 

@@ -45,8 +45,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     m_checkOverlaps = m_constructionMessenger->get_checkOverlaps();
 
-    make_world                          ();
-    make_detector                       ();
+    make_world   ();
+    make_detector();
     
     m_world_physicalVolume = 
     m_world        ->place( nullptr, G4ThreeVector(0,0,0), nullptr                              );
@@ -302,29 +302,41 @@ void DetectorConstruction::ConstructSDandField() {
             calorimeter->set_sensitiveDetector( cSD );
         }
 
-    if( outputMessenger->get_photoSensor_hits_save() )
+    if( outputMessenger->get_photoSensor_hits_save() ||
+        outputMessenger->get_lens_hits_save       ()    ) {
         for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
             auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
-            auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
-            PhotoSensorSensitiveDetector* psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
-            psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_photoSensor()->get_position_front() );
-            psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
-            SDManager->AddNewDetector( psSD );
-            directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
-        }
+            PhotoSensorSensitiveDetector* psSD = nullptr;
 
-    if( outputMessenger->get_lens_hits_save() )
-        for( G4int i = 0; i < m_directionSensitivePhotoDetectors.size(); i++ ) {
-            auto& directionSensitivePhotoDetector = m_directionSensitivePhotoDetectors[i];
-            auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
-            for( auto& lens : lensSystem->get_lenses() ) {
-                LensSensitiveDetector* lSD = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector", i );
-                lSD->set_position( lens->get_position_center() );
-                lSD->set_rotationMatrix( lens->get_rotationMatrix() );
-                SDManager->AddNewDetector( lSD );
-                lens->set_sensitiveDetector( lSD );
+            if( outputMessenger->get_photoSensor_hits_save() ) {
+                auto photoSensorSurface = directionSensitivePhotoDetector->get_photoSensor()->get_surface();
+                psSD = new PhotoSensorSensitiveDetector( photoSensorSurface->get_name() + "_sensitiveDetector", i );
+                psSD->set_position( m_directionSensitivePhotoDetectors[i]->get_photoSensor()->get_position_front() );
+                psSD->set_rotationMatrix( m_directionSensitivePhotoDetectors[i]->get_rotationMatrix() );
+                SDManager->AddNewDetector( psSD );
+                directionSensitivePhotoDetector->get_photoSensor()->set_sensitiveDetector( psSD );
             }
+
+            if( outputMessenger->get_lens_hits_save() ) {
+                auto lensSystem  = directionSensitivePhotoDetector->get_lensSystem();
+                for( auto& lens : lensSystem->get_lenses() ) {
+                    LensSensitiveDetector* lSD = new LensSensitiveDetector( lens->get_name() + "_sensitiveDetector", i );
+                    lSD->set_position( lens->get_position_center() );
+                    lSD->set_rotationMatrix( lens->get_rotationMatrix() );
+                    SDManager->AddNewDetector( lSD );
+                    lens->set_sensitiveDetector( lSD );
+                }
+
+                lensSystem->sort_lenses();
+
+                vector< LensSensitiveDetector* > lensSensitiveDetectors;
+                for( G4int j : outputMessenger->get_photoSensor_hits_position_relative_lens_save() )
+                    lensSensitiveDetectors.push_back( lensSystem->get_lens( j )->get_sensitiveDetector() );
+                psSD->set_lensSensitiveDetectors( lensSensitiveDetectors );
+            }
+
         }
+    }
 
     if( outputMessenger->get_medium_hits_save() ) {
         MediumSensitiveDetector* mSD = new MediumSensitiveDetector( m_mediums.at(0)->get_name() + "_sensitiveDetector", 0 );

@@ -206,3 +206,14 @@ G4ThreeVector CalorimeterHit::get_particle_position_initial() {
 G4String CalorimeterHit::get_hit_process() {
     return m_hit_process;
 }
+
+G4ThreeVector CalorimeterHit::get_particle_direction() {
+    return m_particle_momentum.unit();
+}
+
+G4ThreeVector CalorimeterHit::get_particle_direction_relative() {
+    G4RotationMatrix inverseRotation  = m_calorimeter_rotationMatrix->inverse();
+    G4ThreeVector    relativeMomentum = inverseRotation * m_particle_momentum;
+
+    return relativeMomentum.unit();
+}

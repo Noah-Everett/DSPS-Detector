@@ -39,14 +39,14 @@ def make_relativeVector(df_hits):
 
     return df_hits
 
-def make_reconstructedVector_time(df_hits, C_XENON_MM_PER_NS=162.93068369565216):
-    df_hits['reconstructedVector_time'] = df_hits['reconstructedVector_direction'] * df_hits['time'] * C_XENON_MM_PER_NS
+def make_reconstructedVector_time(df_hits, C_XENON_MM_PER_NS=162.93068369565216, lensDistance=300):
+    df_hits['reconstructedVector_time'] = df_hits['reconstructedVector_direction'] * (df_hits['time'] - lensDistance/C_XENON_MM_PER_NS) * C_XENON_MM_PER_NS
     
     return df_hits
 
-def make_reconstructedPoint_time(df_hits):
+def make_reconstructedPoint_time(df_hits, C_XENON_MM_PER_NS=162.93068369565216, lensDistance=300):
     if 'reconstructedVector_time' not in df_hits.columns:
-        make_reconstructedVector_time(df_hits)
+        make_reconstructedVector_time(df_hits, C_XENON_MM_PER_NS, lensDistance)
 
     df_hits['reconstructedPoint_time'] = df_hits['sensor_position'] + df_hits['reconstructedVector_time']
     

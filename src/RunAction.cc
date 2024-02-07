@@ -52,8 +52,18 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_absolute", index_tuple );
         if( m_outputMessenger->get_photoSensor_hits_position_relative_save() )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_relative", index_tuple );
+        for( G4int i : m_outputMessenger->get_photoSensor_hits_position_relative_lens_save() )
+            m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_relative_lens_" + to_string( i ), index_tuple );
         if( m_outputMessenger->get_photoSensor_hits_position_initial_save() )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_initial", index_tuple );
+        if( m_outputMessenger->get_photoSensor_hits_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "photoSensor_hits_momentum", index_tuple );
+        if( m_outputMessenger->get_photoSensor_hits_direction_save() )
+            m_outputManager->add_tuple_column_3vector( "photoSensor_hits_direction", index_tuple );
+        if( m_outputMessenger->get_photoSensor_hits_direction_relative_save() )
+            m_outputManager->add_tuple_column_3vector( "photoSensor_hits_direction_relative", index_tuple );
+        for( G4int i : m_outputMessenger->get_photoSensor_hits_direction_relative_lens_save() )
+            m_outputManager->add_tuple_column_3vector( "photoSensor_hits_direction_relative_lens_" + to_string( i ), index_tuple );
         if( m_outputMessenger->get_photoSensor_hits_time_save() )
             m_outputManager->add_tuple_column_double( "photoSensor_hits_time", index_tuple );
         if( m_outputMessenger->get_photoSensor_hits_process_save() )
@@ -74,6 +84,12 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_relative", index_tuple );
         if( m_outputMessenger->get_calorimeter_hits_position_initial_save() )
             m_outputManager->add_tuple_column_3vector( "calorimeter_hits_position_initial", index_tuple );
+        if( m_outputMessenger->get_calorimeter_hits_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "calorimeter_hits_momentum", index_tuple );
+        if( m_outputMessenger->get_calorimeter_hits_direction_save() )
+            m_outputManager->add_tuple_column_3vector( "calorimeter_hits_direction", index_tuple );
+        if( m_outputMessenger->get_calorimeter_hits_direction_relative_save() )
+            m_outputManager->add_tuple_column_3vector( "calorimeter_hits_direction_relative", index_tuple );
         if( m_outputMessenger->get_calorimeter_hits_time_save() )
             m_outputManager->add_tuple_column_double( "calorimeter_hits_time", index_tuple );
         if( m_outputMessenger->get_calorimeter_hits_process_save() )
@@ -94,6 +110,12 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_3vector( "lens_hits_position_relative", index_tuple );
         if( m_outputMessenger->get_lens_hits_position_initial_save() )
             m_outputManager->add_tuple_column_3vector( "lens_hits_position_initial", index_tuple );
+        if( m_outputMessenger->get_lens_hits_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "lens_hits_momentum", index_tuple );
+        if( m_outputMessenger->get_lens_hits_direction_save() )
+            m_outputManager->add_tuple_column_3vector( "lens_hits_direction", index_tuple );
+        if( m_outputMessenger->get_lens_hits_direction_relative_save() )
+            m_outputManager->add_tuple_column_3vector( "lens_hits_direction_relative", index_tuple );
         if( m_outputMessenger->get_lens_hits_time_save() )
             m_outputManager->add_tuple_column_double( "lens_hits_time", index_tuple );
         if( m_outputMessenger->get_lens_hits_process_save() )
@@ -114,8 +136,8 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_3vector( "medium_hits_position_absolute", index_tuple );
         if( m_outputMessenger->get_medium_hits_position_initial_save() )
             m_outputManager->add_tuple_column_3vector( "medium_hits_position_initial", index_tuple );
-        if( m_outputMessenger->get_medium_hits_direction_save() )
-            m_outputManager->add_tuple_column_3vector( "medium_hits_direction", index_tuple );
+        if( m_outputMessenger->get_medium_hits_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "medium_hits_momentum", index_tuple );
         if( m_outputMessenger->get_medium_hits_energy_save() )
             m_outputManager->add_tuple_column_double( "medium_hits_energy", index_tuple );
         if( m_outputMessenger->get_medium_hits_process_save() )
@@ -134,8 +156,8 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
         index_tuple = m_outputManager->add_tuple_initialize( "primary", "primary" );
         if( m_outputMessenger->get_primary_position_save() )
             m_outputManager->add_tuple_column_3vector( "primary_position", index_tuple );
-        if( m_outputMessenger->get_primary_direction_save() )
-            m_outputManager->add_tuple_column_3vector( "primary_direction", index_tuple );
+        if( m_outputMessenger->get_primary_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "primary_momentum", index_tuple );
         if( m_outputMessenger->get_primary_process_save() )
             m_outputManager->add_tuple_column_string( "primary_process", index_tuple );
         if( m_outputMessenger->get_primary_time_save() )
@@ -160,8 +182,8 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_double( "photon_time", index_tuple );
         if( m_outputMessenger->get_photon_position_save() )
             m_outputManager->add_tuple_column_3vector( "photon_position", index_tuple );
-        if( m_outputMessenger->get_photon_direction_save() )
-            m_outputManager->add_tuple_column_3vector( "photon_direction", index_tuple );
+        if( m_outputMessenger->get_photon_momentum_save() )
+            m_outputManager->add_tuple_column_3vector( "photon_momentum", index_tuple );
         if( m_outputMessenger->get_photon_energy_save() )
             m_outputManager->add_tuple_column_double( "photon_energy", index_tuple );
         if( m_outputMessenger->get_photon_volume_save() )

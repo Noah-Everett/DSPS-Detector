@@ -28,6 +28,10 @@ void PhotoSensorSensitiveDetector::Initialize( G4HCofThisEvent* t_hitCollectionO
 G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHistory* t_hist ) {
     // m_outputManager->save_step_photoSensor_hits( t_step, m_name, m_position, m_rotationMatrix, false );
     PhotoSensorHit* hit = new PhotoSensorHit();
+    
+    vector< LensHit* > lensHits;
+    for( auto lens : m_lensSensitiveDetectors )
+        lensHits.push_back( lens->get_firstHit() );
 
     hit->set_photoSensor_position      ( m_position                                                            );
     hit->set_photoSensor_rotationMatrix( m_rotationMatrix                                                      );
@@ -40,7 +44,8 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     hit->set_hit_process               ( t_step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() );
     hit->set_particle_energy           ( t_step->GetTrack        ()->GetKineticEnergy ()                       );
     hit->set_particle_momentum         ( t_step->GetTrack        ()->GetMomentum      ()                       );
-    hit->set_particle_position_initial ( t_step->GetTrack        ()->GetVertexPosition()                                           );
+    hit->set_particle_position_initial ( t_step->GetTrack        ()->GetVertexPosition()                       );
+    hit->set_lensHits                  ( lensHits                                                              );
 
     m_photoSensorHitsCollection->insert( hit );
 
@@ -90,4 +95,8 @@ void PhotoSensorSensitiveDetector::set_hitsCollection_ID( G4int t_photoSensorHit
 
 G4int PhotoSensorSensitiveDetector::get_ID() {
     return m_ID;
+}
+
+void PhotoSensorSensitiveDetector::set_lensSensitiveDetectors( vector< LensSensitiveDetector* > t_lensSensitiveDetectors ) {
+    m_lensSensitiveDetectors = t_lensSensitiveDetectors;
 }

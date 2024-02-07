@@ -173,3 +173,58 @@ def get_primary_time(fileName, treeName):
     time = tree['primary_time'].array()
     file.close()
     return time
+
+def get_photosensor_hits_momentum(filename, treeName):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    px = tree['photoSensor_hits_momentum_x'].array()
+    py = tree['photoSensor_hits_momentum_y'].array()
+    pz = tree['photoSensor_hits_momentum_z'].array()
+    file.close()
+    return list(zip(px, py, pz))
+
+def get_photosensor_hits_energy(filename, treeName):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    energy = tree['photoSensor_hits_energy'].array()
+    file.close()
+    return energy
+
+def get_photosensor_hits_direction_relative(filename, treeName):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    x = tree['photoSensor_hits_direction_relative_x'].array()
+    y = tree['photoSensor_hits_direction_relative_y'].array()
+    z = tree['photoSensor_hits_direction_relative_z'].array()
+    file.close()
+    return list(zip(x, y, z))
+
+def get_lens_hits_direction_relative(filename, treeName, lens="0"):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    x = tree['lens_hits_direction_relative_x'].array()
+    y = tree['lens_hits_direction_relative_y'].array()
+    z = tree['lens_hits_direction_relative_z'].array()
+    n = tree['lens_hits_lensID'].array()
+    file.close()
+    print(n)
+    # return list(zip(x, y, z))
+    return n
+
+def get_photosensor_hits_direction_relative_lens(filename, treeName, nLens=0):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    x = tree['photoSensor_hits_direction_relative_lens_{}_x'.format(nLens)].array()
+    y = tree['photoSensor_hits_direction_relative_lens_{}_y'.format(nLens)].array()
+    z = tree['photoSensor_hits_direction_relative_lens_{}_z'.format(nLens)].array()
+    file.close()
+    return list(zip(x, y, z))
+
+def get_photosensor_hits_position_relative_lens(filename, treeName, nLens=0):
+    file = uproot.open(filename)
+    tree = file[treeName]
+    x = tree['photoSensor_hits_position_relative_lens_{}_x'.format(nLens)].array()
+    y = tree['photoSensor_hits_position_relative_lens_{}_y'.format(nLens)].array()
+    z = tree['photoSensor_hits_position_relative_lens_{}_z'.format(nLens)].array()
+    file.close()
+    return list(zip(x, y, z))

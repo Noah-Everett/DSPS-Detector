@@ -35,6 +35,8 @@ class LensSystem
         vector< Lens* >  get_lenses(       ) const;
         Lens           * get_lens  ( G4int ) const;
         G4String         get_name  (       ) const;
+        
+        void sort_lenses();
 
         G4ThreeVector get_position       ( const char*  );
         G4ThreeVector get_position_front (              );

@@ -62,19 +62,21 @@ class CalorimeterHit : public G4VHit
         void set_particle_momentum         (       G4ThreeVector     );
         void set_particle_position_initial (       G4ThreeVector     );
 
-        G4ThreeVector     get_calorimeter_position      ();
-        G4RotationMatrix* get_calorimeter_rotationMatrix();
-        G4String          get_calorimeter_name          ();
-        G4int             get_calorimeter_ID            ();
-        G4ThreeVector     get_hit_position_absolute     ();
-        G4ThreeVector     get_hit_position_relative     ();
-        G4double          get_hit_time                  ();
-        G4double          get_hit_energy                ();
-        G4ThreeVector     get_hit_momentum              ();
-        G4String          get_hit_process               ();
-        G4double          get_particle_energy           ();
-        G4ThreeVector     get_particle_momentum         ();
-        G4ThreeVector     get_particle_position_initial ();
+        G4ThreeVector     get_calorimeter_position       ();
+        G4RotationMatrix* get_calorimeter_rotationMatrix ();
+        G4String          get_calorimeter_name           ();
+        G4int             get_calorimeter_ID             ();
+        G4ThreeVector     get_hit_position_absolute      ();
+        G4ThreeVector     get_hit_position_relative      ();
+        G4double          get_hit_time                   ();
+        G4double          get_hit_energy                 ();
+        G4ThreeVector     get_hit_momentum               ();
+        G4String          get_hit_process                ();
+        G4double          get_particle_energy            ();
+        G4ThreeVector     get_particle_momentum          ();
+        G4ThreeVector     get_particle_position_initial  ();
+        G4ThreeVector     get_particle_direction         ();
+        G4ThreeVector     get_particle_direction_relative();
 
     protected:
         G4ThreeVector     m_calorimeter_position      ;

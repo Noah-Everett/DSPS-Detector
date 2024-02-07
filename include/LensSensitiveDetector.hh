@@ -41,6 +41,7 @@ class LensSensitiveDetector : public G4VSensitiveDetector
         LensHitsCollection* get_hitsCollection     ( const G4Event* );
         G4String            get_hitsCollection_name(                );
         G4int               get_hitsCollection_ID  (                );
+        LensHit*            get_firstHit           (                );
 
         void set_position         ( G4ThreeVector     );
         void set_rotationMatrix   ( G4RotationMatrix* );
@@ -53,6 +54,7 @@ class LensSensitiveDetector : public G4VSensitiveDetector
 
         LensHitsCollection* m_lensHitsCollection   { nullptr };
         G4int               m_lensHitsCollection_ID{ -1      };
+        LensHit           * m_firstHit             { nullptr };
 
         G4int m_ID;
 };

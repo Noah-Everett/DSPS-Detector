@@ -19,7 +19,10 @@
 #include "ConstructionMessenger.hh"
 #include "RunAction.hh"
 
+#include "cmath"
+
 using std::to_string;
+using std::nan;
 
 class EventAction : public G4UserEventAction
 {
