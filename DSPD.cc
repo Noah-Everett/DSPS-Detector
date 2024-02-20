@@ -112,8 +112,10 @@ int main(int argc, char** argv)
         detectorConstruction->make_GDMLFile( outputMessenger->get_GDML_fileName() );
 
     // Terminate job
-    delete visManager;
-    delete runManager;
+    if( visManager )
+        delete visManager;
+    if( runManager )
+        delete runManager;
     OutputMessenger      ::delete_instance();
     ConstructionMessenger::delete_instance();
     UIMessenger          ::delete_instance();

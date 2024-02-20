@@ -10,7 +10,7 @@ from constants import *
 def get_reconstructedPosition_slice(minMax, grid, grid_ind, grid_pos, axis, 
                                     detector_size_1_mm=DETECTOR_SIZE_X_MM, detector_size_2_mm=DETECTOR_SIZE_Y_MM,
                                     saveAnimation=False, plotSlice=None, makeAnimation=None, saveDir=None, showPlots=False, savePlots=False):
-    if minMax is not 'mean' and minMax is not 'max':
+    if minMax != 'mean' and minMax != 'max':
         raise ValueError('minMax must be "mean" or "max"')
     
     grid_ind_tensor = np.reshape(grid_ind, grid.shape)
@@ -107,7 +107,7 @@ def getSlice_indices(grid_ind, axis, i):
 
     return slice
 
-def getSlice_axesAndRotation(axis, grid_ind
+def getSlice_axesAndRotation(axis, grid_ind):
     if axis > 2:
         grid_ind = rotate(grid_ind, 45, axes=(0,1), reshape=False)
         grid_ind = rotate(grid_ind, 45, axes=(1,2), reshape=False)
@@ -124,16 +124,16 @@ def getSlice_axesAndRotation(axis, grid_ind
 
     return axes
 
-if axis > 2:
-    grid_ind = rotate(grid_ind, 45, axes=(0,1), reshape=False)
-    grid_ind = rotate(grid_ind, 45, axes=(1,2), reshape=False)
-    axis -= 3
+    # if axis > 2:
+    #     grid_ind = rotate(grid_ind, 45, axes=(0,1), reshape=False)
+    #     grid_ind = rotate(grid_ind, 45, axes=(1,2), reshape=False)
+    #     axis -= 3
 
-if axis == 0:
-axes = [1,2]
-elif axis == 1:
-axes = [0,2]
-elif axis == 2:
-axes = [0,1]
-else:
-raise ValueError('axis must be 0, 1, 2, 3, 4, or 5')
+    # if axis == 0:
+    #     axes = [1,2]
+    # elif axis == 1:
+    #     axes = [0,2]
+    # elif axis == 2:
+    #     axes = [0,1]
+    # else:
+    #     raise ValueError('axis must be 0, 1, 2, 3, 4, or 5')

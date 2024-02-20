@@ -38,6 +38,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 and NEST libraries
 #
+add_compile_options(-g)
 add_executable(DSPD DSPD.cc ${sources} ${headers})
 target_link_libraries(DSPD ${Geant4_LIBRARIES} NEST::NESTCore NEST::NESTG4)
 

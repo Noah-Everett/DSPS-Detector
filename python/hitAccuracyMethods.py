@@ -1,11 +1,13 @@
 import numpy as np
 import tqdm
+from constants import *
 
-def make_r(df_hits, binned=True):
-    if binned:
-        x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
-    else:
-        x, y = np.array(row['relativePosition'].tolist()).reshape(-1,2).T
+def make_r(df_hits, binned=True, x=None, y=None):
+    if x is None or y is None:
+        if binned:
+            x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
+        else:
+            x, y = np.array(df_hits['relativePosition'].tolist()).reshape(-1,3).T[:2]
 
     r = np.sqrt(x**2 + y**2)
     df_hits['r'] = r.tolist()
@@ -19,11 +21,12 @@ def make_theta(df_hits, rToTheta, binned=True):
 
     return df_hits
 
-def make_phi(df_hits, binned=True):
-    if binned:
-        x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
-    else:
-        x, y = np.array(row['relativePosition'].tolist()).reshape(-1,2).T
+def make_phi(df_hits, binned=True, x=None, y=None):
+    if x is None or y is None:
+        if binned:
+            x, y = np.array(df_hits['relativePosition_binned'].tolist()).reshape(-1,2).T
+        else:
+            x, y = np.array(df_hits['relativePosition'].tolist()).reshape(-1,3).T[:2]
 
     phi = np.arctan2(y, x)
     df_hits['phi'] = phi.tolist()
@@ -51,37 +54,63 @@ def make_reconstructedPoint_time(df_hits, C_XENON_MM_PER_NS=162.93068369565216, 
     df_hits['reconstructedPoint_time'] = df_hits['sensor_position'] + df_hits['reconstructedVector_time']
     
     return df_hits
+    
+def get_rotationMatrix(vector, target_direction):
+    vector = vector / np.linalg.norm(vector)
+    target_direction = target_direction / np.linalg.norm(target_direction)
+
+    axis_of_rotation = np.cross(vector, target_direction)
+
+    angle = np.arccos(np.dot(vector, target_direction))
+
+    rotation_matrix = np.array([
+        [
+            np.cos(angle) + axis_of_rotation[0]**2 * (1 - np.cos(angle)),
+            axis_of_rotation[0] * axis_of_rotation[1] * (1 - np.cos(angle)) - axis_of_rotation[2] * np.sin(angle),
+            axis_of_rotation[0] * axis_of_rotation[2] * (1 - np.cos(angle)) + axis_of_rotation[1] * np.sin(angle)
+        ],[
+            axis_of_rotation[1] * axis_of_rotation[0] * (1 - np.cos(angle)) + axis_of_rotation[2] * np.sin(angle),
+            np.cos(angle) + axis_of_rotation[1]**2 * (1 - np.cos(angle)),
+            axis_of_rotation[1] * axis_of_rotation[2] * (1 - np.cos(angle)) - axis_of_rotation[0] * np.sin(angle)
+        ],[
+            axis_of_rotation[2] * axis_of_rotation[0] * (1 - np.cos(angle)) - axis_of_rotation[1] * np.sin(angle),
+            axis_of_rotation[2] * axis_of_rotation[1] * (1 - np.cos(angle)) + axis_of_rotation[0] * np.sin(angle),
+            np.cos(angle) + axis_of_rotation[2]**2 * (1 - np.cos(angle))
+        ]
+    ])
+
+    return rotation_matrix
+# print('+y', np.dot(get_rotationMatrix([0,0,1], [ 0,-1, 0]), [1,1,1])) # = [ 1,-1, 1]
+# print('-x', np.dot(get_rotationMatrix([0,0,1], [ 1, 0, 0]), [1,1,1])) # = [ 1, 1,-1]
+# print('-z', np.dot(get_rotationMatrix([0,0,1], [ 0, 0, 1]), [1,1,1])) # = [ 1, 1, 1]
+# print('+x', np.dot(get_rotationMatrix([0,0,1], [-1, 0, 0]), [1,1,1])) # = [-1, 1, 1]
+# print('+z', np.dot(get_rotationMatrix([0,0,1], [ 0, 0,-1]), [1,1,1])) # = [-1,-1,-1]
+# print('-y', np.dot(get_rotationMatrix([0,0,1], [ 0, 1, 0]), [1,1,1])) # = [ 1, 1,-1]
 
 def make_reconstructedVector_direction(df_hits):
-    def get_rotationMatrix(vector, target_direction):
-        vector = vector / np.linalg.norm(vector)
-        target_direction = target_direction / np.linalg.norm(target_direction)
-
-        axis_of_rotation = np.cross(vector, target_direction)
-
-        angle = np.arccos(np.dot(vector, target_direction))
-
-        rotation_matrix = np.array([[np.cos(angle) + axis_of_rotation[0]**2 * (1 - np.cos(angle)),
-                                    axis_of_rotation[0] * axis_of_rotation[1] * (1 - np.cos(angle)) - axis_of_rotation[2] * np.sin(angle),
-                                    axis_of_rotation[0] * axis_of_rotation[2] * (1 - np.cos(angle)) + axis_of_rotation[1] * np.sin(angle)],
-                                    [axis_of_rotation[1] * axis_of_rotation[0] * (1 - np.cos(angle)) + axis_of_rotation[2] * np.sin(angle),
-                                    np.cos(angle) + axis_of_rotation[1]**2 * (1 - np.cos(angle)),
-                                    axis_of_rotation[1] * axis_of_rotation[2] * (1 - np.cos(angle)) - axis_of_rotation[0] * np.sin(angle)],
-                                    [axis_of_rotation[2] * axis_of_rotation[0] * (1 - np.cos(angle)) - axis_of_rotation[1] * np.sin(angle),
-                                    axis_of_rotation[2] * axis_of_rotation[1] * (1 - np.cos(angle)) + axis_of_rotation[0] * np.sin(angle),
-                                    np.cos(angle) + axis_of_rotation[2]**2 * (1 - np.cos(angle))]])
-        return rotation_matrix
-
     output_vectors = []
     for _, row in df_hits.iterrows():
         theta = row['theta']
         phi = row['phi']
         sensor_direction = row['sensor_direction']
+        sensor_wall = row['sensor_wall']
         
         output_vector = [np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)]
+        relativeSensorXYZ_sign  = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN [sensor_wall]
+        relativeSensorXYZ_index = RELATIVE_SENSOR_POSITIONS_XYZ_INDEX[sensor_wall]
+        rotated_vector = np.array([
+           -output_vector[0] * relativeSensorXYZ_sign[0],
+           -output_vector[1] * relativeSensorXYZ_sign[1],
+            output_vector[2] * relativeSensorXYZ_sign[2]
+        ])
+        rotated_vector = np.array([
+            rotated_vector[relativeSensorXYZ_index[0]],
+            rotated_vector[relativeSensorXYZ_index[1]],
+            rotated_vector[relativeSensorXYZ_index[2]]
+        ])
         
-        rotationMatrix = get_rotationMatrix([0, 0, 1], sensor_direction)
-        rotated_vector = np.dot(rotationMatrix, output_vector)
+        # rotationMatrix = get_rotationMatrix([0, 0, 1], sensor_direction)
+        # rotated_vector = np.dot(rotationMatrix, output_vector)
         
         output_vectors.append(rotated_vector)
 

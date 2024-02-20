@@ -282,7 +282,7 @@ void DetectorConstruction::ConstructSDandField() {
     G4SDManager* SDManager = G4SDManager::GetSDMpointer();
     OutputMessenger* outputMessenger = OutputMessenger::get_instance();
 
-    if( outputMessenger->get_calorimeter_hits_save() )
+    if( outputMessenger->get_calorimeter_hits_save() ) {
         for( G4int i = 0; i < m_calorimeters_full.size(); i++ ) {
             auto& calorimeter = m_calorimeters_full[i];
             CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i );
@@ -292,7 +292,6 @@ void DetectorConstruction::ConstructSDandField() {
             calorimeter->set_sensitiveDetector( cSD );
         }
     
-    if( outputMessenger->get_calorimeter_hits_save() )
         for( G4int i = 0; i < m_calorimeters_middle.size(); i++ ) {
             auto& calorimeter = m_calorimeters_middle[i];
             CalorimeterSensitiveDetector* cSD = new CalorimeterSensitiveDetector( calorimeter->get_name() + "_sensitiveDetector", i + m_calorimeters_full.size() );
@@ -301,6 +300,7 @@ void DetectorConstruction::ConstructSDandField() {
             SDManager->AddNewDetector( cSD );
             calorimeter->set_sensitiveDetector( cSD );
         }
+    }
 
     if( outputMessenger->get_photoSensor_hits_save() ||
         outputMessenger->get_lens_hits_save       ()    ) {

@@ -66,12 +66,13 @@ def get_photosensor_hits_position_absolute(fileName, treeName):
 
 import numpy as np
 
-def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName):
+def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x=None, y=None):
     file = uproot.open(fileName)
     tree = file[treeName]
 
-    photosensor_relative_x = tree['photoSensor_hits_position_relative_x'].array()
-    photosensor_relative_y = tree['photoSensor_hits_position_relative_y'].array()
+    if x is None or y is None:
+        x = tree['photoSensor_hits_position_relative_x'].array()
+        y = tree['photoSensor_hits_position_relative_y'].array()
 
     histogram = file[get_histogram_names(fileName, histDirectoryName, fullPath=True)[0]]
 
@@ -86,14 +87,14 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
     x_edges[-1] += 1e-9
     y_edges[-1] += 1e-9
 
-    position_relative_x_bins = pd.Series(pd.cut(np.array(photosensor_relative_x), bins=x_edges, retbins=False))
-    position_relative_y_bins = pd.Series(pd.cut(np.array(photosensor_relative_y), bins=y_edges, retbins=False))
+    position_relative_x_bins = pd.Series(pd.cut(np.array(x), bins=x_edges, retbins=False))
+    position_relative_y_bins = pd.Series(pd.cut(np.array(y), bins=y_edges, retbins=False))
 
     file.close()
     return position_relative_x_bins, position_relative_y_bins
 
-def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName):
-    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName)
+def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName, x=None, y=None):
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y)
 
     position_relative_x_binned = position_relative_x_bins.apply(lambda x: (x.right + x.left) / 2)
     position_relative_y_binned = position_relative_y_bins.apply(lambda x: (x.right + x.left) / 2)
@@ -228,3 +229,60 @@ def get_photosensor_hits_position_relative_lens(filename, treeName, nLens=0):
     z = tree['photoSensor_hits_position_relative_lens_{}_z'.format(nLens)].array()
     file.close()
     return list(zip(x, y, z))
+
+def fixRotations(positions, walls):
+    indices = np.where(walls == '+y')
+    absoluteAdjustment = np.array([1, 1, 1])
+    for index in indices:
+        positions[index] = np.array([
+            -positions[index,0] * absoluteAdjustment[0],
+            -positions[index,1] * absoluteAdjustment[1],
+             positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    indices = np.where(walls == '-x')
+    absoluteAdjustment = np.array([-1, 1, 1])
+    for index in indices:
+        positions[index] = np.array([
+            positions[index,0] * absoluteAdjustment[0],
+           -positions[index,1] * absoluteAdjustment[1],
+            positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    indices = np.where(walls == '-z')
+    absoluteAdjustment = np.array([1, 1, 1])
+    for index in indices:
+        positions[index] = np.array([
+           -positions[index,0] * absoluteAdjustment[0],
+           -positions[index,1] * absoluteAdjustment[1],
+            positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    indices = np.where(walls == '+x')
+    absoluteAdjustment = np.array([1, 1, 1])
+    for index in indices:
+        positions[index] = np.array([
+            positions[index,0] * absoluteAdjustment[0],
+           -positions[index,1] * absoluteAdjustment[1],
+            positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    indices = np.where(walls == '+z')
+    absoluteAdjustment = np.array([-1, 1, 1])
+    for index in indices:
+        positions[index] = np.array([
+           -positions[index,0] * absoluteAdjustment[0],
+            positions[index,1] * absoluteAdjustment[1],
+            positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    indices = np.where(walls == '-y')
+    absoluteAdjustment = np.array([1, -1, 1])
+    for index in indices:
+        positions[index] = np.array([
+           -positions[index,0] * absoluteAdjustment[0],
+            positions[index,1] * absoluteAdjustment[1],
+            positions[index,2] * absoluteAdjustment[2]
+        ]).T
+
+    return positions.tolist()

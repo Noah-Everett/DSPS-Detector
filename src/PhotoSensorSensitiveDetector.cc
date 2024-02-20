@@ -30,8 +30,9 @@ G4bool PhotoSensorSensitiveDetector::ProcessHits( G4Step* t_step, G4TouchableHis
     PhotoSensorHit* hit = new PhotoSensorHit();
     
     vector< LensHit* > lensHits;
-    for( auto lens : m_lensSensitiveDetectors )
+    for( auto lens : m_lensSensitiveDetectors ) {
         lensHits.push_back( lens->get_firstHit() );
+    }
 
     hit->set_photoSensor_position      ( m_position                                                            );
     hit->set_photoSensor_rotationMatrix( m_rotationMatrix                                                      );

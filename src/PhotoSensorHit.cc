@@ -157,7 +157,9 @@ G4ThreeVector PhotoSensorHit::get_hit_position_relative() {
         G4cout << G4endl;
         G4cout << "photosensor = " << m_photoSensor_name << G4endl;
         G4cout << "photosensor position = " << m_photoSensor_position << G4endl;
-        G4cout << "photosensor size = " << m_constructionMessenger->get_photoSensor_surface_size_depth() << " x " << m_constructionMessenger->get_photoSensor_surface_size_height() << " x " << m_constructionMessenger->get_photoSensor_surface_size_width() << G4endl;
+        G4cout << "photosensor size = " << m_constructionMessenger->get_photoSensor_surface_size_depth () 
+                               << " x " << m_constructionMessenger->get_photoSensor_surface_size_height() 
+                               << " x " << m_constructionMessenger->get_photoSensor_surface_size_width () << G4endl;
         G4cout << "hit position = " << m_hit_position << G4endl;
         G4cout << "relative_position = " << relative_position << G4endl;
         G4cout << "rotated_relative_position = " << rotated_relative_position << G4endl;
