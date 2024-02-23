@@ -3,6 +3,7 @@ import uproot
 import numpy as np
 import pandas as pd
 import awkward as ak
+from constants import *
 
 def get_histogram_names(fileName, directoryName=None, fullPath=False):
     file = uproot.open(fileName)
@@ -66,7 +67,7 @@ def get_photosensor_hits_position_absolute(fileName, treeName):
 
 import numpy as np
 
-def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x=None, y=None):
+def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None):
     file = uproot.open(fileName)
     tree = file[treeName]
 
@@ -79,8 +80,13 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
     x_bins = histogram.axis(0).edges()
     y_bins = histogram.axis(1).edges()
 
-    x_edges = np.linspace(x_bins.min(), x_bins.max(), len(x_bins))
-    y_edges = np.linspace(y_bins.min(), y_bins.max(), len(y_bins))
+    if nBins_x is None:
+        nBins_x = len(x_bins) - 1
+    if nBins_y is None:
+        nBins_y = len(y_bins) - 1
+
+    x_edges = np.linspace(x_bins.min(), x_bins.max(), nBins_x + 1)
+    y_edges = np.linspace(y_bins.min(), y_bins.max(), nBins_y + 1)
 
     x_edges[0] -= 1e-9
     y_edges[0] -= 1e-9
@@ -93,16 +99,16 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
     file.close()
     return position_relative_x_bins, position_relative_y_bins
 
-def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName, x=None, y=None):
-    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y)
+def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None):
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y, nBins_x, nBins_y)
 
     position_relative_x_binned = position_relative_x_bins.apply(lambda x: (x.right + x.left) / 2)
     position_relative_y_binned = position_relative_y_bins.apply(lambda x: (x.right + x.left) / 2)
 
     return list(zip(position_relative_x_binned, position_relative_y_binned))
 
-def get_photosensor_hits_position_relative_nBin(fileName, treeName, histDirectoryName):
-    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName)
+def get_photosensor_hits_position_relative_nBin(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None):
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y, nBins_x, nBins_y)
 
     return list(zip(position_relative_x_bins.cat.codes, position_relative_y_bins.cat.codes))
 
