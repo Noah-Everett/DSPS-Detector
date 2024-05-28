@@ -5,3 +5,4 @@ scratch/
 Analytical-Meridional-Non-Paraxial-Ray-Propagation/
 runs/
 .vscode/
+__pycache__/
