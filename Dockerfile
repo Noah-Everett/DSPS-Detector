@@ -31,8 +31,9 @@ USER root
 #######################################
 ########## Build Environment ##########
 #######################################
-RUN dnf config-manager --set-enabled extras,powertools \
- && yum install -y gcc \
+# RUN dnf config-manager --set-enabled extras,powertools \
+#  && yum install -y gcc \
+RUN dnf install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
                    cmake \
@@ -44,10 +45,11 @@ RUN dnf config-manager --set-enabled extras,powertools \
                    gsl-devel \
                    quota \
                    patch \
-                   libnsl2-devel \
+                   which \
+                #    libnsl2-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
- && wget https://github.com/Noah-Everett/DSPS-Detector/setup_Dockerfile.sh
+ && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/setup_Dockerfile.sh
 
 
 
