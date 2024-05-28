@@ -143,6 +143,8 @@ RUN source /setup_Dockerfile.sh \
                     -Dmathmore=ON \
                     -Dpythia6=ON \
                     -Dxml=ON \
+                    -DCMAKE_CXX_COMPILER=g++ \
+                    -DCMAKE_C_COMPILER=gcc \
  && make -j${NCPU} \
  && make install \
  && cd / \
