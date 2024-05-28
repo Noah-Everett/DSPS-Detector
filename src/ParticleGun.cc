@@ -73,7 +73,7 @@ void ParticleGun::GeneratePrimaries( G4Event* t_event ) {
         G4PrimaryParticle* particle{ nullptr };
         if( particle_definition->GetParticleName() == "PhotonCreator" ) {
             particle = new G4PrimaryParticle( G4OpticalPhoton::Definition() );
-            particle->SetKineticEnergy( 24.12 * eV );
+            particle->SetKineticEnergy( 6.974754362888755 * eV ); // fit from NEST data
             // G4double energy = G4RandGauss::shoot( 24.12 * eV, 1979. * eV );
             // if( energy > 24.12 * eV / 2. )
             //     particle->SetKineticEnergy( energy );

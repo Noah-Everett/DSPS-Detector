@@ -1,5 +1,8 @@
 import os
 import matplotlib as mpl
+import numpy as np
+import matplotlib.cm as cm
+from matplotlib.colors import ListedColormap
 
 # Set the path to the TeX binaries
 os.environ['PATH'] = '/Library/TeX/texbin:' + os.environ['PATH']
@@ -34,3 +37,7 @@ params = {
     'axes.unicode_minus' : True
 }
 mpl.rcParams.update(params)
+
+rainbow = cm.rainbow(np.linspace(0, 1, 10))
+rainbow = np.insert(rainbow, 0, [0, 0, 0, 1], axis=0)
+rainbow_cmap = ListedColormap(rainbow)

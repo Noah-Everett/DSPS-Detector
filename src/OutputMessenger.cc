@@ -573,9 +573,8 @@ G4bool OutputMessenger::get_photon_volume_save() const {
 G4bool OutputMessenger::get_photon_stepNumber_save() const {
     return m_variable_photon_stepNumber_save;
 }
-G4bool OutputMessenger::get_photoSensor_hits_save() const {
-    return m_variable_photoSensor_hits_position_binned_save                     ||
-           m_variable_photoSensor_hits_position_absolute_save                   ||
+G4bool OutputMessenger::get_photoSensor_hits_tuple_save() const {
+    return m_variable_photoSensor_hits_position_absolute_save                   ||
            m_variable_photoSensor_hits_position_relative_save                   ||
            any( m_variable_photoSensor_hits_position_relative_lens_save )       ||
            m_variable_photoSensor_hits_position_initial_save                    ||
@@ -587,6 +586,10 @@ G4bool OutputMessenger::get_photoSensor_hits_save() const {
            m_variable_photoSensor_hits_process_save                             ||
            m_variable_photoSensor_hits_photoSensorID_save                       ||
            m_variable_photoSensor_hits_energy_save                                ;
+}
+G4bool OutputMessenger::get_photoSensor_hits_save() const {
+    return m_variable_photoSensor_hits_position_binned_save ||
+           get_photoSensor_hits_tuple_save();
 }
 G4bool OutputMessenger::get_calorimeter_hits_save() const {
     return m_variable_calorimeter_hits_position_absolute_save  ||
@@ -675,7 +678,6 @@ vector< G4int > OutputMessenger::parse_nLenses( G4String t_string ) {
     G4Tokenizer tokenizer( t_string );
     G4String nLens_string;
     while( ( nLens_string = tokenizer(" ,") ) && !nLens_string.empty() ) {
-        G4cout << __FILE__ << " " << __LINE__ << " " << nLens_string << G4endl;
         if( to_lower_copy( nLens_string ) == "all" || nLens_string == "*" ) {
             for( G4int i = 0; i < m_constructionMessenger->get_lens_amount(); i++ )
                 t_nLenses.push_back( i );

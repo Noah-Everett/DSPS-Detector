@@ -46,7 +46,7 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
     G4int index_tuple { 0 };
 
     // Make photoSensor_hits tuple
-    if( m_outputMessenger->get_photoSensor_hits_save() ) {
+    if( m_outputMessenger->get_photoSensor_hits_tuple_save() ) {
         index_tuple = m_outputManager->add_tuple_initialize( "photoSensor_hits", "photoSensor_hits" );
         if( m_outputMessenger->get_photoSensor_hits_position_absolute_save() )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_position_absolute", index_tuple );
@@ -64,8 +64,9 @@ RunAction::RunAction( DetectorConstruction* t_detectorConstruction )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_direction_relative", index_tuple );
         for( G4int i : m_outputMessenger->get_photoSensor_hits_direction_relative_lens_save() )
             m_outputManager->add_tuple_column_3vector( "photoSensor_hits_direction_relative_lens_" + to_string( i ), index_tuple );
-        if( m_outputMessenger->get_photoSensor_hits_time_save() )
+        if( m_outputMessenger->get_photoSensor_hits_time_save() ) {
             m_outputManager->add_tuple_column_double( "photoSensor_hits_time", index_tuple );
+            }
         if( m_outputMessenger->get_photoSensor_hits_process_save() )
             m_outputManager->add_tuple_column_string( "photoSensor_hits_process", index_tuple );
         if( m_outputMessenger->get_photoSensor_hits_photoSensorID_save() )

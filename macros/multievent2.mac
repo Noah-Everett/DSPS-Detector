@@ -1,0 +1,254 @@
+##########################
+# Event macro file #
+##########################
+
+# Global parameters
+/run/initialize
+
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/gun/particle mu-
+/gun/energy 700 MeV
+
+/particleGun/momentum/random true
+/particleGun/nParticles 1
+
+/particleGun/position/x/random true
+/particleGun/position/x/min -1.00000 m
+/particleGun/position/x/max  1.00000 m
+/particleGun/position/y/random true
+/particleGun/position/y/min -1.00000 m
+/particleGun/position/y/max  1.00000 m
+/particleGun/position/z/random true
+/particleGun/position/z/min -1.00000 m
+/particleGun/position/z/max  1.00000 m
+
+/analysis/setHistoDirName photoSensor_hits_histograms
+
+/analysis/setFileName multievent_125.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_126.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_127.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_128.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_129.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_130.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_131.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_132.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_133.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_134.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_135.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_136.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_137.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_138.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_139.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_140.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_141.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_142.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_143.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_144.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_145.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_146.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_147.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_148.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_149.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_150.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_151.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_152.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_153.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_154.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_155.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_156.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_157.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_158.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_159.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_160.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_161.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_162.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_163.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_164.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_165.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_166.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_167.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_168.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_169.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_170.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_171.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_172.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_173.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_174.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_175.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_176.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_177.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_178.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_179.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_180.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_181.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_182.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_183.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_184.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_185.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_186.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_187.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_188.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_189.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_190.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_191.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_192.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_193.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_194.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_195.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_196.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_197.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_198.root
+/run/beamOn 1
+
+/analysis/setFileName multievent_199.root
+/run/beamOn 1

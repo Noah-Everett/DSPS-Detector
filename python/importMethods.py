@@ -67,7 +67,7 @@ def get_photosensor_hits_position_absolute(fileName, treeName):
 
 import numpy as np
 
-def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None):
+def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None, forDF=False):
     file = uproot.open(fileName)
     tree = file[treeName]
 
@@ -97,7 +97,11 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
     position_relative_y_bins = pd.Series(pd.cut(np.array(y), bins=y_edges, retbins=False))
 
     file.close()
-    return position_relative_x_bins, position_relative_y_bins
+
+    if not forDF:
+        return position_relative_x_bins, position_relative_y_bins
+    else:
+        return np.array([np.array(position_relative_x_bins), np.array(position_relative_y_bins)]).T.tolist()
 
 def get_photosensor_hits_position_relative_binned(fileName, treeName, histDirectoryName, x=None, y=None, nBins_x=None, nBins_y=None):
     position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y, nBins_x, nBins_y)
@@ -181,6 +185,13 @@ def get_primary_time(fileName, treeName):
     file.close()
     return time
 
+def get_primary_pdg(fileName, treeName):
+    file = uproot.open(fileName)
+    tree = file[treeName]
+    pdg = tree['primary_pdg'].array()
+    file.close()
+    return pdg
+
 def get_photosensor_hits_momentum(filename, treeName):
     file = uproot.open(filename)
     tree = file[treeName]
@@ -236,59 +247,41 @@ def get_photosensor_hits_position_relative_lens(filename, treeName, nLens=0):
     file.close()
     return list(zip(x, y, z))
 
-def fixRotations(positions, walls):
+def fixRotations_relative_signs(positions, walls, handleZ=True):
     indices = np.where(walls == '+y')
-    absoluteAdjustment = np.array([1, 1, 1])
-    for index in indices:
-        positions[index] = np.array([
-            -positions[index,0] * absoluteAdjustment[0],
-            -positions[index,1] * absoluteAdjustment[1],
-             positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['+y']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     indices = np.where(walls == '-x')
-    absoluteAdjustment = np.array([-1, 1, 1])
-    for index in indices:
-        positions[index] = np.array([
-            positions[index,0] * absoluteAdjustment[0],
-           -positions[index,1] * absoluteAdjustment[1],
-            positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['-x']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     indices = np.where(walls == '-z')
-    absoluteAdjustment = np.array([1, 1, 1])
-    for index in indices:
-        positions[index] = np.array([
-           -positions[index,0] * absoluteAdjustment[0],
-           -positions[index,1] * absoluteAdjustment[1],
-            positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['-z']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     indices = np.where(walls == '+x')
-    absoluteAdjustment = np.array([1, 1, 1])
-    for index in indices:
-        positions[index] = np.array([
-            positions[index,0] * absoluteAdjustment[0],
-           -positions[index,1] * absoluteAdjustment[1],
-            positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['+x']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     indices = np.where(walls == '+z')
-    absoluteAdjustment = np.array([-1, 1, 1])
-    for index in indices:
-        positions[index] = np.array([
-           -positions[index,0] * absoluteAdjustment[0],
-            positions[index,1] * absoluteAdjustment[1],
-            positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['+z']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     indices = np.where(walls == '-y')
-    absoluteAdjustment = np.array([1, -1, 1])
-    for index in indices:
-        positions[index] = np.array([
-           -positions[index,0] * absoluteAdjustment[0],
-            positions[index,1] * absoluteAdjustment[1],
-            positions[index,2] * absoluteAdjustment[2]
-        ]).T
+    sign = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN['-y']
+    if not handleZ:
+        sign = (sign[0], sign[1], 1)
+    positions[indices] = positions[indices] * sign
 
     return positions.tolist()

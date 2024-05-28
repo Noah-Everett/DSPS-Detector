@@ -103,6 +103,7 @@ class OutputMessenger : public G4UImessenger
         G4bool          get_photon_energy_save                                (       ) const;
         G4bool          get_photon_volume_save                                (       ) const;
         G4bool          get_photon_stepNumber_save                            (       ) const;
+        G4bool          get_photoSensor_hits_tuple_save                       (       ) const;
         G4bool          get_photoSensor_hits_save                             (       ) const;
         G4bool          get_calorimeter_hits_save                             (       ) const;
         G4bool          get_lens_hits_save                                    (       ) const;

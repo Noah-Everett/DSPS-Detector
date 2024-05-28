@@ -62,20 +62,20 @@ void NESTDetector::Initialization() {
     dt_min = 86.;    // minimum. Top of detector fiducial volume
     dt_max = 936.5;  // maximum. Bottom of detector fiducial volume
 
-    radius = 688.;  // millimeters (fiducial radius)
-    radmax = 728.;  // actual physical geo. limit
+    radius = 5e3; // 688.;  // millimeters (fiducial radius)
+    radmax = 5e3; // 728.;  // actual physical geo. limit
 
-    TopDrift = 1461.;  // mm not cm or us (but, this *is* where dt=0)
+    TopDrift = 5e3; // 1461.;  // mm not cm or us (but, this *is* where dt=0)
     // a z-axis value of 0 means the bottom of the detector (cathode OR bottom
     // PMTs)
     // In 2-phase, TopDrift=liquid/gas border. In gas detector it's GATE, not
     // anode!
-    anode = 1469.;  // the level of the anode grid-wire plane in mm
+    anode = 5e3; // 1469.;  // the level of the anode grid-wire plane in mm
     // In a gas TPC, this is not TopDrift (top of drift region), but a few mm
     // above it
-    gate = 1456.;  // mm. This is where the E-field changes (higher)
+    gate = 5e3; // 1456.;  // mm. This is where the E-field changes (higher)
     // in gas detectors, the gate is still the gate, but it's where S2 starts
-    cathode = 0.;  // mm. Defines point below which events are gamma-X
+    cathode = -5e3; // 0.;  // mm. Defines point below which events are gamma-X
 
     // 2-D (X & Y) Position Reconstruction
     // Set these to zero to implement "perfect" position corrections

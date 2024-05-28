@@ -21,7 +21,16 @@
 
 #include "ConstructionMessenger.hh"
 
+#include <vector>
+#include <cmath>
+
 using std::vector;
+using std::sqrt;
+using std::pow;
+
+using CLHEP::h_Planck;
+using CLHEP::c_light;
+using CLHEP::pi;
 
 class Materials
 {
@@ -171,7 +180,7 @@ class Materials
         G4double m_water_basic_mpt_energies[ 4 ]{ 2.00*eV, 2.87*eV, 2.90*eV, 3.47*eV };
         G4double m_water_basic_mpt_rindices[ 4 ]{ 1.333, 1.333, 1.333, 1.333 };
 
-        // From Geant4's LXe example
+        // // From Geant4's LXe example
         vector< G4double > lxe_Energy = { 7.0 * eV, 7.07 * eV, 7.14 * eV };
         vector< G4double > lxe_SCINT = { 0.1, 1.0, 0.1 };
         vector< G4double > lxe_RIND  = { 1.59, 1.57, 1.54 };

@@ -155,21 +155,72 @@ void Materials::constructMaterial_LXe() {
     G4double z;  // atomic number
     G4double density;
 
-    m_material_LXe = new G4Material( "LXe", z = 54., a = 131.29 * g / mole, density = 2.950 * g / cm3 );
+    const G4double T       = 178;            // Temperature [K]
+    const G4double k       = 1.38064852e-23; // Boltzmann constant [J/K]
+          G4double rho     = 2.950;          // Density [g/cm^3]
+                   rho     *= 1000;          // Convert g/cm^3 to kg/m^3
+          G4double kappa_T = 2.00;           // Isothermal compressibility [atm^-1]
+                                             // from Table 9 of https://doi.org/10.1016/S0021-9614(73)80004-7
+                   kappa_T *= 101.325e4;     // Convert atm to Pa
 
-    m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT1", lxe_Energy, lxe_SCINT );
-    m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT2", lxe_Energy, lxe_SCINT );
-    m_materialPropertiesTable_LXe->AddProperty( "RINDEX"                 , lxe_Energy, lxe_RIND  );
-    m_materialPropertiesTable_LXe->AddProperty( "ABSLENGTH"              , lxe_Energy, lxe_ABSL  );
-    m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD"        , 12000. / MeV );
-    m_materialPropertiesTable_LXe->AddConstProperty( "RESOLUTIONSCALE"           , 1.0          );
-    m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT1", 20. * ns     );
-    m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT2", 45. * ns     );
-    m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD1"       , 1.0          );
-    m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD2"       , 0.0          );
+    // From arXiv:1502.04213v4
+    const G4double a_0  = 1.4  ;
+    const G4double a_UV = 0.4  ;
+    const G4double a_IR = 0.002;
+
+    // From arXiv:1502.04213v4
+    const G4double lambda    = 178  ;
+    const G4double lambda_UV = 146.9;
+    const G4double lambda_IR = 827.0;
+
+    m_material_LXe = new G4Material( "LXe", z = 54., a = 131.29 * g / mole, density = rho * kg / m3 );
+
+    G4double energies_delta = 1   * nm;
+    G4double energies_min   = 115 * nm;
+    G4double energies_max   = 400 * nm;
+    vector< G4double > energies = {};
+    for( G4double wavelength = energies_max; wavelength >= energies_min; wavelength -= energies_delta ) {
+        G4double energy = h_Planck * c_light / wavelength;
+        energies.push_back( energy );
+    }
+
+    vector< G4double > refractiveIndicies = {};
+    for ( G4double energy : energies ) {
+        // From arXiv:1502.04213v4
+        G4double n = sqrt( 
+            a_0 
+            + a_UV * pow( lambda, 2 ) / ( pow( lambda, 2 ) - pow( lambda_UV, 2 ) ) 
+            + a_IR * pow( lambda, 2 ) / ( pow( lambda, 2 ) - pow( lambda_IR, 2 ) ) 
+        );
+        refractiveIndicies.push_back( n );
+    }
+
+    vector< G4double > absorptionLengths = {};
+    for ( G4double n : refractiveIndicies ) {
+        // From arXiv:1502.04213v4
+        G4double l = 16 * pow( pi, 3 ) / ( 6 * pow( lambda, 4 ) ) 
+            * ( k * T * pow( rho, 2 ) * kappa_T 
+            * pow( ( pow( n, 2 ) - 1 ) * ( pow( n, 2 ) + 2 ) / 3, 2 ) );
+        absorptionLengths.push_back( 1/l );
+    }
+
+    ///////////// OLD:
+    // m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT1", lxe_Energy, lxe_SCINT );
+    // m_materialPropertiesTable_LXe->AddProperty( "SCINTILLATIONCOMPONENT2", lxe_Energy, lxe_SCINT );
+    // m_materialPropertiesTable_LXe->AddProperty( "RINDEX"                 , lxe_Energy, lxe_RIND  );
+    // m_materialPropertiesTable_LXe->AddProperty( "ABSLENGTH"              , lxe_Energy, lxe_ABSL  );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD"        , 12000. / MeV );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "RESOLUTIONSCALE"           , 1.0          );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT1", 20. * ns     );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONTIMECONSTANT2", 45. * ns     );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD1"       , 1.0          );
+    // m_materialPropertiesTable_LXe->AddConstProperty( "SCINTILLATIONYIELD2"       , 0.0          );
+
+    m_materialPropertiesTable_LXe->AddProperty( "RINDEX"   , energies, refractiveIndicies, refractiveIndicies.size() );
+    m_materialPropertiesTable_LXe->AddProperty( "ABSLENGTH", energies, absorptionLengths , absorptionLengths .size() );
 
     m_material_LXe->SetMaterialPropertiesTable( m_materialPropertiesTable_LXe );
-    m_material_LXe->GetIonisation()->SetBirksConstant( 0.126 * mm / MeV );
+    // m_material_LXe->GetIonisation()->SetBirksConstant( 0.126 * mm / MeV );
 }
 
 // Would need to redesign lens to use this material --> not worth it at the moment

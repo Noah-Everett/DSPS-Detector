@@ -10,7 +10,7 @@
 //*/////////////////////////////////////////////////////////////////////////*//
 
 #include "OpticalPhysics.hh"
-#include "LUX_Run03.hh"
+// #include "LUX_Run03.hh"
 
 OpticalPhysics::OpticalPhysics( DetectorConstruction* t_detectorConstruction, 
                           const G4String& name                         ) :
@@ -19,9 +19,7 @@ OpticalPhysics::OpticalPhysics( DetectorConstruction* t_detectorConstruction,
 }
 
 OpticalPhysics::~OpticalPhysics() {
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
     // delete m_NESTDetector;
-    G4cout << __FILE__ << " " << __LINE__ << G4endl;
 }
 
 void OpticalPhysics::ConstructProcess() {
