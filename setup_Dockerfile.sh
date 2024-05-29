@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # misc
-export NCPU=${nproc}
+export NCPU=30
 
 # compilers
 export CC=gcc
