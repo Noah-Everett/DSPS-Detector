@@ -4,8 +4,8 @@
 export NCPU=${nproc}
 
 # compilers
-export CC=clang # gcc
-export CXX=clang++ # g++
+export CC=gcc
+export CXX=g++
 export FC=gfortran
 
 # log4cpp
