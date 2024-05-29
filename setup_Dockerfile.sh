@@ -33,6 +33,7 @@ export PATH="${PATH}:/ROOT_install/bin"
 # Geant4
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/Geant4_install/lib64"
 export Geant4_DIR="/Geant4_install/lib/cmake/Geant4"
+export PATH="${PATH}:/Geant4_install/bin"
 
 # GENIE
 export GENIE="/GENIE"
