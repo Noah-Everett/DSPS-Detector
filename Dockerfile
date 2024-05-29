@@ -38,7 +38,6 @@ RUN dnf install -y gcc \
                    gcc-gfortran \
                    epel-release \
                    clang \
-                   clang++ \
                    cmake \
                    make \
                    git \
