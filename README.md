@@ -54,7 +54,7 @@ $ make [-j<numberOfCPUs>]
 
 ## Installation With Docker
 
-You can also use [Docker](https://www.docker.com) to run the simulation. This is useful if you do not want to install Geant4 and NEST on your system. There are pre-built Docker images available on [Docker Hub](https://hub.docker.com/r/noaheverett/dsps). You can pull the image with:
+You can also use [Docker](https://www.docker.com) to run the simulation. This is useful if you do not want to install Geant4 and NEST on your system. There are pre-built Docker images available on [Docker Hub](https://hub.docker.com) at [noaheverett/dsps](https://hub.docker.com/repository/docker/noaheverett/dsps/general). You can pull the image with:
 ```
 $ docker pull noaheverett/dsps:<versionNumber>-<architecture (x86 or arm64)>
 ```
