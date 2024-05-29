@@ -163,7 +163,7 @@ RUN source /setup_Dockerfile.sh \
  && cd /Geant4_build \
  && cmake /Geant4_src -DCMAKE_INSTALL_PREFIX=/Geant4_install \
                       -DCMAKE_PREFIX_PATH=/Xerces-C_install \
-                      -DCMAKE_CXX_STANDARD=14 \
+                      -DCMAKE_CXX_STANDARD=17 \
                       -DGEANT4_USE_GDML=ON \
                       -DGEANT4_USE_SYSTEM_EXPAT=OFF \
                       -DGEANT4_INSTALL_DATA=ON \
