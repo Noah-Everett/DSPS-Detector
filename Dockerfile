@@ -188,6 +188,7 @@ RUN source /setup_Dockerfile.sh \
                 --enable-fnal \
                 --disable-lhapdf5 \
  && make -j${NCPU} \
+ && make install \
  && cd / \
  && rm -rf /GENIE
 
