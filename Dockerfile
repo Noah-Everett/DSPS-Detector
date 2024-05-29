@@ -171,7 +171,7 @@ RUN source /setup_Dockerfile.sh \
  && make install \
  && cd / \
  && rm -rf /Geant4_src \
- && rm -rf /Geant4_build \
+ && rm -rf /Geant4_build
 
 
 
