@@ -155,7 +155,7 @@ RUN source /setup_Dockerfile.sh \
 ########## Geant4 ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch v10.7.2 https://github.com/Geant4/geant4 /Geant4_src \
+ && git clone --depth 1 --branch v11.2.1 https://github.com/Geant4/geant4 /Geant4_src \
  && mkdir /Geant4_build \
  && mkdir /Geant4_install \
  && cd /Geant4_build \
