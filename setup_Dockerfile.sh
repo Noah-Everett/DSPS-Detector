@@ -39,3 +39,7 @@ export PATH="${PATH}:/Geant4_install/bin"
 export GENIE="/GENIE"
 export GENIE_INSTALL="/GENIE"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/GENIE/lib"
+
+# NEST
+export NEST_DIR="/NEST_install/lib/cmake/NEST"
+export PATH="${PATH}:/NEST_install"

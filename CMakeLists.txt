@@ -18,7 +18,6 @@ endif()
 #----------------------------------------------------------------------------
 # Find NEST package
 #
-set(CMAKE_PREFIX_PATH "/Users/noah-everett/Applications/nest-2.3.12_install")
 find_package(NEST REQUIRED)
 include_directories(${NEST_INCLUDE_DIRS})
 
