@@ -3,6 +3,11 @@
 # misc
 export NCPU=${nproc}
 
+# compilers
+export CC=clang # gcc
+export CXX=clang++ # g++
+export FC=gfortran
+
 # log4cpp
 export LOG4CPP_FQ_DIR="/log4cpp_install"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/log4cpp_install/lib"

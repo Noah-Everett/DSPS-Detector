@@ -36,7 +36,8 @@ USER root
 RUN dnf install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
-                   llvm \
+                   clang \
+                   clang++ \
                    cmake \
                    make \
                    git \
@@ -144,8 +145,6 @@ RUN source /setup_Dockerfile.sh \
                     -Dmathmore=ON \
                     -Dpythia6=ON \
                     -Dxml=ON \
-                    -DCMAKE_CXX_COMPILER=g++ \
-                    -DCMAKE_C_COMPILER=gcc \
  && make -j${NCPU} \
  && make install \
  && cd / \
