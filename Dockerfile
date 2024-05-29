@@ -31,24 +31,22 @@ USER root
 #######################################
 ########## Build Environment ##########
 #######################################
-# RUN dnf config-manager --set-enabled extras,powertools \
-#  && yum install -y gcc \
-RUN dnf install -y --enablerepo=crb gcc \
-                                    gcc-c++ \
-                                    gcc-gfortran \
-                                 #    epel-release \
-                                 #    clang \
-                                    cmake \
-                                    make \
-                                    git \
-                                    wget \
-                                    python27 \
-                                    libxml2-devel \
-                                    gsl-devel \
-                                    quota \
-                                    patch \
-                                    which \
-                                    libnsl2-devel \
+RUN yum install -y dnf-plugins-core \
+ && dnf config-manager --set-enabled extras,powertools \
+ && yum install -y gcc \
+                   gcc-c++ \
+                   gcc-gfortran \
+                   cmake \
+                   make \
+                   git \
+                   wget \
+                   python27 \
+                   libxml2-devel \
+                   gsl-devel \
+                   quota \
+                   patch \
+                   which \
+                   libnsl2-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/setup_Dockerfile.sh
