@@ -36,6 +36,7 @@ USER root
 RUN dnf install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
+                   epel-release \
                    clang \
                    clang++ \
                    cmake \
