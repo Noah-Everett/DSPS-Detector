@@ -165,6 +165,7 @@ RUN source /setup_Dockerfile.sh \
                       -DGEANT4_USE_GDML=ON \
                       -DGEANT4_USE_SYSTEM_EXPAT=OFF \
                       -DGEANT4_INSTALL_DATA=ON \
+                      -DGEANT4_BUILD_MULTITHREADED=ON \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -224,3 +225,20 @@ RUN source /setup_Dockerfile.sh \
  && cmake .. \
  && make -j${NCPU} \
  && cd /DSPS
+
+
+
+############################
+########## Python ##########
+############################
+RUN source /setup_Dockerfile.sh \
+ && dnf install -y python3.11 \
+                   python3-pip \
+ && dnf clean all \
+ && rm -rf /var/cache/dnf \
+ && pip3 install numpy \
+                 matplotlib \
+                 pandas \
+                 scikit-learn \
+                 tensorflow \
+                 uproot

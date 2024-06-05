@@ -12,13 +12,13 @@
 #include "ActionInitialization.hh"
 #include "DetectorConstruction.hh"
 #include "ConstructionMessenger.hh"
-#include "UIMessenger.hh"
 #include "Materials.hh"
 #include "OutputMessenger.hh"
 #include "OutputManager.hh"
 #include "PhotonCreator.inl"
 #include "OpticalPhysics.hh"
 #include "ParticleGunMessenger.hh"
+#include "CommandLineArgumentManager.hh"
 
 #include "FTFP_BERT.hh"
 #include "G4EmStandardPhysics_option4.hh"
@@ -36,32 +36,37 @@ int main(int argc, char** argv)
 {
     // Initialize the messengers
     ConstructionMessenger* constructionMessenger = ConstructionMessenger::get_instance();
-    UIMessenger          * UImessenger           = UIMessenger          ::get_instance();
     OutputMessenger      * outputMessenger       = OutputMessenger      ::get_instance();
     ParticleGunMessenger * particleGunMessenger  = ParticleGunMessenger ::get_instance();
 
-    // Execute parameter macros
+    // Initialize the UI manager
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
-    if( argc == 3 ) {
-        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
-        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 2 ] );
-        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 3 ] );
-    } else {
-        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_detector.mac" ) );
-        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_GUI.mac"      ) );
-        UImanager->ApplyCommand( G4String( "/control/execute macros/parameters_output.mac"   ) );
-    }
+
+    // Read in arguments
+    CommandLineArgumentManager* CLAManager = new CommandLineArgumentManager( argc, argv, { "-g", "-d", "-o", "-e" } );
+    G4bool showGUI = ( argc == 1 || CLAManager->findArgument( "-g" ) ) ? true : false;
+    if( CLAManager->findArgument_string( "-d" ) )
+        UImanager->ApplyCommand( "/control/execute " + CLAManager->getArgument_string( "-d" ) );
+    else
+        UImanager->ApplyCommand( "/control/execute macros/parameters_detector.mac" );
+    if( CLAManager->findArgument_string( "-o" ) )
+        UImanager->ApplyCommand( "/control/execute " + CLAManager->getArgument_string( "-o" ) );
+    else
+        UImanager->ApplyCommand( "/control/execute macros/parameters_output.mac" );
+    G4String pathToEventMacro;
+    if( argc == 2 )
+        pathToEventMacro = argv[ 1 ];
+    else
+        pathToEventMacro = ( CLAManager->findArgument_string( "-e" ) ) ? CLAManager->getArgument_string( "-e" ) : "macros/event.mac";
 
     // Initialize UI if needed
     G4UIExecutive* ui = nullptr;
-    if( UImessenger->get_showGUI() || argc == 1 )
+    if( showGUI )
         ui = new G4UIExecutive( argc, argv );
 
     // Initialize the run manager
     G4RunManager* runManager = G4RunManagerFactory::CreateRunManager( G4RunManagerType::Default );
     runManager->SetVerboseLevel( 3 );
-
-    // G4Exception("main", "main", FatalException, "Fatal exception test.");
 
     // Build the detector and initialize SDs
     G4SDManager::GetSDMpointer()->SetVerboseLevel( 1 );
@@ -102,10 +107,8 @@ int main(int argc, char** argv)
             UImanager->ApplyCommand( "/control/execute macros/gui.mac" );
         ui->SessionStart();
         delete ui;
-    } else if( argc == 2 )
-        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 1 ] );
-    else if( argc == 4 )
-        UImanager->ApplyCommand( G4String( "/control/execute " ) + argv[ 3 ] );
+    } else
+        UImanager->ApplyCommand( "/control/execute " + pathToEventMacro );
     
     // Save GDML file if needed
     if( outputMessenger->get_GDML_save() )
@@ -118,7 +121,6 @@ int main(int argc, char** argv)
         delete runManager;
     OutputMessenger      ::delete_instance();
     ConstructionMessenger::delete_instance();
-    UIMessenger          ::delete_instance();
     ParticleGunMessenger ::delete_instance();
     Materials            ::delete_instance();
 
