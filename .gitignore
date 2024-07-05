@@ -2,7 +2,8 @@
 
 build/
 scratch/
+analysis/data/*
 Analytical-Meridional-Non-Paraxial-Ray-Propagation/
 runs/
 .vscode/
-__pycache__/
+*/__pycache__/
