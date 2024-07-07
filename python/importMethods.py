@@ -179,10 +179,16 @@ def get_histogram_hits_tuple(fileName, directoryName=None, numpy=False,
 
     if numpy:
         photosensor_IDs = np.array(photosensor_IDs).astype('U'+str(max(map(len, photosensor_IDs))))
-        photosensor_directions = np.array(photosensor_directions).reshape(-1, 3).astype(np.float16)
-        photosensor_positions = np.array(photosensor_positions).reshape(-1, 3).astype(np.float16)
+        # photosensor_directions = np.array(photosensor_directions).reshape(-1, 3).astype(np.float16)
+        # photosensor_positions = np.array(photosensor_positions).reshape(-1, 3).astype(np.float16)
         photosensor_walls = np.array(photosensor_walls).astype('U'+str(max(map(len, photosensor_walls))))
-        position_relative_binneds = np.array(position_relative_binneds).reshape(-1, 2).astype(np.float16)
+        # l = max(map(len, photosensor_IDs))
+        # photosensor_IDs = [np.array(x).reshape(-1).astype('U'+str(l)) for x in photosensor_IDs]
+        photosensor_directions = [np.array(x).reshape(3).astype(np.int8) for x in photosensor_directions]
+        photosensor_positions = [np.array(x).reshape(3).astype(np.float16) for x in photosensor_positions]
+        # l = max(map(len, photosensor_walls))
+        # photosensor_walls = [np.array(x).reshape(-1).astype('U'+str(l)) for x in photosensor_walls]
+        position_relative_binneds = [np.array(x).reshape(2).astype(np.float16) for x in position_relative_binneds]
         position_relative_nBins = [np.array(x).reshape(2).astype(np.int8) for x in position_relative_nBins]
 
     returns = []
