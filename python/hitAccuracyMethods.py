@@ -150,48 +150,11 @@ def get_rotationMatrix(vector, target_direction):
 # print('-y', np.dot(get_rotationMatrix([0,0,1], [ 0, 1, 0]), [1,1,1])) # = [ 1, 1,-1]
 
 def make_reconstructedVector_direction(df_hits, thetaName='theta', phiName='phi', outputName='reconstructedVector_direction'):
-    timeStart = pd.Timestamp.now()
-    df_hits_old = df_hits.copy()
-    output_vectors = []
-    for _, row in df_hits_old.iterrows():
-        theta = row[thetaName]
-        phi = row[phiName]
-        sensor_direction = row['sensor_direction']
-        sensor_wall = row['sensor_wall']
-        
-        output_vector = [np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)]
-        relativeSensorXYZ_sign  = RELATIVE_SENSOR_POSITIONS_XYZ_SIGN [sensor_wall]
-        relativeSensorXYZ_index = RELATIVE_SENSOR_POSITIONS_XYZ_INDEX[sensor_wall]
-        rotated_vector = np.array([
-            -output_vector[0] * relativeSensorXYZ_sign[0],
-            -output_vector[1] * relativeSensorXYZ_sign[1],
-            output_vector[2] * relativeSensorXYZ_sign[2]
-        ])
-        rotated_vector = np.array([
-            rotated_vector[relativeSensorXYZ_index[0]],
-            rotated_vector[relativeSensorXYZ_index[1]],
-            rotated_vector[relativeSensorXYZ_index[2]]
-        ])
-        
-        # rotationMatrix = get_rotationMatrix([0, 0, 1], sensor_direction)
-        # rotated_vector = np.dot(rotationMatrix, output_vector)
-        
-        output_vectors.append(rotated_vector)
-
-    df_hits_old[outputName] = output_vectors
-    
-    # return df_hits
-    timeEnd = pd.Timestamp.now()
-    oldTime = timeEnd - timeStart
-
-    timeStart = pd.Timestamp.now()
-    df_hits_new = df_hits.copy()
-
     # Calculate sin and cos for theta and phi
-    sin_theta = np.sin(df_hits_new[thetaName])
-    cos_theta = np.cos(df_hits_new[thetaName])
-    sin_phi = np.sin(df_hits_new[phiName])
-    cos_phi = np.cos(df_hits_new[phiName])
+    sin_theta = np.sin(df_hits[thetaName])
+    cos_theta = np.cos(df_hits[thetaName])
+    sin_phi = np.sin(df_hits[phiName])
+    cos_phi = np.cos(df_hits[phiName])
     
     # Create the output vectors using broadcasting
     output_vectors = np.column_stack((sin_theta * cos_phi, sin_theta * sin_phi, cos_theta))
@@ -213,31 +176,16 @@ def make_reconstructedVector_direction(df_hits, thetaName='theta', phiName='phi'
         ])
 
     # Split output_vectors into separate columns
-    df_temp = pd.DataFrame(output_vectors, columns=['x', 'y', 'z'], index=df_hits_new.index)
-    df_hits_new = pd.concat([df_hits_new, df_temp], axis=1)
+    df_temp = pd.DataFrame(output_vectors, columns=['x', 'y', 'z'], index=df_hits.index)
+    df_hits = pd.concat([df_hits, df_temp], axis=1)
     
     # Apply the rotation to each row
-    df_hits_new[outputName] = df_hits_new.apply(rotate_vector, axis=1)
+    df_hits[outputName] = df_hits.apply(rotate_vector, axis=1)
 
     # Drop temporary columns
-    df_hits_new.drop(columns=['x', 'y', 'z'], inplace=True)
-    
-    timeEnd = pd.Timestamp.now()
-    newTime = timeEnd - timeStart
+    df_hits.drop(columns=['x', 'y', 'z'], inplace=True)
 
-    print('Old time:', oldTime)
-    print('New time:', newTime)
-    print()
-
-    for new, old in zip(df_hits_new[outputName].values, df_hits_old[outputName].values):
-        if not np.allclose(new, old):
-            raise ValueError('Error in make_reconstructedVector_direction')
-    
-
-    df_hits = df_hits_new
-    
-    return df_hits_new
-        
+    return df_hits
 
 def make_reconstructedVector_direction_num(df_hits, thetaName='theta_num', phiName='phi_num', outputName='reconstructedVector_direction_num'):
     return make_reconstructedVector_direction(df_hits, thetaName, phiName, outputName)

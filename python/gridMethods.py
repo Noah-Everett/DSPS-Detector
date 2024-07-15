@@ -170,6 +170,23 @@ def get_voxelGrid_errors(grid):
 
     return grid_copy
 
+def get_voxelGrid_ind(size):
+    grid_ind = np.indices(size).reshape(3, -1).T
+
+    return grid_ind
+
+def get_voxelGrid_pos(size, detectorDimensions):
+    if type(size) != np.ndarray:
+        size = np.array(size).reshape(3)
+    if type(detectorDimensions) != np.ndarray:
+        detectorDimensions = np.array(detectorDimensions).reshape(3)
+
+    scale = size / detectorDimensions
+    grid_ind = get_voxelGrid_ind(size)
+    grid_pos = grid_ind / scale - detectorDimensions[np.newaxis, :] / 2
+
+    return grid_pos
+
 def get_voxelGrid(shape, detectorDimensions, 
                   sensorPositions, recoDirections, 
                   hitWeights=None, make_errors=False,
