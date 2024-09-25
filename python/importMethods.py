@@ -1,4 +1,4 @@
-import ROOT
+#import ROOT
 import uproot
 import numpy as np
 import pandas as pd
@@ -23,10 +23,13 @@ def get_histogram_names(fileName, directoryName=None, fullPath=False):
     return keys
 
 def get_histogram_titles(fileName, directoryName=None):
-    file = ROOT.TFile(fileName)
+    # file = ROOT.TFile(fileName)
+    file = uproot.open(fileName)
     names = get_histogram_names(fileName, directoryName, fullPath=True)
-    titles = [file.Get(name).GetTitle() for name in names]
-    file.Close()
+    # titles = [file.Get(name).GetTitle() for name in names]
+    titles = [file[name].title for name in names]
+    # file.Close()
+    file.close()
     return titles
 
 def get_histogram_position(title):
