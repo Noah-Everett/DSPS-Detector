@@ -1,3 +1,6 @@
 [submodule "UNet"]
 	path = UNet
 	url = https://github.com/Noah-Everett/Pytorch-UNet
+[submodule "pytorch-3dunet"]
+	path = pytorch-3dunet
+	url = https://github.com/Noah-Everett/pytorch-3dunet
