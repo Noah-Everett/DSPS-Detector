@@ -2,135 +2,137 @@ import numpy as np
 import tqdm
 from scipy.spatial.distance import cdist
 from constants import *
+from concurrent.futures import ProcessPoolExecutor
+import numba
 
-def get_voxelGrid_hitVector(shape, starts, ends, weights):
-    if weights is None:
-        weights = np.ones(len(starts))
-    elif len(weights) != len(starts):
-        raise ValueError('weights must be None or a list of the same length as starts and ends')
-    elif np.any(weights > 1) or np.any(weights <= 0):
-        raise ValueError('weights must be None or a list of values between 0 and 1')
+@numba.njit
+def position_to_voxel_indices(x, y, z, x0_grid, y0_grid, z0_grid, dx, dy, dz, Nx, Ny, Nz):
+    i = int((x - x0_grid) / dx)
+    j = int((y - y0_grid) / dy)
+    k = int((z - z0_grid) / dz)
+    # Clamp to grid bounds
+    i = max(0, min(Nx - 1, i))
+    j = max(0, min(Ny - 1, j))
+    k = max(0, min(Nz - 1, k))
+    return i, j, k
 
-    grid = np.zeros(shape, dtype=float)
+@numba.njit
+def traverse_voxel_line(x0, y0, z0, x1, y1, z1, x0_grid, y0_grid, z0_grid, dx_vox, dy_vox, dz_vox, Nx, Ny, Nz):
+    dx = x1 - x0
+    dy = y1 - y0
+    dz = z1 - z0
+    L = np.sqrt(dx * dx + dy * dy + dz * dz)
+    if L == 0:
+        return np.empty((0, 3), dtype=np.int32)
+    vx = dx / L
+    vy = dy / L
+    vz = dz / L
+    ix, iy, iz = position_to_voxel_indices(x0, y0, z0, x0_grid, y0_grid, z0_grid, dx_vox, dy_vox, dz_vox, Nx, Ny, Nz)
+    ix1, iy1, iz1 = position_to_voxel_indices(x1, y1, z1, x0_grid, y0_grid, z0_grid, dx_vox, dy_vox, dz_vox, Nx, Ny, Nz)
+    stepX = np.sign(vx)
+    stepY = np.sign(vy)
+    stepZ = np.sign(vz)
+    if vx != 0:
+        if stepX > 0:
+            tVoxelBoundaryX = x0_grid + (ix + 1) * dx_vox
+        else:
+            tVoxelBoundaryX = x0_grid + ix * dx_vox
+        tMaxX = (tVoxelBoundaryX - x0) / vx
+        tDeltaX = dx_vox / abs(vx)
+    else:
+        tMaxX = np.inf
+        tDeltaX = np.inf
+    if vy != 0:
+        if stepY > 0:
+            tVoxelBoundaryY = y0_grid + (iy + 1) * dy_vox
+        else:
+            tVoxelBoundaryY = y0_grid + iy * dy_vox
+        tMaxY = (tVoxelBoundaryY - y0) / vy
+        tDeltaY = dy_vox / abs(vy)
+    else:
+        tMaxY = np.inf
+        tDeltaY = np.inf
+    if vz != 0:
+        if stepZ > 0:
+            tVoxelBoundaryZ = z0_grid + (iz + 1) * dz_vox
+        else:
+            tVoxelBoundaryZ = z0_grid + iz * dz_vox
+        tMaxZ = (tVoxelBoundaryZ - z0) / vz
+        tDeltaZ = dz_vox / abs(vz)
+    else:
+        tMaxZ = np.inf
+        tDeltaZ = np.inf
 
-    def initializeVariables():
-        x1, y1, z1 = starts[:, 0], starts[:, 1], starts[:, 2]
-        x2, y2, z2 = ends  [:, 0], ends  [:, 1], ends  [:, 2]
+    max_steps = Nx + Ny + Nz
+    nsteps = 0
+    voxel_indices = []
+    while True:
+        if 0 <= ix < Nx and 0 <= iy < Ny and 0 <= iz < Nz:
+            voxel_indices.append((ix, iy, iz))
+        else:
+            break
+        nsteps += 1
+        if nsteps > max_steps:
+            break
+        if ix == ix1 and iy == iy1 and iz == iz1:
+            break
+        if tMaxX < tMaxY:
+            if tMaxX < tMaxZ:
+                ix += int(stepX)
+                tMaxX += tDeltaX
+            else:
+                iz += int(stepZ)
+                tMaxZ += tDeltaZ
+        else:
+            if tMaxY < tMaxZ:
+                iy += int(stepY)
+                tMaxY += tDeltaY
+            else:
+                iz += int(stepZ)
+                tMaxZ += tDeltaZ
+    return np.array(voxel_indices, dtype=np.int32)
 
-        dx = np.abs(x2 - x1)
-        dy = np.abs(y2 - y1)
-        dz = np.abs(z2 - z1)
+def get_voxelGrid_hitVector(centers, starts, ends, weights):
+    """
+    centers: numpy array of shape (Nx, Ny, Nz, 3)
+    starts: numpy array of shape (N, 3)
+    ends: numpy array of shape (N, 3)
+    weights: numpy array of shape (N,)
+    """
+    Nx, Ny, Nz, _ = centers.shape
 
-        sx = np.ones(len(starts), dtype=int); sx[x1 > x2] = -1
-        sy = np.ones(len(starts), dtype=int); sy[y1 > y2] = -1
-        sz = np.ones(len(starts), dtype=int); sz[z1 > z2] = -1
+    # Corrected voxel size calculation for uniform grid
+    if Nx > 1:
+        dx_vox = centers[1, 0, 0, 0] - centers[0, 0, 0, 0]
+    else:
+        dx_vox = 1.0
+    if Ny > 1:
+        dy_vox = centers[0, 1, 0, 1] - centers[0, 0, 0, 1]
+    else:
+        dy_vox = 1.0
+    if Nz > 1:
+        dz_vox = centers[0, 0, 1, 2] - centers[0, 0, 0, 2]
+    else:
+        dz_vox = 1.0
 
-        w = weights
+    x0_grid = centers[0, 0, 0, 0] - dx_vox / 2
+    y0_grid = centers[0, 0, 0, 1] - dy_vox / 2
+    z0_grid = centers[0, 0, 0, 2] - dz_vox / 2
 
-        return x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w
-    
-    def updateVariables(indices, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w):
-        x1, y1, z1 = x1[indices], y1[indices], z1[indices]
-        x2, y2, z2 = x2[indices], y2[indices], z2[indices]
-        d1, d2     = d1[indices], d2[indices]
-        dx, dy, dz = dx[indices], dy[indices], dz[indices]
-        sx, sy, sz = sx[indices], sy[indices], sz[indices]
-        w          = w [indices]
+    grid = np.zeros((Nx, Ny, Nz))
 
-        return x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w
-
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w = initializeVariables()
-    X_ind = np.where((dx >= dy) & (dx >= dz))[0]
-    Y_ind = np.where((dy >= dx) & (dy >= dz))[0]
-    Y_ind = Y_ind[~np.isin(Y_ind, X_ind)]
-    Z_ind = np.linspace(0, len(starts)-1, len(starts), dtype=int)
-    Z_ind = Z_ind[~np.isin(Z_ind, np.concatenate((X_ind, Y_ind)))]
-
-    # if X is the dominant axis
-    d1 = dy - dx
-    d2 = dz - dx
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(X_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    while np.where(x1 != x2)[0].size > 0:
-        X_ind = np.where(x1 != x2)[0]
-        x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(X_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-
-        X_cur = np.where((x1 >= 0) & (x1 < shape[0]) & 
-                         (y1 >= 0) & (y1 < shape[1]) & 
-                         (z1 >= 0) & (z1 < shape[2]))[0]
-        np.add.at(grid, (x1[X_cur], y1[X_cur], z1[X_cur]), w[X_cur])
-
-        x1 += sx
-
-        X_cur = np.where(d1 >= 0)[0]
-        y1[X_cur] += sy[X_cur]
-        d1[X_cur] -= dx[X_cur]
-
-        X_cur = np.where(d2 >= 0)[0]
-        z1[X_cur] += sz[X_cur]
-        d2[X_cur] -= dx[X_cur]
-
-        d1 += dy
-        d2 += dz
-
-    # if Y is the dominant axis
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w = initializeVariables()
-    d1 = dx - dy
-    d2 = dz - dy
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Y_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    while np.where(y1 != y2)[0].size > 0:
-        Y_ind = np.where(y1 != y2)[0]
-        x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Y_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-
-        Y_cur = np.where((x1 >= 0) & (x1 < shape[0]) & 
-                         (y1 >= 0) & (y1 < shape[1]) & 
-                         (z1 >= 0) & (z1 < shape[2]))[0]
-        np.add.at(grid, (x1[Y_cur], y1[Y_cur], z1[Y_cur]), w[Y_cur])
-
-        y1 += sy
-
-        Y_cur = np.where(d1 >= 0)[0]
-        x1[Y_cur] += sx[Y_cur]
-        d1[Y_cur] -= dy[Y_cur]
-
-        Y_cur = np.where(d2 >= 0)[0]
-        z1[Y_cur] += sz[Y_cur]
-        d2[Y_cur] -= dy[Y_cur]
-
-        d1 += dx
-        d2 += dz
-
-    # if Z is the dominant axis
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w = initializeVariables()
-    d1 = dx - dz
-    d2 = dy - dz
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Z_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-    while np.where(z1 != z2)[0].size > 0:
-        Z_ind = np.where(z1 != z2)[0]
-        x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w = updateVariables(Z_ind, x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, d1, d2, w)
-
-        Z_cur = np.where((x1 >= 0) & (x1 < shape[0]) & 
-                         (y1 >= 0) & (y1 < shape[1]) & 
-                         (z1 >= 0) & (z1 < shape[2]))[0]
-        np.add.at(grid, (x1[Z_cur], y1[Z_cur], z1[Z_cur]), w[Z_cur])
-
-        z1 += sz
-
-        Z_cur = np.where(d1 >= 0)[0]
-        x1[Z_cur] += sx[Z_cur]
-        d1[Z_cur] -= dz[Z_cur]
-
-        Z_cur = np.where(d2 >= 0)[0]
-        y1[Z_cur] += sy[Z_cur]
-        d2[Z_cur] -= dz[Z_cur]
-
-        d1 += dx
-        d2 += dy
-
-    x1, y1, z1, x2, y2, z2, dx, dy, dz, sx, sy, sz, w = initializeVariables()
-    ind_cur = np.where((x2 >= 0) & (x2 < shape[0]) &
-                       (y2 >= 0) & (y2 < shape[1]) &
-                       (z2 >= 0) & (z2 < shape[2]))[0]
-    np.add.at(grid, (x2[ind_cur], y2[ind_cur], z2[ind_cur]), weights[ind_cur])
+    for i in numba.prange(len(starts)):
+        x0, y0, z0 = starts[i]
+        x1, y1, z1 = ends[i]
+        w = weights[i]
+        voxel_indices = traverse_voxel_line(
+            x0, y0, z0, x1, y1, z1,
+            x0_grid, y0_grid, z0_grid,
+            dx_vox, dy_vox, dz_vox,
+            Nx, Ny, Nz)
+        for idx in voxel_indices:
+            ix, iy, iz = idx
+            grid[ix, iy, iz] += w
 
     return grid
 
@@ -138,41 +140,21 @@ def get_voxelGrid_errors(grid):
     grid_copy = grid.copy()
 
     zeros = np.argwhere(grid_copy == 0)
-    # print('zeros', zeros)
-    # print('zeros.shape', zeros.shape)
     hit = np.argwhere(grid_copy > 0)
-    # print('hit', hit)
-    # print('hit.shape', hit.shape)
-    # print('len(hit)', len(hit))
     if len(hit) == 0:
         return grid_copy
     distances = cdist(zeros, hit, metric='euclidean')
-    # print('distances.shape', distances.shape)
     closestHit = np.argmin(distances, axis=1)
-    # print('closestHit', closestHit)
-    # print('closestHit.shape', closestHit.shape)
     distances = distances[np.arange(len(distances)), closestHit]
-    # print('distances', distances)
-    # print('distances.shape', distances.shape)
     closestHit_ind = hit[closestHit]
-    # print('closestHit_ind', closestHit_ind)
-    # print('closestHit_ind.shape', closestHit_ind.shape)
     hitValues = grid_copy[closestHit_ind[:, 0], closestHit_ind[:, 1], closestHit_ind[:, 2]]
-    # print('hitValues', hitValues)
-    # print('hitValues.shape', hitValues.shape)
     p = np.exp(-distances)
-    # print('p', p)
-    # print('p.shape', p.shape)
-    # print('grid_copy.shape', grid_copy.shape)
-    # print('p * hitValues', p * hitValues)
-    # print('(p * hitValues).shape', (p * hitValues).shape)
     grid_copy[zeros[:, 0], zeros[:, 1], zeros[:, 2]] = p * hitValues
 
     return grid_copy
 
 def get_voxelGrid_ind(size):
     grid_ind = np.indices(size).reshape(3, -1).T
-
     return grid_ind
 
 def get_voxelGrid_pos(size, detectorDimensions):
@@ -187,57 +169,130 @@ def get_voxelGrid_pos(size, detectorDimensions):
 
     return grid_pos
 
+
+def process_wall(wall, indices, starts, ends, hitWeights, centers, make_errors):
+    if indices.size == 0:
+        return wall, np.zeros(centers.shape[:3], dtype=float)
+    wall_starts = starts[indices]
+    wall_ends = ends[indices]
+    wall_weights = hitWeights[indices]
+    wall_grid = get_voxelGrid_hitVector(centers, wall_starts, wall_ends, wall_weights)
+    if make_errors:
+        wall_grid = get_voxelGrid_errors(wall_grid)
+    return wall, wall_grid
+
+def process_wall_wrapper(args):
+    return process_wall(*args)
+
 def get_voxelGrid(shape, detectorDimensions, 
                   sensorPositions, recoDirections, 
                   hitWeights=None, make_errors=False,
                   useWalls=False, sensorWalls=None, 
                   wallOperation=None, returnWalls=False):
-    shape = np.array(shape).reshape(3)
-    detectorDimensions = np.array(detectorDimensions).reshape(3)
-    sensorPositions = np.array(sensorPositions).reshape(-1, 3)
-    sensorPositions = sensorPositions + detectorDimensions / 2
-    recoDirections = np.array(recoDirections).reshape(-1, 3)
-    hitWeights = np.array(hitWeights).reshape(-1)
+    """
+    Computes the voxel grid based on sensor positions and reconstructed directions.
+
+    Parameters:
+    - shape: Tuple or list of 3 integers (Nx, Ny, Nz), the shape of the grid.
+    - detectorDimensions: Tuple or list of 3 floats, physical dimensions of the detector.
+    - sensorPositions: Array of shape (N, 3), positions of the sensors.
+    - recoDirections: Array of shape (N, 3), reconstructed directions.
+    - hitWeights: Optional array of shape (N,), weights for each hit.
+    - make_errors: Boolean flag to apply error processing.
+    - useWalls: Boolean flag indicating whether to process walls separately.
+    - sensorWalls: Optional array of shape (N,), wall identifiers for each sensor.
+    - wallOperation: Function to combine wall grids.
+    - returnWalls: Boolean flag indicating whether to return wall grids.
+
+    Returns:
+    - grid: The computed voxel grid.
+    - grid_indices: Indices of the grid where values are non-zero.
+    - grid_positions: Physical positions corresponding to grid indices.
+    """
+    shape = np.array(shape, dtype=int).reshape(3)
+    detectorDimensions = np.array(detectorDimensions, dtype=float).reshape(3)
+    Nx, Ny, Nz = shape
+    dx_vox = detectorDimensions[0] / Nx
+    dy_vox = detectorDimensions[1] / Ny
+    dz_vox = detectorDimensions[2] / Nz
+
+    # Compute grid centers
+    x0_grid = -detectorDimensions[0] / 2.0
+    y0_grid = -detectorDimensions[1] / 2.0
+    z0_grid = -detectorDimensions[2] / 2.0
+
+    x_centers = x0_grid + (np.arange(Nx) + 0.5) * dx_vox
+    y_centers = y0_grid + (np.arange(Ny) + 0.5) * dy_vox
+    z_centers = z0_grid + (np.arange(Nz) + 0.5) * dz_vox
+
+    centers = np.zeros((Nx, Ny, Nz, 3), dtype=np.float64)
+    centers[:, :, :, 0] = x_centers[:, None, None]
+    centers[:, :, :, 1] = y_centers[None, :, None]
+    centers[:, :, :, 2] = z_centers[None, None, :]
+
+    sensorPositions = np.array(sensorPositions, dtype=float).reshape(-1, 3)
+    recoDirections = np.array(recoDirections, dtype=float).reshape(-1, 3)
+
+    if hitWeights is None:
+        hitWeights = np.ones(len(sensorPositions), dtype=float)
+    else:
+        hitWeights = np.array(hitWeights, dtype=float).reshape(-1)
+        
     if useWalls and sensorWalls is None:
-        raise ValueError('sensorWalls must be a list of the same length as sensorPositions')
+        raise ValueError('sensorWalls must be provided when useWalls is True')
+
+    # Starts are sensor positions
+    starts = sensorPositions
+
+    # Compute ends by extending the reconstructed directions
+    max_distance = np.linalg.norm(detectorDimensions) * 2.0  # A large distance to ensure traversal through the grid
+    ends = sensorPositions + recoDirections * max_distance
 
     grid = np.zeros(shape, dtype=float)
-
-    scale = shape / detectorDimensions
-    starts = (sensorPositions * scale).astype(int)
-    ends = (starts + recoDirections * scale * np.max(shape)**2 / np.max(scale)).astype(int)
-
     wall_grids = {}
 
     if not useWalls and not returnWalls:
-        grid = get_voxelGrid_hitVector(shape, starts, ends, hitWeights)
+        grid = get_voxelGrid_hitVector(centers, starts, ends, hitWeights)
         if make_errors:
-            grid = get_voxelGrid_errors(grid)#, max_distance=max_distance)
-    if useWalls or returnWalls:
-        for wall in [pm+dir for pm in ['+', '-'] for dir in ['x', 'y', 'z']]:
-            wall_ind = np.where(sensorWalls == wall)[0]
-            if len(wall_ind) == 0:
-                wall_grids[wall] = np.zeros(shape, dtype=float)
-                continue
-            wall_starts = starts[wall_ind]
-            wall_ends = ends[wall_ind]
-            wall_hitWeights = hitWeights[wall_ind]
-            wall_grid = get_voxelGrid_hitVector(shape, wall_starts, wall_ends, wall_hitWeights)
-            if make_errors:
-                wall_grid = get_voxelGrid_errors(wall_grid)
-            wall_grids[wall] = wall_grid
+            grid = get_voxelGrid_errors(grid)
+    else:
+        walls = ['+x', '-x', '+y', '-y', '+z', '-z']
+        wall_indices = {wall: np.flatnonzero(sensorWalls == wall) for wall in walls}
 
-    grid_ind = np.argwhere(grid >= 0)
-    grid_pos = grid_ind / scale - detectorDimensions[np.newaxis, :] / 2
+        # Prepare arguments for each wall
+        args_list = [
+            (
+                wall,
+                wall_indices[wall],
+                starts,
+                ends,
+                hitWeights,
+                centers,
+                make_errors
+            ) for wall in walls
+        ]
+
+        # Use ProcessPoolExecutor for parallel processing
+        with ProcessPoolExecutor() as executor:
+            results = executor.map(process_wall_wrapper, args_list)
+        wall_grids = dict(results)
+
+    # Compute grid indices and positions
+    if not useWalls and not returnWalls:
+        grid_indices = np.argwhere(grid > 0)
+    else:
+        grid_indices = None  # Adjust as needed
+
+    scale = shape / detectorDimensions
+    grid_positions = grid_indices / scale - detectorDimensions / 2.0 if grid_indices is not None else None
 
     if useWalls:
-        grid = wallOperation(np.reshape(np.array(list(wall_grids.values())), (len(wall_grids), *shape)), list(wall_grids.keys()), returnWalls=returnWalls)
+        wall_arrays = np.stack([wall_grids[wall] for wall in walls], axis=0)
+        grid = wallOperation(wall_arrays, walls, returnWalls=returnWalls)
     elif returnWalls:
-        grid = np.zeros(grid.shape + (6,))
-        for nWall, wallName in enumerate(wall_grids.keys()):
-            grid[:,:,:,nWall] += wall_grids[wallName]
+        grid = np.stack([wall_grids[wall] for wall in walls], axis=-1)
 
-    return grid, grid_ind, grid_pos
+    return grid, grid_indices, grid_positions
 
 def expNWalls(wallGrids, walls, nWalls=6, returnWalls=False):
     grid_sum = np.sum(wallGrids, axis=0)

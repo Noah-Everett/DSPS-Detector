@@ -1,8 +1,8 @@
 model: # model configuration
   name: UNet3D
-  in_channels: 1 # number of input channels to the model
+  in_channels: 6 # number of input channels to the model
   out_channels: 1 # number of output channels
-  layer_order: gcr # determines the order of operators in a single layer (crg - Conv3d+ReLU+GroupNorm)
+  layer_order: crg # determines the order of operators in a single layer (crg - Conv3d+ReLU+GroupNorm)
   f_maps: 32 # initial number of feature maps
   num_groups: 8 # number of groups in the groupnorm
   final_sigmoid: true # apply element-wise nn.Sigmoid after the final 1x1x1 convolution, otherwise apply nn.Softmax
@@ -25,7 +25,7 @@ lr_scheduler:
   patience: 30
 trainer:
   eval_score_higher_is_better: False # model with lower eval score is considered better
-  checkpoint_dir: CHECKPOINT_DIR # path to the checkpoint directory
+  checkpoint_dir: "/Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/analysis/data/h5-UNet" # path to the checkpoint directory
   resume: null # path to latest checkpoint; if provided the training will be resumed from that checkpoint
   pre_trained: null # path to the best_checkpoint.pytorch; to be used for fine-tuning the model with additional ground truth
   validate_after_iters: 1000 # how many iterations between validations
@@ -34,23 +34,19 @@ trainer:
   max_num_iterations: 150000 # max number of iterations
 loaders: # Configure training and validation loaders
   num_workers: 8 # how many subprocesses to use for data loading
-  raw_internal_path: /raw # path to the raw data within the H5
-  label_internal_path: /label # path to the the label data withtin the H5
+  raw_internal_path: /X # path to the raw data within the H5
+  label_internal_path: /Y # path to the the label data withtin the H5
   train: # configuration of the train loader
     file_paths: # path to the training datasets
-      - PATH_TO_TRAIN_DIR
+      - "/Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/analysis/data/h5-UNet/train/"
 
-    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
-    slice_builder:
+    slice_builder: # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
       name: FilterSliceBuilder
-      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
-      patch_shape: [80, 170, 170]
-      # train stride between patches
-      stride_shape: [20, 40, 40]
-      # minimum volume of the labels in the patch
-      threshold: 0.6
-      # probability of accepting patches which do not fulfil the threshold criterion
-      slack_acceptance: 0.01
+      patch_shape: [2, 2, 2] # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      stride_shape: [1, 1, 1] # train stride between patches
+      skip_shape_check: true
+      threshold: 0.6 # minimum volume of the labels in the patch
+      slack_acceptance: 0.01 # probability of accepting patches which do not fulfil the threshold criterion
 
     transformer:
       raw:
@@ -58,8 +54,7 @@ loaders: # Configure training and validation loaders
         - name: RandomFlip
         - name: RandomRotate90
         - name: RandomRotate
-          # rotate only in ZY plane due to anisotropy
-          axes: [[2, 1]]
+          axes: [[2, 1]] # rotate only in ZY plane due to anisotropy
           angle_spectrum: 45
           mode: reflect
         - name: ElasticDeformation
@@ -76,38 +71,29 @@ loaders: # Configure training and validation loaders
         - name: RandomFlip
         - name: RandomRotate90
         - name: RandomRotate
-          # rotate only in ZY plane due to anisotropy
-          axes: [[2, 1]]
+          axes: [[2, 1]] # rotate only in ZY plane due to anisotropy
           angle_spectrum: 45
           mode: reflect
         - name: ElasticDeformation
           spline_order: 0
         - name: StandardLabelToBoundary
-          # append original ground truth labels to the last channel (to be able to compute the eval metric)
-          append_label: true
+          append_label: true # append original ground truth labels to the last channel (to be able to compute the eval metric)
         - name: ToTensor
           expand_dims: false
 
-  # configuration of the val loader
-  val:
-    # path to the val datasets
-    file_paths:
-      - PATH_TO_VAL_DIR
+  val: # configuration of the val loader
+    file_paths: # path to the val datasets
+      - "/Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/analysis/data/h5-UNet/val/"
 
-    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
-    slice_builder:
+    slice_builder: # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
       name: FilterSliceBuilder
-      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
-      patch_shape: [80, 170, 170]
-      # train stride between patches
-      stride_shape: [80, 170, 170]
-      # minimum volume of the labels in the patch
-      threshold: 0.6
-      # probability of accepting patches which do not fulfil the threshold criterion
-      slack_acceptance: 0.01
+      patch_shape: [2, 2, 2] # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      stride_shape: [1, 1, 1] # train stride between patches
+      skip_shape_check: true
+      threshold: 0.6 # minimum volume of the labels in the patch
+      slack_acceptance: 0.01 # probability of accepting patches which do not fulfil the threshold criterion
 
-    # data augmentation
-    transformer:
+    transformer: # data augmentation
       raw:
         - name: Standardize
         - name: ToTensor
