@@ -7,3 +7,4 @@ Analytical-Meridional-Non-Paraxial-Ray-Propagation/
 runs/
 .vscode/
 python/__pycache__/
+tmp/
