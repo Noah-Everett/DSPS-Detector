@@ -1,7 +1,12 @@
 import yaml
 
-def get_config(paths_train, paths_val, label_input='x', label_output='y', num_workers=1):
+def get_config(paths_train, paths_val, 
+               label_input='x', label_output='y', 
+               num_workers=1,
+               patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
+               device='mps'):
     config = {
+        "device": device,
         "model": {
             "name": "UNet3D",
             "in_channels": 6,
@@ -49,9 +54,9 @@ def get_config(paths_train, paths_val, label_input='x', label_output='y', num_wo
             "train": {
                 "file_paths": paths_train,
                 "slice_builder": {
-                    "name": "FilterSliceBuilder",
-                    "patch_shape": [2, 2, 2],
-                    "stride_shape": [1, 1, 1],
+                    "name": "SliceBuilder", #"FilterSliceBuilder",
+                    "patch_shape": patch_shape,
+                    "stride_shape": stride_shape,
                     "skip_shape_check": True,
                     "threshold": 0.6,
                     "slack_acceptance": 0.01
@@ -91,9 +96,9 @@ def get_config(paths_train, paths_val, label_input='x', label_output='y', num_wo
             "val": {
                 "file_paths": paths_val,
                 "slice_builder": {
-                    "name": "FilterSliceBuilder",
-                    "patch_shape": [2, 2, 2],
-                    "stride_shape": [1, 1, 1],
+                    "name": "SliceBuilder", #"FilterSliceBuilder",
+                    "patch_shape": patch_shape,
+                    "stride_shape": stride_shape,
                     "skip_shape_check": True,
                     "threshold": 0.6,
                     "slack_acceptance": 0.01
