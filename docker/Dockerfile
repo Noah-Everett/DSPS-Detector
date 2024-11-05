@@ -49,14 +49,14 @@ RUN yum install -y dnf-plugins-core \
                    libnsl2-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
- && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/setup_Dockerfile.sh
+ && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
 
 
 
 #############################
 ########## log4cpp ##########
 #############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch v2.9.1 https://github.com/orocos-toolchain/log4cpp /log4cpp_src \
  && mkdir /log4cpp_build \
  && mkdir /log4cpp_install \
@@ -74,7 +74,7 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## fsplit ##########
 ############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && mkdir /fsplit \
  && cd /fsplit \
  && wget https://gist.githubusercontent.com/marc1uk/c0e32d955dd1c06ef69d80ce643018ad/raw/10e592d42737ecc7dca677e774ae66dcb5a3859d/fsplit.c \
@@ -86,7 +86,7 @@ RUN source /setup_Dockerfile.sh \
 #############################
 ########## Pythia6 ##########
 #############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 https://github.com/GENIE-MC-Community/Pythia6Support.git /Pythia6 \
  && cd /Pythia6 \
  && ./build_pythia6.sh --dummies=keep \
@@ -97,7 +97,7 @@ RUN source /setup_Dockerfile.sh \
 ###########################
 ########## Expat ##########
 ###########################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch R_2_5_0 https://github.com/libexpat/libexpat /Expat_src \
  && mkdir /Expat_build \
  && mkdir /Expat_install \
@@ -114,7 +114,7 @@ RUN source /setup_Dockerfile.sh \
 ##############################
 ########## Xerces-C ##########
 ##############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch v3.2.4 https://github.com/apache/xerces-c /Xerces-C_src \
  && mkdir /Xerces-C_build \
  && mkdir /Xerces-C_install \
@@ -131,7 +131,7 @@ RUN source /setup_Dockerfile.sh \
 ##########################
 ########## ROOT ##########
 ##########################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch v6-26-10 https://github.com/root-project/root /ROOT_src \
  && mkdir /ROOT_build \
  && mkdir /ROOT_install \
@@ -154,7 +154,7 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## Geant4 ##########
 ############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch v11.2.1 https://github.com/Geant4/geant4 /Geant4_src \
  && mkdir /Geant4_build \
  && mkdir /Geant4_install \
@@ -177,7 +177,7 @@ RUN source /setup_Dockerfile.sh \
 ###########################
 ########## GENIE ##########
 ###########################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 https://github.com/ANNIEsoft/GENIE-v3 /GENIE \
  && cd /GENIE \
  && ./configure --prefix=/GENIE_install \
@@ -198,7 +198,7 @@ RUN source /setup_Dockerfile.sh \
 ##########################
 ########## NEST ##########
 ##########################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 --branch v2.4.0 https://github.com/NESTCollaboration/nest /NEST_src \
  && mkdir /NEST_build \
  && mkdir /NEST_install \
@@ -217,7 +217,7 @@ RUN source /setup_Dockerfile.sh \
 #############################
 ########## G4-DSPS ##########
 #############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && git clone --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
  && cd /DSPS \
  && mkdir build \
@@ -231,7 +231,7 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## Python ##########
 ############################
-RUN source /setup_Dockerfile.sh \
+RUN source /docker/setup_Dockerfile.sh \
  && dnf install -y python3.11 \
                    python3-pip \
  && dnf clean all \
