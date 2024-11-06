@@ -1,6 +1,7 @@
 import yaml
 
 def get_config(paths_train, paths_val, 
+               checkpoint_dir,
                label_input='x', label_output='y', 
                num_workers=1,
                patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
@@ -39,7 +40,7 @@ def get_config(paths_train, paths_val,
         },
         "trainer": {
             "eval_score_higher_is_better": False,
-            "checkpoint_dir": "/Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/analysis/data/h5-UNet",
+            "checkpoint_dir": checkpoint_dir,
             "resume": None,
             "pre_trained": None,
             "validate_after_iters": 1000,
