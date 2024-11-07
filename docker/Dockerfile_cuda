@@ -17,7 +17,7 @@
 ##############################
 ########## Set FROM ##########
 ##############################
-FROM quay.io/centos/centos:stream8
+FROM nvidia/cuda:12.6.2-cudnn-devel-rockylinux9
 
 
 
@@ -31,22 +31,38 @@ USER root
 #######################################
 ########## Build Environment ##########
 #######################################
-RUN yum install -y dnf-plugins-core \
- && dnf config-manager --set-enabled extras,powertools \
- && yum install -y gcc \
+# RUN yum localinstall /cd/mountpoint/BaseOS/Packages/subscription-manager-1.27.16-1.el8.x86_64.rpm \
+#  && subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms \
+#  && dnf config-manager --set-enabled extras,powertools \
+#  && yum install -y gcc \
+#                    gcc-c++ \
+#                    gcc-gfortran \
+#                    cmake \
+#                    make \
+#                    git \
+#                    wget \
+#                    python27 \
+#                    libxml2-devel \
+#                    gsl-devel \
+#                    quota \
+#                    patch \
+#                    which \
+#                    libnsl2-devel \
+#  && yum clean all \
+#  && rm -rf /vr/cache/yum \
+#  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
+RUN yum install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
                    cmake \
                    make \
                    git \
                    wget \
-                   python27 \
                    libxml2-devel \
                    gsl-devel \
                    quota \
                    patch \
                    which \
-                   libnsl2-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
@@ -61,7 +77,7 @@ RUN source /setup_Dockerfile.sh \
  && mkdir /log4cpp_build \
  && mkdir /log4cpp_install \
  && cd /log4cpp_build \
- && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install \
+ && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install -DCMAKE_CXX_STANDARD=11 \
  && make -j${NCPU} \
  && make install \
  && cp /log4cpp_install/lib/liborocos-log4cpp.so /log4cpp_install/lib/liblog4cpp.so \

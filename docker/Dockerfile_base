@@ -31,9 +31,12 @@ USER root
 #######################################
 ########## Build Environment ##########
 #######################################
-RUN yum install -y dnf-plugins-core \
- && dnf config-manager --set-enabled extras,powertools \
- && yum install -y gcc \
+RUN cd /etc/yum.repos.d/ \
+    && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
+    && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* \
+    && yum install -y dnf-plugins-core \
+    && dnf config-manager --set-enabled extras,powertools \
+    && yum install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
                    cmake \
@@ -132,7 +135,7 @@ RUN source /setup_Dockerfile.sh \
 ########## ROOT ##########
 ##########################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch v6-26-10 https://github.com/root-project/root /ROOT_src \
+ && git clone --depth 1 --branch v6-32-06 https://github.com/root-project/root /ROOT_src \
  && mkdir /ROOT_build \
  && mkdir /ROOT_install \
  && cd /ROOT_build \
@@ -211,34 +214,3 @@ RUN source /setup_Dockerfile.sh \
  && cd / \
  && rm -rf /NEST_src \
  && rm -rf /NEST_build
-
-
-
-#############################
-########## G4-DSPS ##########
-#############################
-RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
- && cd /DSPS \
- && mkdir build \
- && cd build \
- && cmake .. \
- && make -j${NCPU} \
- && cd /DSPS
-
-
-
-############################
-########## Python ##########
-############################
-RUN source /setup_Dockerfile.sh \
- && dnf install -y python3.11 \
-                   python3-pip \
- && dnf clean all \
- && rm -rf /var/cache/dnf \
- && pip3 install numpy \
-                 matplotlib \
-                 pandas \
-                 scikit-learn \
-                 tensorflow \
-                 uproot
