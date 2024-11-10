@@ -32,24 +32,27 @@ USER root
 ########## Build Environment ##########
 #######################################
 RUN cd /etc/yum.repos.d/ \
-    && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
-    && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* \
-    && yum install -y dnf-plugins-core \
-    && dnf config-manager --set-enabled extras,powertools \
-    && yum install -y gcc \
+ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
+ && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* \
+ && cd / \
+ && yum install -y dnf-plugins-core \
+ && dnf config-manager --set-enabled extras,powertools \
+ && yum install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
                    cmake \
                    make \
                    git \
                    wget \
-                   python27 \
                    libxml2-devel \
                    gsl-devel \
                    quota \
                    patch \
                    which \
                    libnsl2-devel \
+                   openssl-devel \
+                   bzip2-devel \
+                   libffi-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
@@ -144,7 +147,6 @@ RUN source /setup_Dockerfile.sh \
                     -Dminimal=ON \
                     -Dgdml=ON \
                     -Dmathmore=ON \
-                    -Dpythia6=ON \
                     -Dxml=ON \
  && make -j${NCPU} \
  && make install \
