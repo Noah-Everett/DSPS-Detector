@@ -155,6 +155,7 @@ RUN source /setup_Dockerfile.sh \
                     -Dgdml=ON \
                     -Dmathmore=ON \
                     -Dxml=ON \
+                    -Dpythia6=ON \
  && make -j${NCPU} \
  && make install \
  && cd / \
