@@ -6,6 +6,7 @@ export NCPU=40
 # compilers
 export CC=gcc
 export CXX=g++
+export STD="17"
 export FC=gfortran
 
 # log4cpp

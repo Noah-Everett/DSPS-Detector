@@ -77,7 +77,8 @@ RUN source /setup_Dockerfile.sh \
  && mkdir /log4cpp_build \
  && mkdir /log4cpp_install \
  && cd /log4cpp_build \
- && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install -DCMAKE_CXX_STANDARD=11 \
+ && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install \
+                       -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cp /log4cpp_install/lib/liborocos-log4cpp.so /log4cpp_install/lib/liblog4cpp.so \
@@ -119,6 +120,7 @@ RUN source /setup_Dockerfile.sh \
  && mkdir /Expat_install \
  && cd /Expat_build \
  && cmake /Expat_src/expat -DCMAKE_INSTALL_PREFIX=/Expat_install \
+                           -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -136,6 +138,7 @@ RUN source /setup_Dockerfile.sh \
  && mkdir /Xerces-C_install \
  && cd /Xerces-C_build \
  && cmake /Xerces-C_src -DCMAKE_INSTALL_PREFIX=/Xerces-C_install \
+                        -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -159,6 +162,7 @@ RUN source /setup_Dockerfile.sh \
                     -Dmathmore=ON \
                     -Dpythia6=ON \
                     -Dxml=ON \
+                    -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -182,6 +186,7 @@ RUN source /setup_Dockerfile.sh \
                       -DGEANT4_USE_SYSTEM_EXPAT=OFF \
                       -DGEANT4_INSTALL_DATA=ON \
                       -DGEANT4_BUILD_MULTITHREADED=ON \
+                      -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -204,7 +209,7 @@ RUN source /setup_Dockerfile.sh \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
- && make -j${NCPU} \
+ && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
@@ -222,6 +227,7 @@ RUN source /setup_Dockerfile.sh \
  && cmake /NEST_src -DCMAKE_INSTALL_PREFIX=/NEST_install \
                     -DG4=ON \
                     -DBUILD_ROOT=ON \
+                    -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cd / \
