@@ -55,6 +55,12 @@ RUN cd /etc/yum.repos.d/ \
                    libffi-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
+ && dnf install -y python3.11 \
+                   python3-pip \
+ && dnf clean all \
+ && rm -rf /var/cache/dnf \
+ && pip3 install --upgrade pip \
+ && pip3 install numpy \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
 
 
@@ -138,7 +144,7 @@ RUN source /setup_Dockerfile.sh \
 ########## ROOT ##########
 ##########################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch v6-32-06 https://github.com/root-project/root /ROOT_src \
+ && git clone --depth 1 --branch v6-24-06 https://github.com/root-project/root /ROOT_src \
  && mkdir /ROOT_build \
  && mkdir /ROOT_install \
  && cd /ROOT_build \
@@ -183,6 +189,7 @@ RUN source /setup_Dockerfile.sh \
 ########## GENIE ##########
 ###########################
 RUN source /setup_Dockerfile.sh \
+ && ls /ROOT_install/include \
  && git clone --depth 1 https://github.com/ANNIEsoft/GENIE-v3 /GENIE \
  && cd /GENIE \
  && ./configure --prefix=/GENIE_install \
