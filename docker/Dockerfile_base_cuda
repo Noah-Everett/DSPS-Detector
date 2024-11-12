@@ -66,6 +66,7 @@ RUN yum install -y gcc \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && dnf install -y python3.11-devel \
+                   python3.11-pip \
  && dnf clean all \
  && rm -rf /var/cache/dnf \
  && pip3.11 install --upgrade pip \
