@@ -219,7 +219,7 @@ RUN source /setup_Dockerfile.sh \
  && cd /NEST_build \
  && cmake /NEST_src -DCMAKE_INSTALL_PREFIX=/NEST_install \
                     -DG4=ON \
-                    -DBUILD_ROOT=ON \
+                    -DBUILD_ROOT=OFF \
  && make -j${NCPU} \
  && make install \
  && cd / \
