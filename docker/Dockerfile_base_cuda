@@ -63,7 +63,6 @@ RUN yum install -y gcc \
                    quota \
                    patch \
                    which \
-                   log4cpp \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && dnf install -y python3.11-devel \
