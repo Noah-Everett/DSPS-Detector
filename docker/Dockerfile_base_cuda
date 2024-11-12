@@ -63,6 +63,7 @@ RUN yum install -y gcc \
                    quota \
                    patch \
                    which \
+                   log4cpp \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && dnf install -y python3.11-devel \
@@ -219,7 +220,7 @@ RUN source /setup_Dockerfile.sh \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
- && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
+ && make CXXFLAGS+=" -std=c++14" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
