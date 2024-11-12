@@ -63,16 +63,16 @@ RUN yum install -y gcc \
                    quota \
                    patch \
                    which \
-                   && yum clean all \
-                   && rm -rf /vr/cache/yum \
-                   && dnf install -y python3.11 \
-                                     python3-pip \
-                   && dnf clean all \
-                   && rm -rf /var/cache/dnf \
-                   && pip3 install --upgrade pip \
-                   && pip3 install numpy \
-                   && pip cache purge \
-                   && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
+ && yum clean all \
+ && rm -rf /vr/cache/yum \
+ && dnf install -y python3.11-devel \
+                   python3-pip \
+ && dnf clean all \
+ && rm -rf /var/cache/dnf \
+ && pip3 install --upgrade pip \
+ && pip3 install numpy \
+ && pip cache purge \
+ && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
 
 
 
