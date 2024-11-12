@@ -157,8 +157,6 @@ RUN source /setup_Dockerfile.sh \
 ##########################
 ########## ROOT ##########
 ##########################
-RUN which python3 \ 
- && readlink -f $(which python3)
 RUN source /setup_Dockerfile.sh \
  && git clone --depth 1 --branch v6-24-06 https://github.com/root-project/root /ROOT_src \
  && mkdir /ROOT_build \
