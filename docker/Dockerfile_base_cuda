@@ -85,7 +85,7 @@ RUN source /setup_Dockerfile.sh \
  && mkdir /log4cpp_install \
  && cd /log4cpp_build \
  && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install \
-                       -DCMAKE_CXX_STANDARD=14 \
+                       -DCMAKE_CXX_STANDARD=${STD} \
  && make -j${NCPU} \
  && make install \
  && cp /log4cpp_install/lib/liborocos-log4cpp.so /log4cpp_install/lib/liblog4cpp.so \
@@ -188,7 +188,6 @@ RUN source /setup_Dockerfile.sh \
  && cd /Geant4_build \
  && cmake /Geant4_src -DCMAKE_INSTALL_PREFIX=/Geant4_install \
                       -DCMAKE_PREFIX_PATH=/Xerces-C_install \
-                      -DCMAKE_CXX_STANDARD=17 \
                       -DGEANT4_USE_GDML=ON \
                       -DGEANT4_USE_SYSTEM_EXPAT=OFF \
                       -DGEANT4_INSTALL_DATA=ON \
@@ -217,7 +216,7 @@ RUN source /setup_Dockerfile.sh \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
- && make CXXFLAGS+=" -std=c++14" -j${NCPU} \
+ && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
