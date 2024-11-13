@@ -17,7 +17,7 @@
 ##############################
 ########## Set FROM ##########
 ##############################
-FROM nvidia/cuda:12.6.2-cudnn-devel-rockylinux9
+FROM --platform=linux/arm64 nvidia/cuda:12.6.2-cudnn-devel-rockylinux9
 
 
 
@@ -111,19 +111,8 @@ RUN source /setup_Dockerfile.sh \
 ########## Pythia6 ##########
 #############################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/GENIE-MC-Community/Pythia6Support.git /Pythia6 \
+ && git clone --depth 1 https://github.com/Noah-Everett/Pythia6Support.git /Pythia6 \
  && cd /Pythia6 \
- && sed -i '517i\echo "HERE 517"' build_pythia6.sh \
- && sed -i '519i\echo "HERE 518"' build_pythia6.sh \
- && sed -i '521i\echo "HERE 519"' build_pythia6.sh \
- && sed -i '523i\echo "HERE 520"' build_pythia6.sh \
- && sed -i '525i\echo "HERE 521"' build_pythia6.sh \
- && sed -i '527i\echo "HERE 522"' build_pythia6.sh \
- && sed -i '529i\echo "HERE 523"' build_pythia6.sh \
- && sed -i '531i\echo "HERE 524"' build_pythia6.sh \
- && sed -i '533i\echo "HERE 525: pwd: `pwd` ls `ls` ls /Pythia6/v6_424/src/ `ls /Pythia6/v6_424/src/` cat /Pythia6/v6_424/src/pydata.f `cat /Pythia6/v6_424/src/pydata.f`"' build_pythia6.sh \
- && sed -i '536i\echo "HERE 528: `uname`: $FORT $m32flag -shared -Wl,-soname,libPythia6.so -o libPythia6.so \
-    ${toppath}/tpythia6_build/*.o ${toppath}/src/*.o ${CERNLINK}"' build_pythia6.sh \
  && ./build_pythia6.sh --dummies=remove \
  && cd /
 
