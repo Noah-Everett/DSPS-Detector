@@ -6,7 +6,8 @@ export NCPU=10
 # compilers
 export CC=gcc
 export CXX=g++
-export STD="14"
+export STD="17"
+export STD_GENIE="14"
 export FC=gfortran
 
 # log4cpp

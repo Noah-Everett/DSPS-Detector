@@ -31,26 +31,7 @@ USER root
 #######################################
 ########## Build Environment ##########
 #######################################
-# RUN yum localinstall /cd/mountpoint/BaseOS/Packages/subscription-manager-1.27.16-1.el8.x86_64.rpm \
-#  && subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms \
-#  && dnf config-manager --set-enabled extras,powertools \
-#  && yum install -y gcc \
-#                    gcc-c++ \
-#                    gcc-gfortran \
-#                    cmake \
-#                    make \
-#                    git \
-#                    wget \
-#                    python27 \
-#                    libxml2-devel \
-#                    gsl-devel \
-#                    quota \
-#                    patch \
-#                    which \
-#                    libnsl2-devel \
-#  && yum clean all \
-#  && rm -rf /vr/cache/yum \
-#  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
+# ROOT threw an error when building the internal freetype and pcre libraries so I installed them up front
 RUN yum install -y gcc \
                    gcc-c++ \
                    gcc-gfortran \
@@ -192,7 +173,7 @@ RUN source /setup_Dockerfile.sh \
                       -DGEANT4_USE_SYSTEM_EXPAT=OFF \
                       -DGEANT4_INSTALL_DATA=ON \
                       -DGEANT4_BUILD_MULTITHREADED=ON \
-                      -DCMAKE_CXX_STANDARD=${STD} \
+                      -DCMAKE_CXX_STANDARD=17 \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -216,7 +197,7 @@ RUN source /setup_Dockerfile.sh \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
- && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
+ && make CXXFLAGS+=" -std=c++${STD_GENIE}" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
