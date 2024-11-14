@@ -10,6 +10,9 @@ export STD="17"
 export STD_GENIE="14"
 export FC=gfortran
 
+# Python
+export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.11/site-packages"
+
 # log4cpp
 export LOG4CPP_FQ_DIR="/log4cpp_install"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/log4cpp_install/lib"

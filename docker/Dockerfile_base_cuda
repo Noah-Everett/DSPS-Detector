@@ -92,7 +92,7 @@ RUN source /setup_Dockerfile.sh \
 ########## Pythia6 ##########
 #############################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/Noah-Everett/Pythia6Support.git /Pythia6 \
+ && git clone --depth 1 https://github.com/Noah-Everett/Pythia6Support /Pythia6 \
  && cd /Pythia6 \
  && ./build_pythia6.sh --dummies=remove \
  && cd /
@@ -182,12 +182,29 @@ RUN source /setup_Dockerfile.sh \
 
 
 
+############################
+########## LHAPDF ##########
+############################
+RUN source /setup_Dockerfile.sh \
+ && wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-6.5.4.tar.gz -O /LHAPDF.tar.gz \
+ && tar xf /LHAPDF.tar.gz \
+ && mv /LHAPDF-6.5.4 /LHAPDF \
+ && rm -f /LHAPDF.tar.gz \
+ && cd /LHAPDF \
+ && ls \
+ && ./configure --prefix=/LHAPDF_install \
+ && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
+ && make install \
+ && cd / \
+ && rm -rf /LHAPDF
+
+
+
 ###########################
 ########## GENIE ##########
 ###########################
 RUN source /setup_Dockerfile.sh \
- && ls /ROOT_install/include \
- && git clone --depth 1 https://github.com/ANNIEsoft/GENIE-v3 /GENIE \
+ && git clone --depth 1 --branch R-3_04_02 https://github.com/GENIE-MC/Generator /GENIE \
  && cd /GENIE \
  && ./configure --prefix=/GENIE_install \
                 --with-libxml2-inc=/usr/include/libxml2 \
@@ -197,7 +214,7 @@ RUN source /setup_Dockerfile.sh \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
- && make CXXFLAGS+=" -std=c++${STD_GENIE}" -j${NCPU} \
+ && make CXXFLAGS+=" -std=c++${STD} -fPIC" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
