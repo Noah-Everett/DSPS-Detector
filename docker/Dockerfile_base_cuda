@@ -62,7 +62,7 @@ RUN yum install -y gcc \
                    gsl-devel \
                    which \
                    freetype-devel \
-                   yum install pcre-devel \
+                   pcre-devel \
  && yum clean all \
  && rm -rf /vr/cache/yum \
  && dnf install -y python3.11-devel \
