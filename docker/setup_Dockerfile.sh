@@ -11,7 +11,7 @@ export STD_GENIE="14"
 export FC=gfortran
 
 # Python
-export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.11/site-packages"
+export PYTHONPATH="${PYTHONPATH}:/usr/lib/python3.11/site-packages"
 
 # log4cpp
 export LOG4CPP_FQ_DIR="/log4cpp_install"

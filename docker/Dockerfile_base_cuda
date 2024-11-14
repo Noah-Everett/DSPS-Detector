@@ -185,13 +185,15 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## LHAPDF ##########
 ############################
-RUN source /setup_Dockerfile.sh \
+RUN rm /setup_Dockerfile.sh && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh \
+ && python3.11 -m site \
+ && source /setup_Dockerfile.sh \
  && wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-6.5.4.tar.gz -O /LHAPDF.tar.gz \
  && tar xf /LHAPDF.tar.gz \
  && mv /LHAPDF-6.5.4 /LHAPDF \
  && rm -f /LHAPDF.tar.gz \
  && cd /LHAPDF \
- && ls \
+ && echo $PYTHONPATH \
  && ./configure --prefix=/LHAPDF_install \
  && make CXXFLAGS+=" -std=c++${STD}" -j${NCPU} \
  && make install \
