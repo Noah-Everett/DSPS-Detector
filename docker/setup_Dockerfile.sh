@@ -7,11 +7,7 @@ export NCPU=10
 export CC=gcc
 export CXX=g++
 export STD="17"
-export STD_GENIE="14"
 export FC=gfortran
-
-# Python
-export PYTHONPATH="${PYTHONPATH}:/usr/lib/python3.11/site-packages"
 
 # log4cpp
 export LOG4CPP_FQ_DIR="/log4cpp_install"
@@ -39,6 +35,10 @@ export PATH="${PATH}:/ROOT_install/bin"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/Geant4_install/lib64"
 export Geant4_DIR="/Geant4_install/lib/cmake/Geant4"
 export PATH="${PATH}:/Geant4_install/bin"
+
+# LHAPDF
+export LHAPDF_LIBRARY_PATH="/LHAPDF_install/lib"
+export LHAPDF_INCLUDE_PATH="/LHAPDF_install/include"
 
 # GENIE
 export GENIE="/GENIE"
