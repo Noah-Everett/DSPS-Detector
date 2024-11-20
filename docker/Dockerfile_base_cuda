@@ -17,7 +17,7 @@
 ##############################
 ########## Set FROM ##########
 ##############################
-FROM --platform=linux/amd64 nvidia/cuda:12.6.2-cudnn-devel-rockylinux8
+FROM nvidia/cuda:12.6.2-cudnn-devel-rockylinux8
 
 
 
@@ -55,31 +55,6 @@ RUN yum install -y gcc \
  && pip3.11 install numpy \
  && pip cache purge \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
-
-
-
-#############################
-########## log4cpp ##########
-#############################
-#  && git clone --depth 1 --branch v2.9.1 https://github.com/orocos-toolchain/log4cpp /log4cpp_src \
-RUN source /setup_Dockerfile.sh \
- && wget https://sourceforge.net/projects/log4cpp/files/log4cpp-1.1.x%20%28new%29/log4cpp-1.1/log4cpp-1.1.4.tar.gz -O /log4cpp.tar.gz \
- && tar xf /log4cpp.tar.gz \
- && mv /log4cpp /log4cpp_src \
- && rm -f /log4cpp.tar.gz \
- && mkdir /log4cpp_build \
- && mkdir /log4cpp_install \
- && touch /log4cpp_src/include/log4cpp/config.h \
- && cd /log4cpp_build \
- && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install \
-                       -DCMAKE_CXX_STANDARD=${STD} \
-                       -DCMAKE_CXX_FLAGS="-DLOG4CPP_HAVE_UNISTD_H" \
-                       -DBUILD_SHARED_LIBS=ON \
- && make -j${NCPU} \
- && make install \
- && cd / \
- && rm -rf /log4cpp_src \
- && rm -rf /log4cpp_build
 
 
 
@@ -207,13 +182,36 @@ RUN source /setup_Dockerfile.sh \
 
 
 
+#############################
+########## log4cpp ##########
+#############################
+#  && git clone --depth 1 --branch v2.9.1 https://github.com/orocos-toolchain/log4cpp /log4cpp_src \
+RUN source /setup_Dockerfile.sh \
+ && wget https://sourceforge.net/projects/log4cpp/files/log4cpp-1.1.x%20%28new%29/log4cpp-1.1/log4cpp-1.1.4.tar.gz -O /log4cpp.tar.gz \
+ && tar xf /log4cpp.tar.gz \
+ && mv /log4cpp /log4cpp_src \
+ && rm -f /log4cpp.tar.gz \
+ && mkdir /log4cpp_build \
+ && mkdir /log4cpp_install \
+ && touch /log4cpp_src/include/log4cpp/config.h \
+ && cd /log4cpp_build \
+ && cmake /log4cpp_src -DCMAKE_INSTALL_PREFIX=/log4cpp_install \
+                       -DCMAKE_CXX_STANDARD=${STD} \
+                       -DCMAKE_CXX_FLAGS="-DLOG4CPP_HAVE_UNISTD_H" \
+                       -DBUILD_SHARED_LIBS=ON \
+ && make -j${NCPU} \
+ && make install \
+ && cd / \
+ && rm -rf /log4cpp_src \
+ && rm -rf /log4cpp_build
+
+
+
 ###########################
 ########## GENIE ##########
 ###########################
 RUN source /setup_Dockerfile.sh \
- && touch /log4cpp_install/include/log4cpp/config.h \
- && rm -f /log4cpp_install/include/log4cpp/Portability.hh \
- && touch /log4cpp_install/include/log4cpp/Portability.hh \
+ && printf "#ifndef CONFIG_H\n#define CONFIG_H\n#define LOG4CPP_HAVE_SSTREAM\n#endif" > /log4cpp_install/include/log4cpp/config.h \
  && ln -s /usr/lib64/libnsl.so.2 /usr/lib64/libnsl.so \
  && git clone --depth 1 --branch R-3_04_02 https://github.com/GENIE-MC/Generator /GENIE \
  && cd /GENIE \
@@ -221,14 +219,15 @@ RUN source /setup_Dockerfile.sh \
                 --with-libxml2-inc=/usr/include/libxml2 \
                 --with-libxml2-lib=/usr/lib64 \
                 --with-pythia6-lib=/Pythia6/v6_424/lib \
-                --with-log4cpp-inc=/log4cpp_install/include/oroco \
+                --with-log4cpp-inc=/log4cpp_install/include \
                 --with-log4cpp-lib=/log4cpp_install/lib \
                 --enable-fnal \
                 --disable-lhapdf5 \
                 --enable-lhapdf6 \
                 --with-lhapdf6-inc=/LHAPDF_install/include \
                 --with-lhapdf6-lib=/LHAPDF_install/lib \
- && make CXXFLAGS+=" -std=c++${STD} -fPIC" -j${NCPU} \
+                --with-compiler=g++ \
+ && make CXXFLAGS+=" -std=c++${STD} -fPIC -include cassert" -j${NCPU} \
  && make install \
  && cd / \
  && rm -rf /GENIE
