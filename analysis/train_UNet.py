@@ -29,8 +29,6 @@ Usage Examples:
                               --max-number 50 \
                               --num-workers 8 \
                               --device cpu \
-                              --batch-size 16 \
-                              --epochs 200
 """
 
 import argparse
@@ -65,10 +63,6 @@ def parse_arguments():
                         help='Number of worker threads for data loading.')
     parser.add_argument('--device', type=str, default='cuda',
                         help='Device to use for training (e.g., "cuda" or "cpu").')
-    parser.add_argument('--batch-size', type=int, default=8,
-                        help='Batch size for training.')
-    parser.add_argument('--epochs', type=int, default=100,
-                        help='Number of training epochs.')
 
     return parser.parse_args()
 
@@ -203,13 +197,11 @@ def main():
 
     # Configure training
     config = get_config(
-        train_path=paths_train,
-        validation_path=paths_val,
-        checkpoint_path=checkpoints_dir,
+        paths_train=paths_train,
+        paths_val=paths_val,
+        checkpoint_dir=checkpoints_dir,
         num_workers=args.num_workers,
         device=args.device,
-        batch_size=args.batch_size,
-        epochs=args.epochs
     )
 
     # Save configuration
