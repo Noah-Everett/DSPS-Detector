@@ -1,125 +1,223 @@
-###################
-##### IMPORTS #####
-###################
-import sys
-import numpy as np
+#!/usr/bin/env python3
+"""
+Train a 3D U-Net model using PyTorch.
+
+This script prepares the dataset by identifying `.h5` files in the specified data directory,
+splits them into training, validation, and test sets, configures the training parameters,
+and initiates the training process.
+
+Usage Examples:
+    1. Auto-detecting min and max file numbers:
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output
+
+    2. Specifying only the maximum file number (auto-detects min-number):
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output \
+                              --max-number 50
+
+    3. Specifying both min and max file numbers:
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output \
+                              --min-number 10 \
+                              --max-number 50
+
+    4. Customizing training parameters:
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output \
+                              --min-number 10 \
+                              --max-number 50 \
+                              --num-workers 8 \
+                              --device cpu \
+                              --batch-size 16 \
+                              --epochs 200
+"""
+
+import argparse
 import os
-import torch
+import sys
+import re
+import numpy as np
 
-from UNetMethods import *
+sys.path.append('../pytorch-3dunet/')
+from pytorch3dunet.train import main as train_main
 
-sys.path.append('pytorch-3dunet/')
-from pytorch3dunet.train import main
+sys.path.append('../python/')
+from UNetMethods import get_config, save_config
 
-####################
-##### SETTINGS #####
-####################
-useHistograms = True # if True use histograms, if False use tupple data
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Train a 3D U-Net model.")
 
-checkFiles = False # check if run ROOT files (1) exit, (2) have enough hits, (3) have enough primary particle steps, (4) all DSPS hit histograms are the same size
+    # Data and output directories
+    parser.add_argument('--data-dir', type=str, required=True,
+                        help='Directory containing the .h5 dataset files.')
+    parser.add_argument('--output-dir', type=str, required=True,
+                        help='Directory to save outputs like models and configs.')
 
-dataDir = ''
-tmpDir  = dataDir+''
+    # File number specifications
+    parser.add_argument('--min-number', type=int, default=-1,
+                        help='Minimum file number (inclusive). Default is -1 (auto-detect).')
+    parser.add_argument('--max-number', type=int, default=-1,
+                        help='Maximum file number (inclusive). Default is -1 (auto-detect).')
 
-fileNumbers = [i for i in range(35)] # the ML data set has 1138 files
-runDataRoot_filePaths = ['/Users/noah-everett/Documents/FNAL/Geant4/USSD_Geant4/runs/MLtrainData/multievent_{}.root'.format(i) for i in fileNumbers]
-runDataRoot_hits_histDir = '/photoSensor_hits_histograms'
-runDataRoot_hits_treeName = 'photoSensor_hits;1'
-runDataRoot_primary_treeName = 'primary;1'
+    # Training parameters
+    parser.add_argument('--num-workers', type=int, default=10,
+                        help='Number of worker threads for data loading.')
+    parser.add_argument('--device', type=str, default='cuda',
+                        help='Device to use for training (e.g., "cuda" or "cpu").')
+    parser.add_argument('--batch-size', type=int, default=8,
+                        help='Batch size for training.')
+    parser.add_argument('--epochs', type=int, default=100,
+                        help='Number of training epochs.')
 
-saveDf_hits                = True
-saveDf_primary             = True
-saveDfOnlyIfNoFile_hits    = True
-saveDfOnlyIfNoFile_primary = True
-saveDf_hits_basePath       = tmpDir+'simDF/MLdata_DF_hits'    # directory and beginning of file name
-saveDf_primary_basePath    = tmpDir+'simDF/MLdata_DF_primary' # directory and beginning of file name
+    return parser.parse_args()
 
-saveGrid_hits_npy                = False
-saveGrid_primary_npy             = False
-saveGrids_h5                     = True
-saveGridOnlyIfNoFile_hits_npy    = True
-saveGridOnlyIfNoFile_primary_npy = True
-saveGridOnlyIfNoFile_h5          = True
-saveGrid_hits_basePath_npy       = tmpDir+'MLdata/MLdata_grid_hits'    # directory and beginning of file name
-saveGrid_primary_basePath_npy    = tmpDir+'MLdata/MLdata_grid_primary' # directory and beginning of file name
-saveGrids_h5                     = tmpDir+'MLdata/MLdata_grids'        # directory and beginning of file name
+def discover_file_numbers(data_dir):
+    """
+    Discover all file numbers in the data directory based on the expected file naming pattern.
+    Expected pattern: {number}.h5 (e.g., 0.h5, 1.h5, ...)
+    """
+    if not os.path.isdir(data_dir):
+        raise FileNotFoundError(f"Data directory not found: {data_dir}")
 
-saveModel          = True
-saveModel_basePath = 'data/MLmodels/MLmodel' # directory and beginning of file name
+    pattern = re.compile(r'^(\d+)\.h5$')
+    file_numbers = []
 
-#################################
-##### MAKE INPUT PATH LISTS #####
-#################################
-dfPaths_hits    = [f"{saveDf_hits_basePath}_{i}.parquet"    for i in fileNumbers]
-dfPaths_primary = [f"{saveDf_primary_basePath}_{i}.parquet" for i in fileNumbers]
+    for filename in os.listdir(data_dir):
+        match = pattern.match(filename)
+        if match:
+            file_num = int(match.group(1))
+            file_numbers.append(file_num)
 
-#########################
-##### MORE SETTINGS #####
-#########################
-N = 80
-gridSize_input  = (N, N, N)
-gridSize_output = (N, N, N)
+    if not file_numbers:
+        raise ValueError(f"No .h5 files found in {data_dir} matching the expected pattern.")
 
-voxelGrid_make_errors               = False
-voxelGrid_make_walls                = True
-voxelGrid_make_walls_combine        = False
+    return sorted(file_numbers)
 
-voxelGrid_make_vectors_combine      = True
+def prepare_file_numbers(data_dir, min_number, max_number):
+    """
+    Generate a list of file numbers based on min_number and max_number.
+    If min_number or max_number is -1, auto-detect from the data directory.
+    """
+    available_numbers = discover_file_numbers(data_dir)
+    auto_min = min(available_numbers)
+    auto_max = max(available_numbers)
 
-###########################
-##### MAKE PATH LISTS #####
-###########################
-gridPaths_hits_npy    = [f"{saveGrid_hits_basePath_npy}_{i}_{gridSize_input[0]}x{gridSize_input[1]}x{gridSize_input[2]}_{'withWalls' if voxelGrid_make_walls else 'noWalls'}_{'withErrors' if voxelGrid_make_errors else 'noErrors'}.npy" for i in fileNumbers]
-gridPaths_primary_npy = [f"{saveGrid_primary_basePath_npy}_{i}_{gridSize_output[0]}x{gridSize_output[1]}x{gridSize_output[2]}.npy"                                                                                                        for i in fileNumbers]
-gridPaths_h5          = [f"{saveGrids_h5}_{i}_{gridSize_output[0]}x{gridSize_output[1]}x{gridSize_output[2]}_{'withWalls' if voxelGrid_make_walls else 'noWalls'}_{'withErrors' if voxelGrid_make_errors else 'noErrors'}.h5"             for i in fileNumbers]
+    # Determine actual min and max
+    actual_min = min_number if min_number != -1 else auto_min
+    actual_max = max_number if max_number != -1 else auto_max
 
-print('gridPaths_hits_npy[0]:', gridPaths_hits_npy[0])
-print('gridPaths_primary_npy[0]:', gridPaths_primary_npy[0])
-print('gridPaths_h5[0]:', gridPaths_h5[0])
+    if actual_min > actual_max:
+        raise ValueError(f"min-number ({actual_min}) cannot be greater than max-number ({actual_max}).")
 
-#####################
-##### LOAD DATA #####
-#####################
-nTest = 20
-nVal  = 10
+    # Filter available_numbers within the specified range
+    filtered_numbers = [num for num in available_numbers if actual_min <= num <= actual_max]
 
-np.random.seed(42)
+    if not filtered_numbers:
+        raise ValueError(f"No files found in the range {actual_min} to {actual_max}.")
 
-testIndices = np.random.choice(len(dfPaths_hits), nTest, replace=False)
-valIndices  = np.random.choice(np.delete(np.arange(len(dfPaths_hits)), testIndices), nVal, replace=False)
+    return filtered_numbers
 
-X_train_indices = np.delete(np.arange(len(dfPaths_hits)), np.concatenate((testIndices, valIndices)))
-Y_train_indices = np.delete(np.arange(len(dfPaths_hits)), np.concatenate((testIndices, valIndices)))
-X_test_indices  = np.array(testIndices)
-Y_test_indices  = np.array(testIndices)
-X_val_indices   = np.array(valIndices)
-Y_val_indices   = np.array(valIndices)
+def prepare_file_paths(data_dir, file_numbers):
+    """
+    Prepare the list of grid file paths based on the provided file numbers.
+    Assumes files are named as {number}.h5 (e.g., 0.h5, 1.h5).
+    """
+    grid_paths = [
+        os.path.join(data_dir, f"{i}.h5")
+        for i in file_numbers
+    ]
+    return grid_paths
 
-paths_train = [gridPaths_h5[i] for i in X_train_indices]
-paths_test  = [gridPaths_h5[i] for i in X_test_indices]
-paths_val   = [gridPaths_h5[i] for i in X_val_indices]
+def split_dataset(file_paths, n_test=20, n_val=10, seed=42):
+    """
+    Split the dataset into training, validation, and test sets.
+    """
+    np.random.seed(seed)
+    total = len(file_paths)
+    if total < (n_test + n_val):
+        raise ValueError(f"Not enough files to split into test and validation sets. Required: {n_test + n_val}, Available: {total}")
 
-# print('X_train_indices:', X_train_indices.tolist())
-# print('X_test_indices:' , X_test_indices .tolist())
-# print('X_val_indices:'  , X_val_indices  .tolist())
+    indices = np.arange(total)
+    test_indices = np.random.choice(total, n_test, replace=False)
+    remaining = np.setdiff1d(indices, test_indices)
+    val_indices = np.random.choice(remaining, n_val, replace=False)
+    train_indices = np.setdiff1d(remaining, val_indices)
 
-print('len(paths_train):', len(paths_train))
-print('len(paths_test):' , len(paths_test))
-print('len(paths_val):'  , len(paths_val))
+    paths_train = [file_paths[i] for i in train_indices]
+    paths_val = [file_paths[i] for i in val_indices]
+    paths_test = [file_paths[i] for i in test_indices]
 
-assert len(paths_train) == len(X_train_indices)
-assert len(paths_test ) == len(X_test_indices )
-assert len(paths_val  ) == len(X_val_indices  )
+    return paths_train, paths_val, paths_test
 
-assert len(np.intersect1d(X_train_indices, X_test_indices)) == 0, f"Overlap: {np.intersect1d(X_train_indices, X_test_indices)}"
-assert len(np.intersect1d(X_train_indices, X_val_indices )) == 0, f"Overlap: {np.intersect1d(X_train_indices, X_val_indices )}"
-assert len(np.intersect1d(X_test_indices , X_val_indices )) == 0, f"Overlap: {np.intersect1d(X_test_indices , X_val_indices )}"
+def check_file_existence(file_paths):
+    """
+    Check if all files in file_paths exist.
+    Returns a list of missing files.
+    """
+    missing = [path for path in file_paths if not os.path.isfile(path)]
+    return missing
 
-#################
-##### TRAIN #####
-#################
-config = get_config(paths_train, paths_val, 'checkpoints', num_workers=10, device='cuda')
-# config = get_config(tmpDir+'/train/', tmpDir+'/val/', num_workers=10)
-save_config(config, 'config.yml')
+def main():
+    args = parse_arguments()
 
-main(['--config', 'config.yml'])
+    # Create output directories if they don't exist
+    os.makedirs(args.output_dir, exist_ok=True)
+    checkpoints_dir = os.path.join(args.output_dir, 'checkpoints')
+    os.makedirs(checkpoints_dir, exist_ok=True)
+    config_path = os.path.join(args.output_dir, 'config.yml')
+
+    # Prepare file numbers
+    try:
+        file_numbers = prepare_file_numbers(args.data_dir, args.min_number, args.max_number)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error in preparing file numbers: {e}")
+        return
+
+    print(f"Selected file numbers: {file_numbers}")
+
+    # Prepare file paths
+    grid_paths = prepare_file_paths(args.data_dir, file_numbers)
+    print(f"Total grid files found: {len(grid_paths)}")
+
+    # Verify that all grid files exist
+    missing_files = check_file_existence(grid_paths)
+    if missing_files:
+        print("Warning: The following grid files are missing:")
+        for path in missing_files:
+            print(f" - {path}")
+        print("Please ensure all specified grid files exist.")
+        # Exit to prevent training with missing data
+        return
+
+    # Split dataset
+    try:
+        paths_train, paths_val, paths_test = split_dataset(grid_paths)
+    except ValueError as e:
+        print(f"Error in dataset splitting: {e}")
+        return
+
+    print(f"Training samples: {len(paths_train)}")
+    print(f"Validation samples: {len(paths_val)}")
+    print(f"Test samples: {len(paths_test)}")
+
+    # Configure training
+    config = get_config(
+        train_path=paths_train,
+        validation_path=paths_val,
+        checkpoint_path=checkpoints_dir,
+        num_workers=args.num_workers,
+        device=args.device,
+        batch_size=args.batch_size,
+        epochs=args.epochs
+    )
+
+    # Save configuration
+    save_config(config, config_path)
+    print(f"Configuration saved to {config_path}")
+
+    # Start training
+    train_main(['--config', config_path])
+
+if __name__ == '__main__':
+    main()
