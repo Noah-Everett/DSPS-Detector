@@ -32,7 +32,7 @@ USER root
 ########## G4-DSPS ##########
 #############################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
+ && git clone --recurse-submodules --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
  && cd /DSPS \
  && mkdir build \
  && cd build \
@@ -42,6 +42,15 @@ RUN source /setup_Dockerfile.sh \
 
 
 
+####################################
+########## Pytorch-3dunet ##########
+####################################
+RUN source /setup_Dockerfile.sh \
+ && cd /DSPS/pytorch-3dunet \
+ && python setup.py install \
+ && cd /
+
+
 ############################
 ########## Python ##########
 ############################
@@ -49,5 +58,9 @@ RUN source /setup_Dockerfile.sh \
  && pip3 install matplotlib \
                  pandas \
                  scikit-learn \
-                 tensorflow \
-                 uproot
+                 torch \
+                 uproot \
+                 pyyaml \
+                 h5py \
+                 tensorboard \
+                 scikit-image

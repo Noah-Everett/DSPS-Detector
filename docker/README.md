@@ -1,6 +1,3 @@
+docker run --shm-size=8g --gpus all -it --mount type=bind,source=/home/noaheverett,target=/noaheverett noaheverett/dsps:1.1.3-x86-Cuda
 
-
-
-docker run --gpus all -d --name test-pyt \
-  -u $(id -u):$(id -g) -e HOME=$HOME -e USER=$USER -v $HOME:$HOME \
-  nvcr.io/nvidia/pytorch:24.05-py3
+python train_UNet.py --data-dir /noaheverett/MLdataNumbers/ --output-dir /noaheverett/TrainOutput --num-workers 48 --device cuda

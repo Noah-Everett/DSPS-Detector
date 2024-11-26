@@ -3,9 +3,10 @@ import yaml
 def get_config(paths_train, paths_val, 
                checkpoint_dir,
                label_input='x', label_output='y', 
-               num_workers=1,
+               num_workers=0,
                patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
-               device='mps'):
+               device='mps',
+               batchSize=1):
     config = {
         "device": device,
         "model": {
@@ -46,7 +47,8 @@ def get_config(paths_train, paths_val,
             "validate_after_iters": 1000,
             "log_after_iters": 500,
             "max_num_epochs": 1000,
-            "max_num_iterations": 150000
+            "max_num_iterations": 150000,
+            "batch_size": batchSize,
         },
         "loaders": {
             "num_workers": num_workers,

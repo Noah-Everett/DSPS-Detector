@@ -1,22 +1,54 @@
 import argparse
 import os
+import uproot
+
+def checkFiles(paths_input, shape):
+    for path in paths_input:
+        try:
+            f = uproot.open(path)
+        except:
+            print(f"Error: could not open file {path}. Skipping file.")
+            paths_input.remove(path)
+            continue
+
+        try:
+            histsDir = f['photoSensor_hits_histograms']
+        except:
+            print(f"Error: could not find photoSensor_hits_histograms dir in file {path}. Skipping file.")
+            paths_input.remove(path)
+            continue
+
+        try:
+            for key in histsDir.keys():
+                h = histsDir[key]
+                if h.allnumpy().shape != shape:
+                    print(f"Error: histogram {key} in file {path} has shape {h.allnumpy().shape}, not {shape}. Skipping file.")
+                    paths_input.remove(path)
+                    break
+        except:
+            print(f"Error: could not read histogram in file {path}. Skipping file.")
+            paths_input.remove(path)
+            continue
+
+    return paths_input
+
+def applyCuts(paths_input, minNHits, minNPrimarySteps):
+    for path in paths_input:
+        f = uproot.open(path)
+        histsDir = f['photoSensor_hits_histograms']
 
 def main(args):
-    paths_X_input = [f"{args.dir_input}/{f}" for f in os.listdir(args.dir_input) if f.endswith('.h5')]
-    paths_Y_output = [f"{args.dir_output}/{f}" for f in os.listdir(args.dir_output) if f.endswith('.h5')]
-
-
+    paths_input = [f"{args.dir_input}/{f}" for f in os.listdir(args.dir_input) if f.endswith('.root')]
 
     if args.checkFiles:
-        checkFiles(args.dir_input)
+        paths_input = checkFiles(paths_input, args.gridSize)
     if args.doCuts:
-        applyCuts(args.dir_input, args.dir_output, args.gridSize, args.minNHits, args.minNPrimarySteps)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train UNet')
 
     # add required argument for input data directory
-    parser.add_argument('dir_input', type=str, help='Path to input data directory. Note: all h5 files in this directory will be used as input data')
+    parser.add_argument('dir_input', type=str, help='Path to input data directory. Note: all ROOT files in this directory will be used as input data')
 
     # add required argument for output data directory
     parser.add_argument('dir_output', type=str, help='Path to generated output data directory')
