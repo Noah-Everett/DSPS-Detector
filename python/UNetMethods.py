@@ -48,12 +48,12 @@ def get_config(paths_train, paths_val,
             "log_after_iters": 500,
             "max_num_epochs": 1000,
             "max_num_iterations": 150000,
-            "batch_size": batchSize,
         },
         "loaders": {
             "num_workers": num_workers,
             "raw_internal_path": "/"+label_input,
             "label_internal_path": "/"+label_output,
+            "batch_size": batchSize,
             "train": {
                 "file_paths": paths_train,
                 "slice_builder": {
