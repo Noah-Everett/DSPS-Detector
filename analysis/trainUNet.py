@@ -42,7 +42,7 @@ sys.path.append('../pytorch-3dunet/')
 from pytorch3dunet.train import main as train_main
 
 sys.path.append('../python/')
-from UNetMethods import get_config, save_config
+from UNetMethods import get_config_train, save_config
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Train a 3D U-Net model.")
@@ -199,7 +199,7 @@ def main():
     print(f"Test samples: {len(paths_test)}")
 
     # Configure training
-    config = get_config(
+    config = get_config_train(
         paths_train=paths_train,
         paths_val=paths_val,
         checkpoint_dir=checkpoints_dir,

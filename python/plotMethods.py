@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
+from matplotlib import colors
 
 def hatch_between(bins, hist, y=0, ax=None, **kwargs):
     if ax is None:

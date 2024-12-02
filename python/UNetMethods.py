@@ -1,12 +1,12 @@
 import yaml
 
-def get_config(paths_train, paths_val, 
-               checkpoint_dir,
-               label_input='x', label_output='y', 
-               num_workers=0,
-               patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
-               device='mps',
-               batchSize=1):
+def get_config_train(paths_train, paths_val, 
+                     checkpoint_dir,
+                     label_input='x', label_output='y', 
+                     num_workers=0,
+                     patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
+                     device='cpu',
+                     batchSize=1):
     config = {
         "device": device,
         "model": {
@@ -125,3 +125,44 @@ def get_config(paths_train, paths_val,
 def save_config(config, path):
     with open(path, 'w') as f:
         yaml.dump(config, f)
+
+def get_config_predict(paths_test, model_path, output_dir, num_workers=0, batchSize=1, patch_shape=[40, 40, 40], stride_shape=[40, 40, 40], label_input='x', label_output='y', device='cpu'):
+    config = {
+        "device": device,
+        "model_path": model_path,
+        "model": {
+            "name": "UNet3D",
+            "in_channels": 6,
+            "out_channels": 1,
+            "layer_order": "crg",
+            "f_maps": 32,
+            "num_groups": 8,
+            "final_sigmoid": True,
+        },
+        "predictor": {
+            "name": "StandardPredictor",
+        },
+        "loaders": {
+            "output_dir": output_dir,
+            "batch_size": batchSize,
+            "raw_internal_path": "/"+label_input,
+            "label_internal_path": "/"+label_output,
+            "num_workers": num_workers,
+            "test": {
+                "file_paths": [f for f in paths_test],
+                "slice_builder": {
+                    "name": "SliceBuilder",
+                    "patch_shape": patch_shape,
+                    "stride_shape": stride_shape,
+                    "skip_shape_check": True,
+                },
+                "transformer": {
+                    "raw": [
+                        {"name": "Standardize"},
+                        {"name": "ToTensor", "expand_dims": True},
+                    ],
+                },
+            },
+        },
+    }
+    return config
