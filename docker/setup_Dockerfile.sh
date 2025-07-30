@@ -50,4 +50,4 @@ export NEST_DIR="/NEST_install/lib/cmake/NEST"
 export PATH="${PATH}:/NEST_install"
 
 # Eigen3
-export Eigen3_DIR="/Eigen3_install"
+export Eigen3_DIR="/Eigen3_install/share/eigen3/cmake"
