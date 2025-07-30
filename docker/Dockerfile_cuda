@@ -51,11 +51,13 @@ RUN source /setup_Dockerfile.sh \
  && cd /
 
 
+
 ############################
 ########## Python ##########
 ############################
 RUN source /setup_Dockerfile.sh \
  && pip3 install -r /DSPS/requirements.txt
+
 
 
 ############################
@@ -70,6 +72,8 @@ RUN source /setup_Dockerfile.sh \
  && make install \
  && cd / \
  && rm -rf /Eigen3_build
+
+
 
 ######################################
 ########## Voxel-Transveral ##########
