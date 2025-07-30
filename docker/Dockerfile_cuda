@@ -33,6 +33,7 @@ USER root
 #############################
 RUN source /setup_Dockerfile.sh \
  && git clone --recurse-submodules --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
+ && cp /DSPS/docker/setup_Dockerfile.sh /setup_Dockerfile.sh \
  && cd /DSPS \
  && mkdir build \
  && cd build \
