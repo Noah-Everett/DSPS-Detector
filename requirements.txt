@@ -1,5 +1,11 @@
-h5py==3.11.0
-numpy==1.26.4
-pandas==2.2.2
-torch==2.5.1
-uproot==5.1.2
+h5py
+numpy
+pandas
+torch
+uproot
+tqdm
+matplotlib
+scikit-learn
+pyyaml
+tensorboard
+scikit-image

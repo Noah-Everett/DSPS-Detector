@@ -55,12 +55,27 @@ RUN source /setup_Dockerfile.sh \
 ########## Python ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && pip3 install matplotlib \
-                 pandas \
-                 scikit-learn \
-                 torch \
-                 uproot \
-                 pyyaml \
-                 h5py \
-                 tensorboard \
-                 scikit-image
+ && pip3 install -r /DSPS/requirements.txt
+
+
+############################
+########## Eigen3 ##########
+############################
+RUN source /setup_Dockerfile.sh \
+ && git clone --depth 1 --branch v3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
+ && mkdir /Eigen3_build /Eigen3_install \
+ && cd /Eigen3_build \
+ && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+ && make -j${NCPU} \
+ && make install \
+ && cd / \
+ && rm -rf /Eigen3_build
+
+######################################
+########## Voxel-Transveral ##########
+######################################
+RUN source /setup_Dockerfile.sh \
+ && git clone --depth 1 https://github.com/risteon/voxel-traversal /VoxelTransversal \
+ && cd /VoxelTransversal \
+ && python setup.py install \
+ && cd /
