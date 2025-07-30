@@ -1,6 +1,14 @@
 import argparse
 import os
+import sys
 import uproot
+import numpy as np
+import pandas as pd
+
+sys.path.append('../python/')
+from gridMethods import *
+from importMethods import *
+# get_histogram_hits_tuple, get_histogram_sizes, get_histogram_nHits_total
 
 def checkFiles(paths_input, shape):
     for path in paths_input:
@@ -33,16 +41,37 @@ def checkFiles(paths_input, shape):
     return paths_input
 
 def applyCuts(paths_input, minNHits, minNPrimarySteps):
+    filtered_paths = []
     for path in paths_input:
-        f = uproot.open(path)
-        histsDir = f['photoSensor_hits_histograms']
+        try:
+            nHits = get_histogram_nHits_total(path, directoryName='photoSensor_hits_histograms')
+            sizes = get_histogram_sizes(path, directoryName='photoSensor_hits_histograms')
+
+            if nHits >= minNHits and len(sizes) >= minNPrimarySteps:
+                filtered_paths.append(path)
+        except Exception as e:
+            print(f"Error processing file {path}: {e}")
+
+    return filtered_paths
+
+def processFiles(paths_input, output_dir, grid_size):
+    for path in paths_input:
+        try:
+            data = get_histogram_hits_tuple(path, directoryName='photoSensor_hits_histograms')
+            output_path = os.path.join(output_dir, os.path.basename(path).replace('.root', '.npy'))
+            np.save(output_path, data)
+        except Exception as e:
+            print(f"Error processing file {path}: {e}")
 
 def main(args):
-    paths_input = [f"{args.dir_input}/{f}" for f in os.listdir(args.dir_input) if f.endswith('.root')]
+    paths_input = [os.path.join(args.dir_input, f) for f in os.listdir(args.dir_input) if f.endswith('.root')]
 
     if args.checkFiles:
         paths_input = checkFiles(paths_input, args.gridSize)
     if args.doCuts:
+        paths_input = applyCuts(paths_input, args.minNHits, args.minNPrimarySteps)
+
+    processFiles(paths_input, args.dir_output, args.gridSize)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train UNet')
