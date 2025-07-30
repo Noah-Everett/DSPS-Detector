@@ -76,6 +76,7 @@ RUN source /setup_Dockerfile.sh \
 ######################################
 RUN source /setup_Dockerfile.sh \
  && ls /Eigen3_install \
+ && ls /Eigen3_install/include \
  && git clone --depth 1 https://github.com/risteon/voxel-traversal /VoxelTransversal \
  && cd /VoxelTransversal \
  && python setup.py install \
