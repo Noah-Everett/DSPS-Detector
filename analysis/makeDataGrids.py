@@ -73,21 +73,18 @@ def r_to_theta(r):
 def check_files(paths, hist_dir, num_workers):
     """
     Verify that each ROOT file contains histograms of the same shape,
-    based on the first file's first histogram. Uses uproot's to_numpy()
-    to avoid uint8 overflow issues.
+    based on the first file's first histogram.
     Parallelized over files.
     """
     if not paths:
         return []
-
-    # Infer expected shape from numpy-converted counts
+    # Infer expected shape
     try:
+        print('paths[0]:', paths[0])
         with uproot.open(paths[0], num_workers=num_workers) as f0:
             h0 = f0[hist_dir]
             first_key = next(iter(h0.keys()))
-            hist = h0[first_key]
-            counts, _ = hist.to_numpy()
-            expected = counts.shape
+            expected = h0[first_key].values().shape
             LOGGER.info(f"Expected histogram shape: {expected}")
     except Exception as e:
         LOGGER.error(f"Failed to infer expected shape from {paths[0]}: {e}")
@@ -98,9 +95,9 @@ def check_files(paths, hist_dir, num_workers):
             with uproot.open(path, num_workers=num_workers) as f:
                 h = f[hist_dir]
                 for key in h.keys():
-                    counts_i, _ = h[key].to_numpy()
-                    if counts_i.shape != expected:
-                        LOGGER.error(f"{path}:{key} shape {counts_i.shape} != expected {expected}")
+                    arr = h[key].values()
+                    if arr.shape != expected:
+                        LOGGER.error(f"{path}:{key} shape {arr.shape} != expected {expected}")
                         return None
             return path
         except Exception as e:
@@ -391,7 +388,6 @@ def main():
                 LOGGER.info(f"Wrote {name} paths: {of}")
 
     LOGGER.info("Data grid generation completed")
-
 
 if __name__ == '__main__':
     main()
