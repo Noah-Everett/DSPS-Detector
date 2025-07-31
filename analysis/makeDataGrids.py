@@ -41,11 +41,12 @@ def check_files(paths, grid_shape, hist_dir):
     valid = []
     for path in paths:
         try:
+            print('here1')
             f = uproot.open(path)
+            print('here2')
             hists = f[hist_dir]
             for key in hists.keys():
                 h = hists[key]
-                print('type(h):', type(h))
                 if h.allnumpy().shape != tuple(grid_shape):
                     print(f"Error: histogram {key} in {path} has shape {h.allnumpy().shape}, expected {tuple(grid_shape)}. Skipping.")
                     raise ValueError
