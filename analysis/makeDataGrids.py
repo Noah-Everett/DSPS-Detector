@@ -6,17 +6,18 @@ Script to process ROOT files, generate DataFrames and voxel grids for ML,
 and split data into train/val/test. All intermediate DataFrames are saved on disk
 and cleaned up if not retained long-term to manage memory use.
 Supports limiting the number of input files with `-n/--nFiles`.
+Ensures no memory leaks by explicit cleanup of large objects.
 """
 import argparse
 import logging
 import os
 import sys
 import shutil
+import gc
 import numpy as np
 import pandas as pd
 import h5py
 import uproot
-import tempfile
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
@@ -175,6 +176,9 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved hits DataFrame: {out_path}")
             df_paths.append(out_path)
+            # cleanup large DataFrame
+            del df
+            gc.collect()
         except Exception as e:
             LOGGER.error(f"Failed to process hits for {path}: {e}")
     return df_paths
@@ -203,6 +207,9 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved primary DataFrame: {out_path}")
             df_paths.append(out_path)
+            # cleanup large DataFrame
+            del df, positions, pdgs
+            gc.collect()
         except Exception as e:
             LOGGER.error(f"Failed to process primary for {path}: {e}")
     return df_paths
@@ -242,6 +249,9 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                     walls_combine_method=walls_method,
                     vector_combine=combine_vectors
                 )
+                # cleanup intermediate
+                del dfh, starts, dirs
+                gc.collect()
             if save_npy_primary or save_h5:
                 dfp = pd.read_parquet(dfp_p)
                 positions = np.vstack(dfp['position'].tolist())
@@ -251,6 +261,8 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                     detectorDimensions=DETECTOR_SIZE_MM,
                     makeErrors=False
                 )[0]
+                del dfp, positions
+                gc.collect()
             if do_h5:
                 with h5py.File(h5p, 'w') as f:
                     if x is not None:
@@ -264,6 +276,9 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
             if do_npy_pri and y is not None:
                 np.save(npf, y)
                 LOGGER.debug(f"Saved NPY primary grid: {npf}")
+            # final cleanup
+            del x, y
+            gc.collect()
         except Exception as e:
             LOGGER.error(f"Error in grid creation for {h5p}: {e}")
     jobs = list(zip(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5))
@@ -307,7 +322,7 @@ def main():
     parser.add_argument('--saveDFprimary', action='store_true', help='Retain primary DataFrames')
     parser.add_argument('--saveGridNpyHits', action='store_true', help='Save hit grids as .npy')
     parser.add_argument('--saveGridNpyPrimary', action='store_true', help='Save primary grids as .npy')
-    parser.add_argument('--saveGridH5', action='store_true', help='Save grids as .h5')
+    parser.add_argument(--saveGridH5', action='store_true', help='Save grids as .h5')
     parser.add_argument('--numWorkers', type=int, default=1, help='Number of parallel workers')
     parser.add_argument('--nTest', type=int, default=20, help='Number of test examples')
     parser.add_argument('--nVal', type=int, default=10, help='Number of validation examples')
