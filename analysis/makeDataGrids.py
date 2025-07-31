@@ -20,16 +20,17 @@ sys.path.append('../python/')
 from constants import (
     CM_PER_RAD, MM_PER_CM, Y_LIM, DETECTOR_SIZE_MM
 )
+# Import functions from importMethods
 from importMethods import (
     get_histogram_nHits_total,
     get_histogram_hits_tuple,
-    get_photosensor_IDs,
-    get_photosensor_directions,
-    get_photosensor_positions,
-    get_photosensor_walls,
-    get_photosensor_relativePosition_binned,
-    get_photosensor_relativePosition_nBin,
-    get_photosensor_initialPosition,
+    get_photosensor_hits_photosensor_ID,
+    get_photosensor_hits_photosensor_direction,
+    get_photosensor_hits_photosensor_position,
+    get_photosensor_hits_photosensor_wall,
+    get_photosensor_hits_position_relative_binned,
+    get_photosensor_hits_position_relative_nBin,
+    get_photosensor_hits_position_initial,
     get_primary_position,
     get_primary_pdg
 )
@@ -46,7 +47,8 @@ from filterMethods import (
 from gridMethods import (
     get_voxelGrid,
     make_voxelGrid_truth,
-    expNWalls
+    expNWalls,
+    wallStringToInt
 )
 
 
@@ -145,13 +147,13 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
                 })
             else:
                 df = pd.DataFrame({
-                    'sensor_name': get_photosensor_IDs(path, hist_dir),
-                    'sensor_direction': get_photosensor_directions(path, hist_dir),
-                    'sensor_position': get_photosensor_positions(path, hist_dir),
-                    'sensor_wall': get_photosensor_walls(path, hist_dir),
-                    'relativePosition_binned': get_photosensor_relativePosition_binned(path, hist_dir),
-                    'relativePosition_nBin': get_photosensor_relativePosition_nBin(path, hist_dir),
-                    'initialPosition': get_photosensor_initialPosition(path, hist_dir)
+                    'sensor_name': get_photosensor_hits_photosensor_ID(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'sensor_direction': get_photosensor_hits_photosensor_direction(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'sensor_position': get_photosensor_hits_photosensor_position(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'sensor_wall': get_photosensor_hits_photosensor_wall(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'relativePosition_binned': get_photosensor_hits_position_relative_binned(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'relativePosition_nBin': get_photosensor_hits_position_relative_nBin(path, 'photoSensor_hits;1', hist_dir, verbose=False),
+                    'initialPosition': get_photosensor_hits_position_initial(path, 'photoSensor_hits;1', verbose=False)
                 })
             # Feature engineering
             df = make_r(df)
@@ -224,11 +226,11 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                     vector_starts=np.array(dfh_df['sensor_position'].tolist()).reshape(-1, 3),
                     vector_directions=-np.array(dfh_df['reconstructedVector_direction'].tolist()).reshape(-1, 3),
                     vector_weights=None,
-                    make_errors=combine_errors,
-                    make_walls=combine_walls,
-                    make_walls_combine=walls_combine,
+                    vector_start_walls=wallStringToInt(dfh_df['sensor_wall'].to_numpy().astype(str)),
+                    walls=combine_walls,
+                    walls_combine=walls_combine,
                     walls_combine_method=walls_method,
-                    combine_vectors=combine_vectors
+                    vector_combine=combine_vectors
                 )
             y = None
             if save_npy_primary or save_h5:
