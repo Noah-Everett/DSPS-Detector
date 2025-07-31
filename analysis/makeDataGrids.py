@@ -104,7 +104,7 @@ def check_files(paths, hist_dir, num_workers):
             return None
 
     LOGGER.info(f"Checking {len(paths)} files for consistent histogram shapes...")
-    valid = Parallel(n_jobs=num_workers)(
+    valid = Parallel(n_jobs=num_workers, backend='threading')(
         delayed(_check)(p) for p in tqdm(paths, desc="Checking files")
     )
     valid = [p for p in valid if p]
