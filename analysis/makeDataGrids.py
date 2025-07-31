@@ -47,8 +47,8 @@ def check_files(paths, grid_shape, hist_dir):
             hists = f[hist_dir]
             for key in hists.keys():
                 h = hists[key]
-                if h.allnumpy().shape != tuple(grid_shape):
-                    print(f"Error: histogram {key} in {path} has shape {h.allnumpy().shape}, expected {tuple(grid_shape)}. Skipping.")
+                if h.to_numpy().shape != tuple(grid_shape):
+                    print(f"Error: histogram {key} in {path} has shape {h.to_numpy().shape}, expected {tuple(grid_shape)}. Skipping.")
                     raise ValueError
             valid.append(path)
         except Exception as e:
