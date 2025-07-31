@@ -38,19 +38,17 @@ def check_files(paths, grid_shape, hist_dir):
     """
     Verify that each ROOT file contains histograms of the expected shape.
     """
+def check_files(paths, grid_shape, hist_dir):
+    expected = tuple(grid_shape[:2])
     valid = []
     for path in paths:
         try:
-            f = uproot.open(path)
+            f     = uproot.open(path)
             hists = f[hist_dir]
             for key in hists.keys():
-                h = hists[key]
-                print('type(h):', type(h))
-                print('h:', h)
-                print('type(h.to_numpy()):', type(h.to_numpy()))
-                print('h.to_numpy():', h.to_numpy())
-                if h.to_numpy().shape != tuple(grid_shape):
-                    print(f"Error: histogram {key} in {path} has shape {h.to_numpy().shape}, expected {tuple(grid_shape)}. Skipping.")
+                arr = hists[key].values()
+                if arr.shape != expected:
+                    print(f"Error: {key} has shape {arr.shape}, expected {expected}")
                     raise ValueError
             valid.append(path)
         except Exception as e:
