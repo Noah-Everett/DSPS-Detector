@@ -16,21 +16,38 @@ import uproot
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
-# Add custom modules to path
 sys.path.append('../python/')
-
-# Import all methods (unknown source mapping)
-from filterMethods import *
-from timeMethods import *
-from gridMethods import *
-from trackReconstructionMethods import *
-from vertexReconstructionMethods import *
-from hitAccuracyMethods import *
-from statisticsMethods import *
-from importMethods import *
-from constants import *
-from plotMethods import *
-from UNetMethods import *
+from constants import (
+    CM_PER_RAD, MM_PER_CM, Y_LIM, DETECTOR_SIZE_MM
+)
+from importMethods import (
+    get_histogram_nHits_total,
+    get_histogram_hits_tuple,
+    get_photosensor_IDs,
+    get_photosensor_directions,
+    get_photosensor_positions,
+    get_photosensor_walls,
+    get_photosensor_relativePosition_binned,
+    get_photosensor_relativePosition_nBin,
+    get_photosensor_initialPosition,
+    get_primary_position,
+    get_primary_pdg
+)
+from hitAccuracyMethods import (
+    make_r,
+    make_theta,
+    make_phi,
+    make_reconstructedVector_direction,
+    make_relativeVector
+)
+from filterMethods import (
+    filter_r
+)
+from gridMethods import (
+    get_voxelGrid,
+    make_voxelGrid_truth,
+    expNWalls
+)
 
 
 def configure_logging(verbosity: str):
