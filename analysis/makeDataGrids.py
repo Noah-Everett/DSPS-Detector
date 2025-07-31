@@ -6,14 +6,14 @@ Script to process ROOT files, generate DataFrames and voxel grids for ML,
 and split data into train/val/test. All intermediate DataFrames are saved on disk
 and cleaned up if not retained long-term to manage memory use.
 Supports limiting the number of input files with `-n/--nFiles`.
-Ensures no memory leaks by explicit cleanup of large objects.
+Uses a system temporary directory for non-persistent data and ensures no memory leaks.
 """
 import argparse
 import logging
 import os
 import sys
-import shutil
 import gc
+import tempfile
 import numpy as np
 import pandas as pd
 import h5py
@@ -165,7 +165,7 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
                         path, 'photoSensor_hits;1', verbose=False
                     )
                 })
-            # Feature engineering
+            # feature engineering
             df = make_r(df)
             df = filter_r(df, Y_LIM)
             df = make_theta(df, r_to_theta)
@@ -207,7 +207,7 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved primary DataFrame: {out_path}")
             df_paths.append(out_path)
-            # cleanup large DataFrame
+            # cleanup large data
             del df, positions, pdgs
             gc.collect()
         except Exception as e:
@@ -249,7 +249,6 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                     walls_combine_method=walls_method,
                     vector_combine=combine_vectors
                 )
-                # cleanup intermediate
                 del dfh, starts, dirs
                 gc.collect()
             if save_npy_primary or save_h5:
@@ -276,7 +275,6 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
             if do_npy_pri and y is not None:
                 np.save(npf, y)
                 LOGGER.debug(f"Saved NPY primary grid: {npf}")
-            # final cleanup
             del x, y
             gc.collect()
         except Exception as e:
@@ -322,7 +320,7 @@ def main():
     parser.add_argument('--saveDFprimary', action='store_true', help='Retain primary DataFrames')
     parser.add_argument('--saveGridNpyHits', action='store_true', help='Save hit grids as .npy')
     parser.add_argument('--saveGridNpyPrimary', action='store_true', help='Save primary grids as .npy')
-    parser.add_argument(--saveGridH5', action='store_true', help='Save grids as .h5')
+    parser.add_argument('--saveGridH5', action='store_true', help='Save grids as .h5')
     parser.add_argument('--numWorkers', type=int, default=1, help='Number of parallel workers')
     parser.add_argument('--nTest', type=int, default=20, help='Number of test examples')
     parser.add_argument('--nVal', type=int, default=10, help='Number of validation examples')
@@ -334,8 +332,6 @@ def main():
     LOGGER.info("Starting data grid generation")
 
     os.makedirs(args.output_dir, exist_ok=True)
-    tmp_dir = os.path.join(args.output_dir, 'tmp')
-    os.makedirs(tmp_dir, exist_ok=True)
 
     # gather root files
     all_files = [f for f in os.listdir(args.input_dir) if f.endswith('.root')]
@@ -355,63 +351,56 @@ def main():
     need_pri  = args.saveDFprimary or args.saveGridNpyPrimary or args.saveGridH5
 
     df_hits_paths, df_pri_paths = [], []
-    hits_base = os.path.join(args.output_dir, 'DF_hits') if args.saveDFhits else os.path.join(tmp_dir, 'DF_hits')
-    pri_base  = os.path.join(args.output_dir, 'DF_primary') if args.saveDFprimary else os.path.join(tmp_dir, 'DF_primary')
 
-    if need_hits:
-        os.makedirs(os.path.dirname(hits_base), exist_ok=True)
-        df_hits_paths = process_hits_df(
-            root_files, 'photoSensor_hits_histograms', hits_base,
-            args.overwriteDF, args.useHistograms
-        )
+    # use system temp dir for non-persistent DataFrames
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        hits_base = os.path.join(args.output_dir, 'DF_hits') if args.saveDFhits else os.path.join(tmp_dir, 'DF_hits')
+        pri_base  = os.path.join(args.output_dir, 'DF_primary') if args.saveDFprimary else os.path.join(tmp_dir, 'DF_primary')
 
-    if need_pri:
-        os.makedirs(os.path.dirname(pri_base), exist_ok=True)
-        df_pri_paths = process_primary_df(
-            root_files, 'primary;1', pri_base,
-            args.overwriteDF, args.primaryPdg
-        )
+        if need_hits:
+            os.makedirs(os.path.dirname(hits_base), exist_ok=True)
+            df_hits_paths = process_hits_df(
+                root_files, 'photoSensor_hits_histograms', hits_base,
+                args.overwriteDF, args.useHistograms
+            )
 
-    grid_shape = tuple(args.gridSize)
-    base_hits_npy = os.path.join(args.output_dir, 'grid_hits')
-    base_pri_npy  = os.path.join(args.output_dir, 'grid_primary')
-    base_h5       = os.path.join(args.output_dir, 'grid_h5')
+        if need_pri:
+            os.makedirs(os.path.dirname(pri_base), exist_ok=True)
+            df_pri_paths = process_primary_df(
+                root_files, 'primary;1', pri_base,
+                args.overwriteDF, args.primaryPdg
+            )
 
-    paths_npy_hits    = [f"{base_hits_npy}_{i}.npy" for i in range(len(df_hits_paths))]
-    paths_npy_primary = [f"{base_pri_npy}_{i}.npy" for i in range(len(df_pri_paths))]
-    paths_h5          = [f"{base_h5}_{i}.h5" for i in range(len(df_hits_paths))]
+        grid_shape = tuple(args.gridSize)
+        base_hits_npy = os.path.join(args.output_dir, 'grid_hits')
+        base_pri_npy  = os.path.join(args.output_dir, 'grid_primary')
+        base_h5       = os.path.join(args.output_dir, 'grid_h5')
 
-    if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
-        create_grids(
-            df_hits_paths, df_pri_paths,
-            paths_npy_hits, paths_npy_primary, paths_h5,
-            args.saveGridNpyHits, args.saveGridNpyPrimary, args.saveGridH5,
-            grid_shape,
-            combine_errors=False,
-            combine_walls=True,
-            walls_combine=False,
-            walls_method=expNWalls,
-            combine_vectors=True,
-            num_workers=args.numWorkers
-        )
+        paths_npy_hits    = [f"{base_hits_npy}_{i}.npy" for i in range(len(df_hits_paths))]
+        paths_npy_primary = [f"{base_pri_npy}_{i}.npy" for i in range(len(df_pri_paths))]
+        paths_h5          = [f"{base_h5}_{i}.h5" for i in range(len(df_hits_paths))]
 
-    if not args.noSplit and args.saveGridH5:
-        train_paths, test_paths, val_paths = split_data(paths_h5, args.nTest, args.nVal, seed=42)
-        for name, lst in [('train', train_paths), ('test', test_paths), ('val', val_paths)]:
-            out_file = os.path.join(args.output_dir, f"{name}_paths.txt")
-            with open(out_file, 'w') as f:
-                f.write("\n".join(lst))
-            LOGGER.info(f"Wrote {name} paths to {out_file}")
+        if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
+            create_grids(
+                df_hits_paths, df_pri_paths,
+                paths_npy_hits, paths_npy_primary, paths_h5,
+                args.saveGridNpyHits, args.saveGridNpyPrimary, args.saveGridH5,
+                grid_shape,
+                combine_errors=False,
+                combine_walls=True,
+                walls_combine=False,
+                walls_method=expNWalls,
+                combine_vectors=True,
+                num_workers=args.numWorkers
+            )
 
-    # cleanup temporary DataFrames if not retained
-    if not args.saveDFhits:
-        shutil.rmtree(os.path.join(tmp_dir, 'DF_hits'), ignore_errors=True)
-    if not args.saveDFprimary:
-        shutil.rmtree(os.path.join(tmp_dir, 'DF_primary'), ignore_errors=True)
-    try:
-        os.rmdir(tmp_dir)
-    except OSError:
-        pass
+        if not args.noSplit and args.saveGridH5:
+            train_paths, test_paths, val_paths = split_data(paths_h5, args.nTest, args.nVal, seed=42)
+            for name, lst in [('train', train_paths), ('test', test_paths), ('val', val_paths)]:
+                out_file = os.path.join(args.output_dir, f"{name}_paths.txt")
+                with open(out_file, 'w') as f:
+                    f.write("\n".join(lst))
+                LOGGER.info(f"Wrote {name} paths to {out_file}")
 
     LOGGER.info("Data grid generation completed.")
 
