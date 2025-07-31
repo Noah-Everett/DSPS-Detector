@@ -80,7 +80,7 @@ RUN source /setup_Dockerfile.sh \
 ########## Voxel-Transveral ##########
 ######################################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/risteon/voxel-traversal /VoxelTransversal_src \
+ && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal_src \
  && mkdir /VoxelTransversal_build /VoxelTransversal_install \
  && cd /VoxelTransversal_build \
  && cmake /VoxelTransversal_src -DCMAKE_INSTALL_PREFIX=/VoxelTransversal_install \
