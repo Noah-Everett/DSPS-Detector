@@ -24,7 +24,11 @@ def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape,
     assert len(vector_starts) == len(vector_ends) == len(vector_weights)
     assert len(grid_minBound) == len(grid_maxBound) == len(grid_shape) == 3
 
+    print('grid_minBound:', grid_minBound)
+    print('grid_maxBound:', grid_maxBound)
+    print('grid_shape:', grid_shape)
     PTgrid = pt.Grid3D(grid_minBound, grid_maxBound, grid_shape)
+    print('PTgrid:', PTgrid)
     grid = np.zeros(grid_shape, dtype=float)
 
     for i in range(len(vector_starts)):
