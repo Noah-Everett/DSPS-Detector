@@ -37,23 +37,26 @@ def configure_logging(verbosity: str):
     level = getattr(logging, verbosity.upper(), None)
     if not isinstance(level, int):
         raise ValueError(f"Invalid verbosity level: {verbosity}")
+    
+    # Configure root logger with detailed format
     logging.basicConfig(
         level=level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format='%(asctime)s - %(name)s - %(filename)s::%(funcName)s(%(lineno)d) - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    LOGGER.debug(f"Logging configured to {verbosity} level.")
+    
+    # Suppress verbose fsspec logging
+    logging.getLogger("fsspec.local").setLevel(logging.WARNING)
 
 # Global logger for the entire module
-LOGGER = logging.getLogger(__name__)
-logging.getLogger("fsspec.local").setLevel(logging.WARNING)
+LOGGER = logging.getLogger('makeDataGrids')
 
 
 def r_to_theta(r):
     return r / (CM_PER_RAD * MM_PER_CM)
 
 
-def check_files(paths, hist_dir):
+def check_files(paths, hist_dir, num_workers=1):
     """
     Verify that each ROOT file contains histograms of the same shape.
     """
@@ -62,17 +65,17 @@ def check_files(paths, hist_dir):
     for path in paths:
         try:
             LOGGER.debug(f"Opening file: {path}")
-            f = uproot.open(path)
-            hists = f[hist_dir]
-            for key in hists.keys():
-                arr = hists[key].values()
-                if expected is None:
-                    expected = arr.shape
-                    LOGGER.debug(f"Expected histogram shape set to {expected}")
-                if arr.shape != expected:
-                    LOGGER.error(f"{key} has shape {arr.shape}, expected {expected}")
-                    raise ValueError(f"Shape mismatch for {key}")
-            valid.append(path)
+            with uproot.open(path, num_workers=num_workers) as f:
+                hists = f[hist_dir]
+                for key in hists.keys():
+                    arr = hists[key].values()
+                    if expected is None:
+                        expected = arr.shape
+                        LOGGER.debug(f"Expected histogram shape set to {expected}")
+                    if arr.shape != expected:
+                        LOGGER.error(f"{key} has shape {arr.shape}, expected {expected}")
+                        raise ValueError(f"Shape mismatch for {key}")
+                valid.append(path)
         except Exception as e:
             LOGGER.warning(f"Skipping file {path}: {e}")
     LOGGER.info(f"Valid files after check: {len(valid)}/{len(paths)}")
@@ -302,6 +305,7 @@ def main():
 
     configure_logging(args.verbosity)
     LOGGER.info("Starting data grid generation")
+    LOGGER.debug(f"Logging configured to {args.verbosity.upper()} level.")
 
     os.makedirs(args.output_dir, exist_ok=True)
     root_files = [os.path.join(args.input_dir, f) for f in os.listdir(args.input_dir) if f.endswith('.root')]
@@ -309,7 +313,7 @@ def main():
 
     # File checks and cuts
     if not args.noCheckFiles:
-        root_files = check_files(root_files, 'photoSensor_hits_histograms')
+        root_files = check_files(root_files, 'photoSensor_hits_histograms', num_workers=args.numWorkers)
     if not args.noCuts:
         root_files = apply_cuts(root_files, args.minNHits, args.minPrimarySteps,
                                 'photoSensor_hits_histograms', 'primary;1')
