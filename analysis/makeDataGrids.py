@@ -83,7 +83,7 @@ def check_files(paths, hist_dir, num_workers):
     # Infer expected shape from numpy-converted counts
     try:
         print('here1')
-        with uproot.open(paths[0], num_workers=num_workers) as f0:
+        with uproot.open(paths[2], num_workers=num_workers) as f0:
             print('here2')
             h0 = f0[hist_dir]
             first_key = next(iter(h0.keys()))
