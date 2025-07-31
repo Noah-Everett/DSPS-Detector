@@ -46,6 +46,7 @@ def configure_logging(verbosity: str):
 
 # Global logger for the entire module
 LOGGER = logging.getLogger(__name__)
+logging.getLogger("fsspec.local").setLevel(logging.WARNING)
 
 
 def r_to_theta(r):
@@ -61,17 +62,17 @@ def check_files(paths, hist_dir):
     for path in paths:
         try:
             LOGGER.debug(f"Opening file: {path}")
-            with uproot.open(path) as f:
-                hists = f[hist_dir]
-                for key in hists.keys():
-                    arr = hists[key].values()
-                    if expected is None:
-                        expected = arr.shape
-                        LOGGER.debug(f"Expected histogram shape set to {expected}")
-                    if arr.shape != expected:
-                        LOGGER.error(f"{key} has shape {arr.shape}, expected {expected}")
-                        raise ValueError(f"Shape mismatch for {key}")
-                valid.append(path)
+            f = uproot.open(path)
+            hists = f[hist_dir]
+            for key in hists.keys():
+                arr = hists[key].values()
+                if expected is None:
+                    expected = arr.shape
+                    LOGGER.debug(f"Expected histogram shape set to {expected}")
+                if arr.shape != expected:
+                    LOGGER.error(f"{key} has shape {arr.shape}, expected {expected}")
+                    raise ValueError(f"Shape mismatch for {key}")
+            valid.append(path)
         except Exception as e:
             LOGGER.warning(f"Skipping file {path}: {e}")
     LOGGER.info(f"Valid files after check: {len(valid)}/{len(paths)}")
