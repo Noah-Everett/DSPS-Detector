@@ -1,10 +1,11 @@
-*.DS_Store
+**/.DS_Store
+**/__pycache__/
+**/.ipynb_checkpoints/
+
+.vscode/
 
 build/
 scratch/
 analysis/data/*
-Analytical-Meridional-Non-Paraxial-Ray-Propagation/
 runs/
-.vscode/
-python/__pycache__/
 tmp/
