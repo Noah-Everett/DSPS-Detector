@@ -32,6 +32,7 @@ from constants import *
 from plotMethods import *
 from UNetMethods import *
 
+
 def configure_logging(verbosity: str):
     level = getattr(logging, verbosity.upper(), None)
     if not isinstance(level, int):
@@ -41,7 +42,10 @@ def configure_logging(verbosity: str):
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    logging.debug(f"Logging configured to {verbosity.upper()} level.")
+    LOGGER.debug(f"Logging configured to {verbosity} level.")
+
+# Global logger for the entire module
+LOGGER = logging.getLogger(__name__)
 
 
 def r_to_theta(r):
@@ -52,26 +56,25 @@ def check_files(paths, hist_dir):
     """
     Verify that each ROOT file contains histograms of the same shape.
     """
-    logger = logging.getLogger('check_files')
     expected = None
     valid = []
     for path in paths:
         try:
-            logger.debug(f"Opening file: {path}")
+            LOGGER.debug(f"Opening file: {path}")
             f = uproot.open(path)
             hists = f[hist_dir]
             for key in hists.keys():
                 arr = hists[key].values()
                 if expected is None:
                     expected = arr.shape
-                    logger.debug(f"Expected histogram shape set to {expected}")
+                    LOGGER.debug(f"Expected histogram shape set to {expected}")
                 if arr.shape != expected:
-                    logger.error(f"{key} has shape {arr.shape}, expected {expected}")
+                    LOGGER.error(f"{key} has shape {arr.shape}, expected {expected}")
                     raise ValueError(f"Shape mismatch for {key}")
             valid.append(path)
         except Exception as e:
-            logger.warning(f"Skipping file {path}: {e}")
-    logger.info(f"Valid files after check: {len(valid)}/{len(paths)}")
+            LOGGER.warning(f"Skipping file {path}: {e}")
+    LOGGER.info(f"Valid files after check: {len(valid)}/{len(paths)}")
     return valid
 
 
@@ -79,21 +82,19 @@ def apply_cuts(paths, min_hits, min_primary_steps, hist_dir, primary_tree):
     """
     Filter files by total hit count and number of primary steps.
     """
-    logger = logging.getLogger('apply_cuts')
     filtered = []
     for path in paths:
         try:
             n_hits = get_histogram_nHits_total(path, directoryName=hist_dir)
-            sizes = get_histogram_sizes(path, directoryName=hist_dir)
             prim_positions = get_primary_position(path, primary_tree)
-            logger.debug(f"{path}: n_hits={n_hits}, primary_steps={len(prim_positions)}")
+            LOGGER.debug(f"{path}: n_hits={n_hits}, primary_steps={len(prim_positions)}")
             if n_hits >= min_hits and len(prim_positions) >= min_primary_steps:
                 filtered.append(path)
             else:
-                logger.info(f"File {path} excluded by cuts: hits={n_hits}, steps={len(prim_positions)}")
+                LOGGER.info(f"File {path} excluded by cuts: hits={n_hits}, steps={len(prim_positions)}")
         except Exception as e:
-            logger.error(f"Error applying cuts to {path}: {e}")
-    logger.info(f"Files after cuts: {len(filtered)}/{len(paths)}")
+            LOGGER.error(f"Error applying cuts to {path}: {e}")
+    LOGGER.info(f"Files after cuts: {len(filtered)}/{len(paths)}")
     return filtered
 
 
@@ -101,14 +102,13 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
     """
     Build and save hits DataFrame for each file.
     """
-    logger = logging.getLogger('process_hits_df')
-    logger.info(f"Processing {len(paths)} files for hits DataFrames")
+    LOGGER.info(f"Processing {len(paths)} files for hits DataFrames")
     df_paths = []
     for i, path in enumerate(tqdm(paths, desc="Processing hits DataFrames")):
         out_path = f"{output_base}_{i}.parquet"
-        logger.debug(f"Output path: {out_path}")
+        LOGGER.debug(f"Output path: {out_path}")
         if not overwrite and os.path.exists(out_path):
-            logger.info(f"Skipping existing DataFrame: {out_path}")
+            LOGGER.info(f"Skipping existing DataFrame: {out_path}")
             df_paths.append(out_path)
             continue
         try:
@@ -141,10 +141,10 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
             if 'initialPosition' in df.columns:
                 df = make_relativeVector(df)
             df.to_parquet(out_path, compression='snappy')
-            logger.info(f"Saved hits DataFrame: {out_path}")
+            LOGGER.info(f"Saved hits DataFrame: {out_path}")
             df_paths.append(out_path)
         except Exception as e:
-            logger.error(f"Failed to process hits for {path}: {e}")
+            LOGGER.error(f"Failed to process hits for {path}: {e}")
     return df_paths
 
 
@@ -152,14 +152,13 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
     """
     Build and save primary DataFrame for each file, filtering by pdg code.
     """
-    logger = logging.getLogger('process_primary_df')
-    logger.info(f"Processing {len(paths)} files for primary DataFrames")
+    LOGGER.info(f"Processing {len(paths)} files for primary DataFrames")
     df_paths = []
     for i, path in enumerate(tqdm(paths, desc="Processing primary DataFrames")):
         out_path = f"{output_base}_{i}.parquet"
-        logger.debug(f"Output path: {out_path}")
+        LOGGER.debug(f"Output path: {out_path}")
         if not overwrite and os.path.exists(out_path):
-            logger.info(f"Skipping existing DataFrame: {out_path}")
+            LOGGER.info(f"Skipping existing DataFrame: {out_path}")
             df_paths.append(out_path)
             continue
         try:
@@ -171,10 +170,10 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
             half = np.array(DETECTOR_SIZE_MM) / 2
             df = df[df['position'].apply(lambda xyz: all(-half[j] < xyz[j] < half[j] for j in range(3)))]
             df.to_parquet(out_path, compression='snappy')
-            logger.info(f"Saved primary DataFrame: {out_path}")
+            LOGGER.info(f"Saved primary DataFrame: {out_path}")
             df_paths.append(out_path)
         except Exception as e:
-            logger.error(f"Failed to process primary for {path}: {e}")
+            LOGGER.error(f"Failed to process primary for {path}: {e}")
     return df_paths
 
 
@@ -185,15 +184,14 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
     """
     Create voxel grids and save as .npy and/or .h5 using Parallel.
     """
-    logger = logging.getLogger('create_grids')
-    logger.info("Starting voxel grid creation")
+    LOGGER.info("Starting voxel grid creation")
     def _create_one(args):
         dfh, dfp, nh, npf, h5p = args
         do_npy_hit = save_npy_hits and not os.path.exists(nh)
         do_npy_pri = save_npy_primary and not os.path.exists(npf)
         do_h5 = save_h5 and not os.path.exists(h5p)
         if not (do_npy_hit or do_npy_pri or do_h5):
-            logger.debug(f"Skipping grid creation for {h5p}")
+            LOGGER.debug(f"Skipping grid creation for {h5p}")
             return
         try:
             x = None
@@ -226,15 +224,15 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                         f.create_dataset('x', data=np.moveaxis(x, -1, 0))
                     if y is not None:
                         f.create_dataset('y', data=y)
-                logger.info(f"Saved H5 grid: {h5p}")
+                LOGGER.info(f"Saved H5 grid: {h5p}")
             if do_npy_hit and x is not None:
                 np.save(nh, x)
-                logger.debug(f"Saved NPY hit grid: {nh}")
+                LOGGER.debug(f"Saved NPY hit grid: {nh}")
             if do_npy_pri and y is not None:
                 np.save(npf, y)
-                logger.debug(f"Saved NPY primary grid: {npf}")
+                LOGGER.debug(f"Saved NPY primary grid: {npf}")
         except Exception as e:
-            logger.error(f"Error in grid creation for args {args}: {e}")
+            LOGGER.error(f"Error in grid creation for args {args}: {e}")
 
     jobs = list(zip(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5))
     Parallel(n_jobs=num_workers)(delayed(_create_one)(job) for job in tqdm(jobs, desc="Creating voxel grids"))
@@ -244,8 +242,7 @@ def split_data(all_h5_paths, n_test, n_val, seed):
     """
     Split dataset into train/test/val lists.
     """
-    logger = logging.getLogger('split_data')
-    logger.info(f"Splitting {len(all_h5_paths)} files into train/test/val")
+    LOGGER.info(f"Splitting {len(all_h5_paths)} files into train/test/val")
     np.random.seed(seed)
     total = len(all_h5_paths)
     indices = np.arange(total)
@@ -256,7 +253,7 @@ def split_data(all_h5_paths, n_test, n_val, seed):
     train = [all_h5_paths[i] for i in train_idx]
     test = [all_h5_paths[i] for i in test_idx]
     val = [all_h5_paths[i] for i in val_idx]
-    logger.info(f"Train: {len(train)}, Test: {len(test)}, Val: {len(val)}")
+    LOGGER.info(f"Train: {len(train)}, Test: {len(test)}, Val: {len(val)}")
     return train, test, val
 
 
@@ -298,17 +295,16 @@ def main():
                         help='Number of validation examples (default: 10)')
     parser.add_argument('--noSplit', action='store_true',
                         help='Do not split data into train/test/val (default: split)')
-    parser.add_argument('--verbosity', '-v', choices=['debug','info','warning','error','critical'], default='info',
+    parser.add_argument('--verbosity', choices=['debug','info','warning','error','critical'], default='info',
                         help='Logging verbosity level (default: info)')
     args = parser.parse_args()
 
     configure_logging(args.verbosity)
-    logger = logging.getLogger('main')
+    LOGGER.info("Starting data grid generation")
 
-    logger.info("Starting data grid generation")
     os.makedirs(args.output_dir, exist_ok=True)
     root_files = [os.path.join(args.input_dir, f) for f in os.listdir(args.input_dir) if f.endswith('.root')]
-    logger.info(f"Found {len(root_files)} root files in {args.input_dir}")
+    LOGGER.info(f"Found {len(root_files)} root files in {args.input_dir}")
 
     # File checks and cuts
     if not args.noCheckFiles:
@@ -358,9 +354,9 @@ def main():
             out_file = os.path.join(args.output_dir, f"{name}_paths.txt")
             with open(out_file, 'w') as f:
                 f.write("\n".join(lst))
-            logger.info(f"Wrote {name} paths to {out_file}")
+            LOGGER.info(f"Wrote {name} paths to {out_file}")
 
-    logger.info("Data grid generation completed.")
+    LOGGER.info("Data grid generation completed.")
 
 if __name__ == '__main__':
     main()
