@@ -5,6 +5,7 @@ makeDataGrids.py
 Script to process ROOT files, generate DataFrames and voxel grids for ML,
 and split data into train/val/test. All intermediate DataFrames are saved on disk
 and cleaned up if not retained long-term to manage memory use.
+Supports limiting the number of input files with `-n/--nFiles`.
 """
 import argparse
 import logging
@@ -35,7 +36,10 @@ from importMethods import (
     get_primary_position,
     get_primary_pdg
 )
-from hitAccuracyMethods import make_r, make_theta, make_phi, make_reconstructedVector_direction, make_relativeVector
+from hitAccuracyMethods import (
+    make_r, make_theta, make_phi,
+    make_reconstructedVector_direction, make_relativeVector
+)
 from filterMethods import filter_r
 from gridMethods import get_voxelGrid, make_voxelGrid_truth, expNWalls, wallStringToInt
 
@@ -43,6 +47,9 @@ from gridMethods import get_voxelGrid, make_voxelGrid_truth, expNWalls, wallStri
 LOGGER = logging.getLogger('makeDataGrids')
 
 def configure_logging(verbosity: str):
+    """
+    Configure root logger formatting and level.
+    """
     level = getattr(logging, verbosity.upper(), None)
     if not isinstance(level, int):
         raise ValueError(f"Invalid verbosity level: {verbosity}")
@@ -55,6 +62,9 @@ def configure_logging(verbosity: str):
 
 
 def r_to_theta(r):
+    """
+    Convert radius to theta using constants.
+    """
     return r / (CM_PER_RAD * MM_PER_CM)
 
 
@@ -119,7 +129,9 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
             continue
         try:
             if use_histograms:
-                ids, dirs, poss, walls, rel_binned, rel_nbin = get_histogram_hits_tuple(path, hist_dir, True)
+                ids, dirs, poss, walls, rel_binned, rel_nbin = get_histogram_hits_tuple(
+                    path, hist_dir, True
+                )
                 df = pd.DataFrame({
                     'sensor_name': ids,
                     'sensor_direction': dirs,
@@ -130,13 +142,27 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
                 })
             else:
                 df = pd.DataFrame({
-                    'sensor_name': get_photosensor_hits_photosensor_ID(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'sensor_direction': get_photosensor_hits_photosensor_direction(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'sensor_position': get_photosensor_hits_photosensor_position(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'sensor_wall': get_photosensor_hits_photosensor_wall(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'relativePosition_binned': get_photosensor_hits_position_relative_binned(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'relativePosition_nBin': get_photosensor_hits_position_relative_nBin(path, 'photoSensor_hits;1', hist_dir, verbose=False),
-                    'initialPosition': get_photosensor_hits_position_initial(path, 'photoSensor_hits;1', verbose=False)
+                    'sensor_name': get_photosensor_hits_photosensor_ID(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'sensor_direction': get_photosensor_hits_photosensor_direction(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'sensor_position': get_photosensor_hits_photosensor_position(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'sensor_wall': get_photosensor_hits_photosensor_wall(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'relativePosition_binned': get_photosensor_hits_position_relative_binned(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'relativePosition_nBin': get_photosensor_hits_position_relative_nBin(
+                        path, 'photoSensor_hits;1', hist_dir, verbose=False
+                    ),
+                    'initialPosition': get_photosensor_hits_position_initial(
+                        path, 'photoSensor_hits;1', verbose=False
+                    )
                 })
             # Feature engineering
             df = make_r(df)
@@ -267,6 +293,8 @@ def main():
     parser = argparse.ArgumentParser(description='Generate ML data grids with logging')
     parser.add_argument('input_dir', help='Directory of input ROOT files')
     parser.add_argument('output_dir', help='Base output directory')
+    parser.add_argument('-n', '--nFiles', type=int, default=None,
+                        help='Maximum number of files to process')
     parser.add_argument('--gridSize', type=int, nargs=3, default=[80,80,80], help='Voxel grid size')
     parser.add_argument('--minNHits', type=int, default=0, help='Minimum number of hits')
     parser.add_argument('--minPrimarySteps', type=int, default=30, help='Minimum primary steps')
@@ -291,11 +319,15 @@ def main():
     LOGGER.info("Starting data grid generation")
 
     os.makedirs(args.output_dir, exist_ok=True)
-    # temp directory for intermediate DataFrames
     tmp_dir = os.path.join(args.output_dir, 'tmp')
     os.makedirs(tmp_dir, exist_ok=True)
 
-    root_files = [os.path.join(args.input_dir, f) for f in os.listdir(args.input_dir) if f.endswith('.root')]
+    # gather root files
+    all_files = [f for f in os.listdir(args.input_dir) if f.endswith('.root')]
+    if args.nFiles is not None:
+        all_files = all_files[:args.nFiles]
+        LOGGER.info(f"Limiting to first {len(all_files)} files")
+    root_files = [os.path.join(args.input_dir, f) for f in all_files]
     LOGGER.info(f"Found {len(root_files)} root files in {args.input_dir}")
 
     if not args.noCheckFiles:
@@ -308,19 +340,23 @@ def main():
     need_pri  = args.saveDFprimary or args.saveGridNpyPrimary or args.saveGridH5
 
     df_hits_paths, df_pri_paths = [], []
-    # decide where to store intermediate DataFrames
     hits_base = os.path.join(args.output_dir, 'DF_hits') if args.saveDFhits else os.path.join(tmp_dir, 'DF_hits')
     pri_base  = os.path.join(args.output_dir, 'DF_primary') if args.saveDFprimary else os.path.join(tmp_dir, 'DF_primary')
 
     if need_hits:
         os.makedirs(os.path.dirname(hits_base), exist_ok=True)
-        df_hits_paths = process_hits_df(root_files, 'photoSensor_hits_histograms', hits_base, args.overwriteDF, args.useHistograms)
+        df_hits_paths = process_hits_df(
+            root_files, 'photoSensor_hits_histograms', hits_base,
+            args.overwriteDF, args.useHistograms
+        )
 
     if need_pri:
         os.makedirs(os.path.dirname(pri_base), exist_ok=True)
-        df_pri_paths = process_primary_df(root_files, 'primary;1', pri_base, args.overwriteDF, args.primaryPdg)
+        df_pri_paths = process_primary_df(
+            root_files, 'primary;1', pri_base,
+            args.overwriteDF, args.primaryPdg
+        )
 
-    # prepare grid output paths
     grid_shape = tuple(args.gridSize)
     base_hits_npy = os.path.join(args.output_dir, 'grid_hits')
     base_pri_npy  = os.path.join(args.output_dir, 'grid_primary')
@@ -357,7 +393,6 @@ def main():
         shutil.rmtree(os.path.join(tmp_dir, 'DF_hits'), ignore_errors=True)
     if not args.saveDFprimary:
         shutil.rmtree(os.path.join(tmp_dir, 'DF_primary'), ignore_errors=True)
-    # remove temp dir if empty
     try:
         os.rmdir(tmp_dir)
     except OSError:
