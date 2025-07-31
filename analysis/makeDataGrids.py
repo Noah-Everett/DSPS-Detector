@@ -80,7 +80,9 @@ def check_files(paths, hist_dir, num_workers):
         return []
     # Infer expected shape
     try:
+        print('1')
         with uproot.open(paths[0], num_workers=num_workers) as f0:
+            print('2')
             h0 = f0[hist_dir]
             print('h0:', h0)
             print('h0.keys():', h0.keys())
