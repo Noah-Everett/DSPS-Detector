@@ -2,7 +2,7 @@ h5py
 numpy
 pandas
 torch
-uproot
+uproot==5.1.2
 tqdm
 matplotlib
 scikit-learn
