@@ -34,12 +34,11 @@ from UNetMethods import *
 def r_to_theta(r):
     return r / (CM_PER_RAD * MM_PER_CM)
 
-def check_files(paths, grid_shape, hist_dir):
+def check_files(paths, hist_dir):
     """
-    Verify that each ROOT file contains histograms of the expected shape.
+    Verify that each ROOT file contains histograms of the same shape.
     """
-def check_files(paths, grid_shape, hist_dir):
-    expected = tuple(grid_shape[:2])
+    expected = None
     valid = []
     for path in paths:
         try:
@@ -47,6 +46,8 @@ def check_files(paths, grid_shape, hist_dir):
             hists = f[hist_dir]
             for key in hists.keys():
                 arr = hists[key].values()
+                if expected is None:
+                    expected = arr.shape
                 if arr.shape != expected:
                     print(f"Error: {key} has shape {arr.shape}, expected {expected}")
                     raise ValueError
@@ -246,7 +247,7 @@ def main():
 
     # File checks and cuts
     if not args.noCheckFiles:
-        root_files = check_files(root_files, args.gridSize, 'photoSensor_hits_histograms')
+        root_files = check_files(root_files, 'photoSensor_hits_histograms')
     if not args.noCuts:
         root_files = apply_cuts(root_files, args.minNHits, args.minPrimarySteps,
                                 'photoSensor_hits_histograms', 'primary;1')
