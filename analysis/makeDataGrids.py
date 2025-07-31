@@ -78,13 +78,13 @@ def check_files(paths, hist_dir, num_workers):
     """
     if not paths:
         return []
-    # Determine expected shape from first file
+    # Infer expected shape
     try:
         with uproot.open(paths[0], num_workers=num_workers) as f0:
             h0 = f0[hist_dir]
             first_key = next(iter(h0.keys()))
             expected = h0[first_key].values().shape
-            LOGGER.debug(f"Expected histogram shape set to {expected}")
+            LOGGER.info(f"Expected histogram shape: {expected}")
     except Exception as e:
         LOGGER.error(f"Failed to infer expected shape from {paths[0]}: {e}")
         return []
@@ -96,17 +96,18 @@ def check_files(paths, hist_dir, num_workers):
                 for key in h.keys():
                     arr = h[key].values()
                     if arr.shape != expected:
-                        LOGGER.error(f"{path}:{key} has shape {arr.shape}, expected {expected}")
+                        LOGGER.error(f"{path}:{key} shape {arr.shape} != expected {expected}")
                         return None
             return path
         except Exception as e:
             LOGGER.warning(f"Skipping file {path}: {e}")
             return None
 
-    results = Parallel(n_jobs=num_workers)(
-        delayed(_check)(p) for p in paths
+    LOGGER.info(f"Checking {len(paths)} files for consistent histogram shapes...")
+    valid = Parallel(n_jobs=num_workers)(
+        delayed(_check)(p) for p in tqdm(paths, desc="Checking files")
     )
-    valid = [p for p in results if p]
+    valid = [p for p in valid if p]
     LOGGER.info(f"Valid files after check: {len(valid)}/{len(paths)}")
     return valid
 
@@ -126,10 +127,11 @@ def apply_cuts(paths, min_hits, min_primary_steps, hist_dir, primary_tree, num_w
             LOGGER.error(f"Error applying cuts to {path}: {e}")
         return None
 
-    results = Parallel(n_jobs=num_workers)(
-        delayed(_cut)(p) for p in paths
+    LOGGER.info(f"Applying cuts (min_hits={min_hits}, min_steps={min_primary_steps})...")
+    filtered = Parallel(n_jobs=num_workers)(
+        delayed(_cut)(p) for p in tqdm(paths, desc="Applying cuts")
     )
-    filtered = [p for p in results if p]
+    filtered = [p for p in filtered if p]
     LOGGER.info(f"Files after cuts: {len(filtered)}/{len(paths)}")
     return filtered
 
@@ -138,13 +140,13 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms, num
     """
     Parallel build & save hits DataFrames; returns list of parquet paths.
     """
-    LOGGER.info(f"Processing {len(paths)} hits DataFrames")
+    LOGGER.info(f"Processing {len(paths)} hits DataFrames...")
 
     def _build(i, path):
         out_path = f"{output_base}_{i}.parquet"
         if not overwrite and os.path.exists(out_path):
+            LOGGER.debug(f"Skipping existing: {out_path}")
             return out_path
-        # load & build
         if use_histograms:
             ids, dirs, poss, walls, rb, rn = get_histogram_hits_tuple(path, hist_dir, True)
             df = pd.DataFrame({
@@ -165,7 +167,6 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms, num
                 'relativePosition_nBin': get_photosensor_hits_position_relative_nBin(path, 'photoSensor_hits;1', hist_dir),
                 'initialPosition': get_photosensor_hits_position_initial(path, 'photoSensor_hits;1')
             })
-        # feature engineering
         df = make_r(df)
         df = filter_r(df, Y_LIM)
         df = make_theta(df, r_to_theta)
@@ -179,21 +180,22 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms, num
         gc.collect()
         return out_path
 
-    results = Parallel(n_jobs=num_workers)(
-        delayed(_build)(i, p) for i, p in enumerate(paths)
+    paths_out = Parallel(n_jobs=num_workers)(
+        delayed(_build)(i, p) for i, p in enumerate(tqdm(paths, desc="Building hits DFs"))
     )
-    return results
+    return paths_out
 
 
 def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code, num_workers):
     """
     Parallel build & save primary DataFrames; returns list of parquet paths.
     """
-    LOGGER.info(f"Processing {len(paths)} primary DataFrames")
+    LOGGER.info(f"Processing {len(paths)} primary DataFrames...")
 
     def _build(i, path):
         out_path = f"{output_base}_{i}.parquet"
         if not overwrite and os.path.exists(out_path):
+            LOGGER.debug(f"Skipping existing: {out_path}")
             return out_path
         positions = get_primary_position(path, primary_tree)
         pdgs = get_primary_pdg(path, primary_tree)
@@ -207,10 +209,10 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code, nu
         gc.collect()
         return out_path
 
-    results = Parallel(n_jobs=num_workers)(
-        delayed(_build)(i, p) for i, p in enumerate(paths)
+    paths_out = Parallel(n_jobs=num_workers)(
+        delayed(_build)(i, p) for i, p in enumerate(tqdm(paths, desc="Building primary DFs"))
     )
-    return results
+    return paths_out
 
 
 def create_grids(df_hits, df_pri,
@@ -222,19 +224,20 @@ def create_grids(df_hits, df_pri,
     """
     Parallel create voxel grids and save as .npy/.h5.
     """
-    LOGGER.info("Creating voxel grids")
+    LOGGER.info("Creating voxel grids...")
+    jobs = list(zip(df_hits, df_pri, npy_hits, npy_pri, h5_paths))
 
     def _make(idx, dfh_p, dfp_p, nh, npf, h5p):
         do_npy_h = save_npy_hits and not os.path.exists(nh)
-        do_npy_p = save_npy_pri  and not os.path.exists(npf)
-        do_h5    = save_h5     and not os.path.exists(h5p)
+        do_npy_p = save_npy_pri and not os.path.exists(npf)
+        do_h5    = save_h5 and not os.path.exists(h5p)
         if not (do_npy_h or do_npy_p or do_h5):
             return
         x = y = None
         if save_npy_hits or save_h5:
             dfh = pd.read_parquet(dfh_p)
             starts = np.vstack(dfh['sensor_position'].tolist())
-            dirs   = -np.vstack(dfh['reconstructedVector_direction'].tolist())
+            dirs = -np.vstack(dfh['reconstructedVector_direction'].tolist())
             x = get_voxelGrid(
                 grid_shape=np.array(grid_shape),
                 grid_dimensions=np.array(DETECTOR_SIZE_MM),
@@ -252,9 +255,9 @@ def create_grids(df_hits, df_pri,
         if save_npy_pri or save_h5:
             dfp = pd.read_parquet(dfp_p)
             pos = np.vstack(dfp['position'].tolist())
-            y   = make_voxelGrid_truth(pos, shape=grid_shape,
-                                        detectorDimensions=DETECTOR_SIZE_MM,
-                                        makeErrors=False)[0]
+            y = make_voxelGrid_truth(pos, shape=grid_shape,
+                                     detectorDimensions=DETECTOR_SIZE_MM,
+                                     makeErrors=False)[0]
             del dfp, pos
             gc.collect()
         if do_h5:
@@ -269,15 +272,8 @@ def create_grids(df_hits, df_pri,
         del x, y
         gc.collect()
 
-    jobs = [(i, dfh, dfp, nh, npf, h5p)
-            for i, (dfh, dfp, nh, npf, h5p)
-            in enumerate(zip(df_hits,
- df_pri,
- npy_hits,
- npy_pri,
- h5_paths))]
     Parallel(n_jobs=num_workers)(
-        delayed(_make)(*job) for job in jobs
+        delayed(_make)(i, *job) for i, job in enumerate(tqdm(jobs, desc="Creating voxel grids"))
     )
 
 
@@ -285,20 +281,20 @@ def split_data(all_h5, n_test, n_val, seed):
     """
     Split dataset into train/test/val lists.
     """
-    LOGGER.info(f"Splitting {len(all_h5)} files")
+    LOGGER.info(f"Splitting {len(all_h5)} files into train/test/val")
     np.random.seed(seed)
     idx = np.arange(len(all_h5))
     test = np.random.choice(idx, size=n_test, replace=False)
-    rem  = np.setdiff1d(idx, test)
-    val  = np.random.choice(rem, size=n_val, replace=False)
-    train= np.setdiff1d(rem, val)
+    rem = np.setdiff1d(idx, test)
+    val = np.random.choice(rem, size=n_val, replace=False)
+    train = np.setdiff1d(rem, val)
     return ([all_h5[i] for i in train],
             [all_h5[i] for i in test],
             [all_h5[i] for i in val])
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate ML data grids with logging')
+    parser = argparse.ArgumentParser(description='Generate ML data grids with precise progress logs')
     parser.add_argument('input_dir')
     parser.add_argument('output_dir')
     parser.add_argument('-n', '--nFiles', type=int, default=None,
@@ -329,11 +325,11 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # collect files
-    files = sorted(f for f in os.listdir(args.input_dir) if f.endswith('.root'))
-    if args.nFiles: files = files[:args.nFiles]
-    paths = [os.path.join(args.input_dir,f) for f in files]
-    LOGGER.info(f"Processing {len(paths)} ROOT files")
+    files = sorted([f for f in os.listdir(args.input_dir) if f.endswith('.root')])
+    if args.nFiles:
+        files = files[:args.nFiles]
+        LOGGER.info(f"Limiting to first {len(files)} files")
+    paths = [os.path.join(args.input_dir, f) for f in files]
 
     if not args.noCheckFiles:
         paths = check_files(paths, 'photoSensor_hits_histograms', args.numWorkers)
@@ -348,28 +344,27 @@ def main():
     dfp_paths = []
 
     with tempfile.TemporaryDirectory() as tmp:
-        hb = (os.path.join(args.output_dir,'DF_hits')
-              if args.saveDFhits else os.path.join(tmp,'DF_hits'))
-        pb = (os.path.join(args.output_dir,'DF_primary')
-              if args.saveDFprimary else os.path.join(tmp,'DF_primary'))
+        hb = (os.path.join(args.output_dir, 'DF_hits') if args.saveDFhits else os.path.join(tmp, 'DF_hits'))
+        pb = (os.path.join(args.output_dir, 'DF_primary') if args.saveDFprimary else os.path.join(tmp, 'DF_primary'))
+
         if need_h:
-            os.makedirs(os.path.dirname(hb),exist_ok=True)
-            dfh_paths = process_hits_df(paths,'photoSensor_hits_histograms',
-                                        hb,args.overwriteDF,args.useHistograms,
+            os.makedirs(os.path.dirname(hb), exist_ok=True)
+            dfh_paths = process_hits_df(paths, 'photoSensor_hits_histograms',
+                                        hb, args.overwriteDF, args.useHistograms,
                                         args.numWorkers)
         if need_p:
-            os.makedirs(os.path.dirname(pb),exist_ok=True)
-            dfp_paths = process_primary_df(paths,'primary;1',
-                                           pb,args.overwriteDF,args.primaryPdg,
+            os.makedirs(os.path.dirname(pb), exist_ok=True)
+            dfp_paths = process_primary_df(paths, 'primary;1',
+                                           pb, args.overwriteDF, args.primaryPdg,
                                            args.numWorkers)
 
         gs = tuple(args.gridSize)
-        bh_n = os.path.join(args.output_dir,'grid_hits')
-        bp_n = os.path.join(args.output_dir,'grid_primary')
-        bh5  = os.path.join(args.output_dir,'grid_h5')
+        bh_n = os.path.join(args.output_dir, 'grid_hits')
+        bp_n = os.path.join(args.output_dir, 'grid_primary')
+        bh5 = os.path.join(args.output_dir, 'grid_h5')
         npy_h = [f"{bh_n}_{i}.npy" for i in range(len(dfh_paths))]
         npy_p = [f"{bp_n}_{i}.npy" for i in range(len(dfp_paths))]
-        h5s   = [f"{bh5}_{i}.h5"   for i in range(len(dfh_paths))]
+        h5s = [f"{bh5}_{i}.h5" for i in range(len(dfh_paths))]
 
         if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
             create_grids(dfh_paths, dfp_paths,
@@ -384,13 +379,14 @@ def main():
                          num_workers=args.numWorkers)
 
         if not args.noSplit and args.saveGridH5:
-            t,tst,v = split_data(h5s,args.nTest,args.nVal,seed=42)
-            for name,lst in [('train',t),('test',tst),('val',v)]:
-                of = os.path.join(args.output_dir,f"{name}_paths.txt")
-                with open(of,'w') as f: f.write("\n".join(lst))
+            train, test, val = split_data(h5s, args.nTest, args.nVal, seed=42)
+            for name, lst in [('train', train), ('test', test), ('val', val)]:
+                of = os.path.join(args.output_dir, f"{name}_paths.txt")
+                with open(of, 'w') as f:
+                    f.write("\n".join(lst))
                 LOGGER.info(f"Wrote {name} paths: {of}")
 
     LOGGER.info("Data grid generation completed")
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
