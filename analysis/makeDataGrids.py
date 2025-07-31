@@ -80,13 +80,9 @@ def check_files(paths, hist_dir, num_workers):
         return []
     # Infer expected shape
     try:
-        print('1')
+        print('paths[0]:', paths[0])
         with uproot.open(paths[0], num_workers=num_workers) as f0:
-            print('2')
             h0 = f0[hist_dir]
-            print('h0:', h0)
-            print('h0.keys():', h0.keys())
-            print('h0[h0.keys()[0]]:', h0[h0.keys()[0]])
             first_key = next(iter(h0.keys()))
             expected = h0[first_key].values().shape
             LOGGER.info(f"Expected histogram shape: {expected}")
