@@ -9,3 +9,4 @@ scikit-learn
 pyyaml
 tensorboard
 scikit-image
+pyarrow
