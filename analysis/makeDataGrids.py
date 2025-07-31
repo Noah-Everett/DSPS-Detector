@@ -16,11 +16,9 @@ import uproot
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
+# allow imports from parent python directory
 sys.path.append('../python/')
-from constants import (
-    CM_PER_RAD, MM_PER_CM, Y_LIM, DETECTOR_SIZE_MM
-)
-# Import functions from importMethods
+from constants import CM_PER_RAD, MM_PER_CM, Y_LIM, DETECTOR_SIZE_MM
 from importMethods import (
     get_histogram_nHits_total,
     get_histogram_hits_tuple,
@@ -34,41 +32,23 @@ from importMethods import (
     get_primary_position,
     get_primary_pdg
 )
-from hitAccuracyMethods import (
-    make_r,
-    make_theta,
-    make_phi,
-    make_reconstructedVector_direction,
-    make_relativeVector
-)
-from filterMethods import (
-    filter_r
-)
-from gridMethods import (
-    get_voxelGrid,
-    make_voxelGrid_truth,
-    expNWalls,
-    wallStringToInt
-)
+from hitAccuracyMethods import make_r, make_theta, make_phi, make_reconstructedVector_direction, make_relativeVector
+from filterMethods import filter_r
+from gridMethods import get_voxelGrid, make_voxelGrid_truth, expNWalls, wallStringToInt
 
+# Global logger
+LOGGER = logging.getLogger('makeDataGrids')
 
 def configure_logging(verbosity: str):
     level = getattr(logging, verbosity.upper(), None)
     if not isinstance(level, int):
         raise ValueError(f"Invalid verbosity level: {verbosity}")
-    
-    # Configure root logger with detailed format
     logging.basicConfig(
         level=level,
         format='%(asctime)s - %(name)s - %(filename)s::%(funcName)s(%(lineno)d) - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    
-    # Suppress verbose fsspec logging
     logging.getLogger("fsspec.local").setLevel(logging.WARNING)
-
-# Global logger for the entire module
-LOGGER = logging.getLogger('makeDataGrids')
 
 
 def r_to_theta(r):
@@ -121,22 +101,17 @@ def apply_cuts(paths, min_hits, min_primary_steps, hist_dir, primary_tree):
     return filtered
 
 
-def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
+def build_hits_dataframes(paths, hist_dir, use_histograms):
     """
-    Build and save hits DataFrame for each file.
+    Build hits DataFrames in-memory for each file (without saving).
     """
-    LOGGER.info(f"Processing {len(paths)} files for hits DataFrames")
-    df_paths = []
-    for i, path in enumerate(tqdm(paths, desc="Processing hits DataFrames")):
-        out_path = f"{output_base}_{i}.parquet"
-        LOGGER.debug(f"Output path: {out_path}")
-        if not overwrite and os.path.exists(out_path):
-            LOGGER.info(f"Skipping existing DataFrame: {out_path}")
-            df_paths.append(out_path)
-            continue
+    dfs = []
+    for path in tqdm(paths, desc="Building hits DataFrames"):
         try:
             if use_histograms:
-                ids, dirs, poss, walls, rel_binned, rel_nbin = get_histogram_hits_tuple(path, hist_dir, True)
+                ids, dirs, poss, walls, rel_binned, rel_nbin = get_histogram_hits_tuple(
+                    path, hist_dir, True
+                )
                 df = pd.DataFrame({
                     'sensor_name': ids,
                     'sensor_direction': dirs,
@@ -163,51 +138,66 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
             df = make_reconstructedVector_direction(df)
             if 'initialPosition' in df.columns:
                 df = make_relativeVector(df)
+            dfs.append(df)
+        except Exception as e:
+            LOGGER.error(f"Failed to build hits DF for {path}: {e}")
+    return dfs
+
+
+def save_hits_dataframes(dfs, output_base, overwrite):
+    """
+    Save hits DataFrames to parquet files if desired.
+    """
+    for i, df in enumerate(dfs):
+        out_path = f"{output_base}_{i}.parquet"
+        if overwrite or not os.path.exists(out_path):
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved hits DataFrame: {out_path}")
-            df_paths.append(out_path)
-        except Exception as e:
-            LOGGER.error(f"Failed to process hits for {path}: {e}")
-    return df_paths
-
-
-def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
-    """
-    Build and save primary DataFrame for each file, filtering by pdg code.
-    """
-    LOGGER.info(f"Processing {len(paths)} files for primary DataFrames")
-    df_paths = []
-    for i, path in enumerate(tqdm(paths, desc="Processing primary DataFrames")):
-        out_path = f"{output_base}_{i}.parquet"
-        LOGGER.debug(f"Output path: {out_path}")
-        if not overwrite and os.path.exists(out_path):
+        else:
             LOGGER.info(f"Skipping existing DataFrame: {out_path}")
-            df_paths.append(out_path)
-            continue
+
+
+def build_primary_dataframes(paths, primary_tree, pdg_code):
+    """
+    Build primary particle DataFrames in-memory for each file (without saving).
+    """
+    dfs = []
+    half = np.array(DETECTOR_SIZE_MM) / 2
+    for path in tqdm(paths, desc="Building primary DataFrames"):
         try:
             positions = get_primary_position(path, primary_tree)
             pdgs = get_primary_pdg(path, primary_tree)
             df = pd.DataFrame({'position': positions, 'pdg': pdgs})
-            # Filter by user-specified pdg and detector bounds
             df = df[df['pdg'] == pdg_code]
-            half = np.array(DETECTOR_SIZE_MM) / 2
             df = df[df['position'].apply(lambda xyz: all(-half[j] < xyz[j] < half[j] for j in range(3)))]
+            dfs.append(df)
+        except Exception as e:
+            LOGGER.error(f"Failed to build primary DF for {path}: {e}")
+    return dfs
+
+
+def save_primary_dataframes(dfs, output_base, overwrite):
+    """
+    Save primary DataFrames to parquet files if desired.
+    """
+    for i, df in enumerate(dfs):
+        out_path = f"{output_base}_{i}.parquet"
+        if overwrite or not os.path.exists(out_path):
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved primary DataFrame: {out_path}")
-            df_paths.append(out_path)
-        except Exception as e:
-            LOGGER.error(f"Failed to process primary for {path}: {e}")
-    return df_paths
+        else:
+            LOGGER.info(f"Skipping existing DataFrame: {out_path}")
 
 
-def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5,
+def create_grids(dfs_hits, dfs_primary, paths_npy_hits, paths_npy_primary, paths_h5,
                  save_npy_hits, save_npy_primary, save_h5,
-                 grid_shape, combine_errors, combine_walls, walls_combine, walls_method, combine_vectors,
-                 num_workers):
+                 grid_shape, combine_errors, combine_walls, walls_combine, walls_method,
+                 combine_vectors, num_workers):
     """
-    Create voxel grids and save as .npy and/or .h5 using Parallel.
+    Create voxel grids and save as .npy and/or .h5 using Parallel processing.
     """
     LOGGER.info("Starting voxel grid creation")
+
     def _create_one(args):
         dfh, dfp, nh, npf, h5p = args
         do_npy_hit = save_npy_hits and not os.path.exists(nh)
@@ -217,26 +207,26 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
             LOGGER.debug(f"Skipping grid creation for {h5p}")
             return
         try:
-            x = None
+            x, y = None, None
             if save_npy_hits or save_h5:
-                dfh_df = pd.read_parquet(dfh)
+                starts = np.vstack(dfh['sensor_position'].tolist()).reshape(-1, 3)
+                dirs = -np.vstack(dfh['reconstructedVector_direction'].tolist()).reshape(-1, 3)
                 x = get_voxelGrid(
                     grid_shape=np.array(grid_shape, int),
                     grid_dimensions=np.array(DETECTOR_SIZE_MM),
-                    vector_starts=np.array(dfh_df['sensor_position'].tolist()).reshape(-1, 3),
-                    vector_directions=-np.array(dfh_df['reconstructedVector_direction'].tolist()).reshape(-1, 3),
+                    vector_starts=starts,
+                    vector_directions=dirs,
                     vector_weights=None,
-                    vector_start_walls=wallStringToInt(dfh_df['sensor_wall'].to_numpy().astype(str)),
+                    vector_start_walls=wallStringToInt(dfh['sensor_wall'].to_numpy().astype(str)),
                     walls=combine_walls,
                     walls_combine=walls_combine,
                     walls_combine_method=walls_method,
                     vector_combine=combine_vectors
                 )
-            y = None
             if save_npy_primary or save_h5:
-                dfp_df = pd.read_parquet(dfp)
+                positions = np.vstack(dfp['position'].tolist())
                 y = make_voxelGrid_truth(
-                    np.array(dfp_df['position'].tolist()),
+                    positions,
                     shape=grid_shape,
                     detectorDimensions=DETECTOR_SIZE_MM,
                     makeErrors=False
@@ -255,9 +245,9 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                 np.save(npf, y)
                 LOGGER.debug(f"Saved NPY primary grid: {npf}")
         except Exception as e:
-            LOGGER.error(f"Error in grid creation for args {args}: {e}")
+            LOGGER.error(f"Error in grid creation for {h5p}: {e}")
 
-    jobs = list(zip(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5))
+    jobs = list(zip(dfs_hits, dfs_primary, paths_npy_hits, paths_npy_primary, paths_h5))
     Parallel(n_jobs=num_workers)(delayed(_create_one)(job) for job in tqdm(jobs, desc="Creating voxel grids"))
 
 
@@ -324,8 +314,8 @@ def main():
 
     configure_logging(args.verbosity)
     LOGGER.info("Starting data grid generation")
-    LOGGER.debug(f"Logging configured to {args.verbosity.upper()} level.")
 
+    # prepare output
     os.makedirs(args.output_dir, exist_ok=True)
     root_files = [os.path.join(args.input_dir, f) for f in os.listdir(args.input_dir) if f.endswith('.root')]
     LOGGER.info(f"Found {len(root_files)} root files in {args.input_dir}")
@@ -337,42 +327,54 @@ def main():
         root_files = apply_cuts(root_files, args.minNHits, args.minPrimarySteps,
                                 'photoSensor_hits_histograms', 'primary;1')
 
-    # DataFrame generation
-    df_hits_paths = []
-    if args.saveDFhits:
-        df_hits_paths = process_hits_df(root_files, 'photoSensor_hits_histograms',
-                                        os.path.join(args.output_dir, 'DF_hits'),
-                                        args.overwriteDF, args.useHistograms)
-    df_pri_paths = []
-    if args.saveDFprimary:
-        df_pri_paths = process_primary_df(root_files, 'primary;1',
-                                          os.path.join(args.output_dir, 'DF_primary'),
-                                          args.overwriteDF, args.primaryPdg)
+    # Build DataFrames always if grids or saving requested
+    dfs_hits, dfs_primary = [], []
+    need_hits = args.saveDFhits or args.saveGridNpyHits or args.saveGridH5
+    need_pri  = args.saveDFprimary or args.saveGridNpyPrimary or args.saveGridH5
+
+    if need_hits:
+        LOGGER.info("Building hits DataFrames in memory")
+        dfs_hits = build_hits_dataframes(root_files, 'photoSensor_hits_histograms', args.useHistograms)
+        if args.saveDFhits:
+            save_hits_dataframes(dfs_hits, os.path.join(args.output_dir, 'DF_hits'), args.overwriteDF)
+        else:
+            LOGGER.debug("Skipping saving hits DataFrames to disk")
+
+    if need_pri:
+        LOGGER.info("Building primary DataFrames in memory")
+        dfs_primary = build_primary_dataframes(root_files, 'primary;1', args.primaryPdg)
+        if args.saveDFprimary:
+            save_primary_dataframes(dfs_primary, os.path.join(args.output_dir, 'DF_primary'), args.overwriteDF)
+        else:
+            LOGGER.debug("Skipping saving primary DataFrames to disk")
 
     # Prepare grid output paths
-    gridSize = tuple(args.gridSize)
+    grid_shape = tuple(args.gridSize)
     base_hits_npy = os.path.join(args.output_dir, 'grid_hits')
-    base_pri_npy = os.path.join(args.output_dir, 'grid_primary')
-    base_h5 = os.path.join(args.output_dir, 'grid_h5')
-    paths_npy_hits = [f"{base_hits_npy}_{i}.npy" for i in range(len(df_hits_paths))]
-    paths_npy_pri = [f"{base_pri_npy}_{i}.npy" for i in range(len(df_pri_paths))]
-    paths_h5 = [f"{base_h5}_{i}.h5" for i in range(len(df_hits_paths))]
+    base_pri_npy  = os.path.join(args.output_dir, 'grid_primary')
+    base_h5       = os.path.join(args.output_dir, 'grid_h5')
+
+    paths_npy_hits     = [f"{base_hits_npy}_{i}.npy" for i in range(len(dfs_hits))]
+    paths_npy_primary  = [f"{base_pri_npy}_{i}.npy" for i in range(len(dfs_primary))]
+    paths_h5           = [f"{base_h5}_{i}.h5" for i in range(len(dfs_hits))]
 
     # Grid creation
     if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
-        create_grids(df_hits_paths, df_pri_paths,
-                     paths_npy_hits, paths_npy_pri, paths_h5,
-                     args.saveGridNpyHits, args.saveGridNpyPrimary, args.saveGridH5,
-                     gridSize,
-                     combine_errors=False,
-                     combine_walls=True,
-                     walls_combine=False,
-                     walls_method=expNWalls,
-                     combine_vectors=True,
-                     num_workers=args.numWorkers)
+        create_grids(
+            dfs_hits, dfs_primary,
+            paths_npy_hits, paths_npy_primary, paths_h5,
+            args.saveGridNpyHits, args.saveGridNpyPrimary, args.saveGridH5,
+            grid_shape,
+            combine_errors=False,
+            combine_walls=True,
+            walls_combine=False,
+            walls_method=expNWalls,
+            combine_vectors=True,
+            num_workers=args.numWorkers
+        )
 
     # Data splitting
-    if not args.noSplit:
+    if not args.noSplit and args.saveGridH5:
         train_paths, test_paths, val_paths = split_data(paths_h5, args.nTest, args.nVal, seed=42)
         for name, lst in [('train', train_paths), ('test', test_paths), ('val', val_paths)]:
             out_file = os.path.join(args.output_dir, f"{name}_paths.txt")
