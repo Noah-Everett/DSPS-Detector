@@ -295,7 +295,7 @@ def main():
                         help='Number of validation examples (default: 10)')
     parser.add_argument('--noSplit', action='store_true',
                         help='Do not split data into train/test/val (default: split)')
-    parser.add_argument('--verbosity', choices=['debug','info','warning','error','critical'], default='info',
+    parser.add_argument('--verbosity', '-v', choices=['debug','info','warning','error','critical'], default='info',
                         help='Logging verbosity level (default: info)')
     args = parser.parse_args()
 
