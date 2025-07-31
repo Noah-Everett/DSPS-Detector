@@ -8,6 +8,7 @@ and cleaned up if not retained long-term to manage memory use.
 Supports limiting the number of input files with `-n/--nFiles`.
 Uses a system temporary directory for non-persistent data and ensures no memory leaks.
 """
+
 import argparse
 import logging
 import os
@@ -46,6 +47,7 @@ from gridMethods import get_voxelGrid, make_voxelGrid_truth, expNWalls, wallStri
 
 # Global logger
 LOGGER = logging.getLogger('makeDataGrids')
+
 
 def configure_logging(verbosity: str):
     """
@@ -173,14 +175,18 @@ def process_hits_df(paths, hist_dir, output_base, overwrite, use_histograms):
             df = make_reconstructedVector_direction(df)
             if 'initialPosition' in df.columns:
                 df = make_relativeVector(df)
+
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved hits DataFrame: {out_path}")
             df_paths.append(out_path)
+
             # cleanup large DataFrame
             del df
             gc.collect()
+
         except Exception as e:
             LOGGER.error(f"Failed to process hits for {path}: {e}")
+
     return df_paths
 
 
@@ -203,36 +209,48 @@ def process_primary_df(paths, primary_tree, output_base, overwrite, pdg_code):
             pdgs = get_primary_pdg(path, primary_tree)
             df = pd.DataFrame({'position': positions, 'pdg': pdgs})
             df = df[df['pdg'] == pdg_code]
-            df = df[df['position'].apply(lambda xyz: all(-half[j] < xyz[j] < half[j] for j in range(3)))]
+            df = df[df['position'].apply(
+                lambda xyz: all(-half[j] < xyz[j] < half[j] for j in range(3))
+            )]
+
             df.to_parquet(out_path, compression='snappy')
             LOGGER.info(f"Saved primary DataFrame: {out_path}")
             df_paths.append(out_path)
+
             # cleanup large data
             del df, positions, pdgs
             gc.collect()
+
         except Exception as e:
             LOGGER.error(f"Failed to process primary for {path}: {e}")
+
     return df_paths
 
 
-def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5,
+def create_grids(df_paths_hits, df_paths_primary,
+                 paths_npy_hits, paths_npy_primary, paths_h5,
                  save_npy_hits, save_npy_primary, save_h5,
-                 grid_shape, combine_errors, combine_walls, walls_combine, walls_method, combine_vectors,
+                 grid_shape, combine_errors, combine_walls,
+                 walls_combine, walls_method, combine_vectors,
                  num_workers):
     """
     Create voxel grids and save as .npy and/or .h5 using Parallel.
     """
     LOGGER.info("Starting voxel grid creation")
+
     def _create_one(args):
         dfh_p, dfp_p, nh, npf, h5p = args
         do_npy_hit = save_npy_hits and not os.path.exists(nh)
         do_npy_pri = save_npy_primary and not os.path.exists(npf)
         do_h5 = save_h5 and not os.path.exists(h5p)
+
         if not (do_npy_hit or do_npy_pri or do_h5):
             LOGGER.debug(f"Skipping grid creation for {h5p}")
             return
+
         try:
-            x, y = None, None
+            x = y = None
+
             if save_npy_hits or save_h5:
                 dfh = pd.read_parquet(dfh_p)
                 starts = np.vstack(dfh['sensor_position'].tolist()).reshape(-1, 3)
@@ -251,6 +269,7 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                 )
                 del dfh, starts, dirs
                 gc.collect()
+
             if save_npy_primary or save_h5:
                 dfp = pd.read_parquet(dfp_p)
                 positions = np.vstack(dfp['position'].tolist())
@@ -262,6 +281,7 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                 )[0]
                 del dfp, positions
                 gc.collect()
+
             if do_h5:
                 with h5py.File(h5p, 'w') as f:
                     if x is not None:
@@ -269,18 +289,26 @@ def create_grids(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_prim
                     if y is not None:
                         f.create_dataset('y', data=y)
                 LOGGER.info(f"Saved H5 grid: {h5p}")
+
             if do_npy_hit and x is not None:
                 np.save(nh, x)
                 LOGGER.debug(f"Saved NPY hit grid: {nh}")
             if do_npy_pri and y is not None:
                 np.save(npf, y)
                 LOGGER.debug(f"Saved NPY primary grid: {npf}")
+
             del x, y
             gc.collect()
+
         except Exception as e:
             LOGGER.error(f"Error in grid creation for {h5p}: {e}")
-    jobs = list(zip(df_paths_hits, df_paths_primary, paths_npy_hits, paths_npy_primary, paths_h5))
-    Parallel(n_jobs=num_workers)(delayed(_create_one)(job) for job in tqdm(jobs, desc="Creating voxel grids"))
+
+    jobs = list(zip(df_paths_hits, df_paths_primary,
+                    paths_npy_hits, paths_npy_primary, paths_h5))
+    Parallel(n_jobs=num_workers)(
+        delayed(_create_one)(job)
+        for job in tqdm(jobs, desc="Creating voxel grids")
+    )
 
 
 def split_data(all_h5_paths, n_test, n_val, seed):
@@ -295,9 +323,11 @@ def split_data(all_h5_paths, n_test, n_val, seed):
     remaining = np.setdiff1d(indices, test_idx)
     val_idx = np.random.choice(remaining, size=n_val, replace=False)
     train_idx = np.setdiff1d(remaining, val_idx)
+
     train = [all_h5_paths[i] for i in train_idx]
     test = [all_h5_paths[i] for i in test_idx]
     val = [all_h5_paths[i] for i in val_idx]
+
     LOGGER.info(f"Train: {len(train)}, Test: {len(test)}, Val: {len(val)}")
     return train, test, val
 
@@ -308,24 +338,42 @@ def main():
     parser.add_argument('output_dir', help='Base output directory')
     parser.add_argument('-n', '--nFiles', type=int, default=None,
                         help='Maximum number of files to process')
-    parser.add_argument('--gridSize', type=int, nargs=3, default=[80,80,80], help='Voxel grid size')
-    parser.add_argument('--minNHits', type=int, default=0, help='Minimum number of hits')
-    parser.add_argument('--minPrimarySteps', type=int, default=30, help='Minimum primary steps')
-    parser.add_argument('--primaryPdg', type=int, default=13, help='PDG code for primary')
-    parser.add_argument('--noCuts', action='store_true', help='Skip cuts')
-    parser.add_argument('--noCheckFiles', action='store_true', help='Skip file checks')
-    parser.add_argument('--useHistograms', action='store_true', help='Use histogram-based input')
-    parser.add_argument('--overwriteDF', action='store_true', help='Overwrite existing DF files')
-    parser.add_argument('--saveDFhits', action='store_true', help='Retain hits DataFrames')
-    parser.add_argument('--saveDFprimary', action='store_true', help='Retain primary DataFrames')
-    parser.add_argument('--saveGridNpyHits', action='store_true', help='Save hit grids as .npy')
-    parser.add_argument('--saveGridNpyPrimary', action='store_true', help='Save primary grids as .npy')
-    parser.add_argument('--saveGridH5', action='store_true', help='Save grids as .h5')
-    parser.add_argument('--numWorkers', type=int, default=1, help='Number of parallel workers')
-    parser.add_argument('--nTest', type=int, default=20, help='Number of test examples')
-    parser.add_argument('--nVal', type=int, default=10, help='Number of validation examples')
-    parser.add_argument('--noSplit', action='store_true', help='Do not split data')
-    parser.add_argument('--verbosity', '-v', choices=['debug','info','warning','error','critical'], default='info', help='Logging level')
+    parser.add_argument('--gridSize', type=int, nargs=3, default=[80, 80, 80],
+                        help='Voxel grid size')
+    parser.add_argument('--minNHits', type=int, default=0,
+                        help='Minimum number of hits')
+    parser.add_argument('--minPrimarySteps', type=int, default=30,
+                        help='Minimum primary steps')
+    parser.add_argument('--primaryPdg', type=int, default=13,
+                        help='PDG code for primary')
+    parser.add_argument('--noCuts', action='store_true',
+                        help='Skip applying hit/step cuts')
+    parser.add_argument('--noCheckFiles', action='store_true',
+                        help='Skip verifying histogram shapes')
+    parser.add_argument('--useHistograms', action='store_true',
+                        help='Use histogram-based hit tuple')
+    parser.add_argument('--overwriteDF', action='store_true',
+                        help='Overwrite existing DataFrames')
+    parser.add_argument('--saveDFhits', action='store_true',
+                        help='Retain hits DataFrames')
+    parser.add_argument('--saveDFprimary', action='store_true',
+                        help='Retain primary DataFrames')
+    parser.add_argument('--saveGridNpyHits', action='store_true',
+                        help='Save hit grids as .npy')
+    parser.add_argument('--saveGridNpyPrimary', action='store_true',
+                        help='Save primary grids as .npy')
+    parser.add_argument('--saveGridH5', action='store_true',
+                        help='Save grids as .h5')
+    parser.add_argument('--numWorkers', type=int, default=1,
+                        help='Number of parallel workers')
+    parser.add_argument('--nTest', type=int, default=20,
+                        help='Number of test examples')
+    parser.add_argument('--nVal', type=int, default=10,
+                        help='Number of validation examples')
+    parser.add_argument('--noSplit', action='store_true',
+                        help='Do not split data into train/test/val')
+    parser.add_argument('-v', '--verbosity', choices=['debug', 'info', 'warning', 'error', 'critical'],
+                        default='info', help='Logging verbosity level')
     args = parser.parse_args()
 
     configure_logging(args.verbosity)
@@ -341,21 +389,26 @@ def main():
     root_files = [os.path.join(args.input_dir, f) for f in all_files]
     LOGGER.info(f"Found {len(root_files)} root files in {args.input_dir}")
 
+    # optionally skip checks/cuts
     if not args.noCheckFiles:
         root_files = check_files(root_files, 'photoSensor_hits_histograms', num_workers=args.numWorkers)
     if not args.noCuts:
         root_files = apply_cuts(root_files, args.minNHits, args.minPrimarySteps,
                                 'photoSensor_hits_histograms', 'primary;1')
 
+    # determine which DataFrames are needed
     need_hits = args.saveDFhits or args.saveGridNpyHits or args.saveGridH5
     need_pri  = args.saveDFprimary or args.saveGridNpyPrimary or args.saveGridH5
 
-    df_hits_paths, df_pri_paths = [], []
+    df_hits_paths = []
+    df_pri_paths  = []
 
     # use system temp dir for non-persistent DataFrames
     with tempfile.TemporaryDirectory() as tmp_dir:
-        hits_base = os.path.join(args.output_dir, 'DF_hits') if args.saveDFhits else os.path.join(tmp_dir, 'DF_hits')
-        pri_base  = os.path.join(args.output_dir, 'DF_primary') if args.saveDFprimary else os.path.join(tmp_dir, 'DF_primary')
+        hits_base = (os.path.join(args.output_dir, 'DF_hits')
+                     if args.saveDFhits else os.path.join(tmp_dir, 'DF_hits'))
+        pri_base  = (os.path.join(args.output_dir, 'DF_primary')
+                     if args.saveDFprimary else os.path.join(tmp_dir, 'DF_primary'))
 
         if need_hits:
             os.makedirs(os.path.dirname(hits_base), exist_ok=True)
@@ -371,6 +424,7 @@ def main():
                 args.overwriteDF, args.primaryPdg
             )
 
+        # prepare grid output paths
         grid_shape = tuple(args.gridSize)
         base_hits_npy = os.path.join(args.output_dir, 'grid_hits')
         base_pri_npy  = os.path.join(args.output_dir, 'grid_primary')
@@ -378,8 +432,9 @@ def main():
 
         paths_npy_hits    = [f"{base_hits_npy}_{i}.npy" for i in range(len(df_hits_paths))]
         paths_npy_primary = [f"{base_pri_npy}_{i}.npy" for i in range(len(df_pri_paths))]
-        paths_h5          = [f"{base_h5}_{i}.h5" for i in range(len(df_hits_paths))]
+        paths_h5          = [f"{base_h5}_{i}.h5"     for i in range(len(df_hits_paths))]
 
+        # create voxel grids
         if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
             create_grids(
                 df_hits_paths, df_pri_paths,
@@ -394,8 +449,11 @@ def main():
                 num_workers=args.numWorkers
             )
 
+        # optionally split data
         if not args.noSplit and args.saveGridH5:
-            train_paths, test_paths, val_paths = split_data(paths_h5, args.nTest, args.nVal, seed=42)
+            train_paths, test_paths, val_paths = split_data(
+                paths_h5, args.nTest, args.nVal, seed=42
+            )
             for name, lst in [('train', train_paths), ('test', test_paths), ('val', val_paths)]:
                 out_file = os.path.join(args.output_dir, f"{name}_paths.txt")
                 with open(out_file, 'w') as f:
@@ -403,6 +461,7 @@ def main():
                 LOGGER.info(f"Wrote {name} paths to {out_file}")
 
     LOGGER.info("Data grid generation completed.")
+
 
 if __name__ == '__main__':
     main()
