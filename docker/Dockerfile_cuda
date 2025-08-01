@@ -65,7 +65,7 @@ RUN source /setup_Dockerfile.sh \
 ########## Eigen3 ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
+ && git clone --depth 1 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
  && mkdir /Eigen3_build /Eigen3_install \
  && cd /Eigen3_build \
  && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
