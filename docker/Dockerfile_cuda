@@ -65,16 +65,10 @@ RUN source /setup_Dockerfile.sh \
 ########## Eigen3 ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && git init /Eigen3_src \
- && cd /Eigen3_src \
- && git remote add origin https://gitlab.com/libeigen/eigen.git \
- && git fetch --depth 1 origin a097f728fe8a6b87dddd33f205839eb617796238 \
- && git checkout FETCH_HEAD \
+ && git clone --depth 1 --branch 3.3.9 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
  && mkdir /Eigen3_build /Eigen3_install \
  && cd /Eigen3_build \
- && cmake /Eigen3_src \
-          -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
-          -DCMAKE_BUILD_TYPE=Release \
+ && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
  && make -j${NCPU} \
  && make install \
  && cd / \
