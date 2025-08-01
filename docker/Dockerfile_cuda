@@ -64,15 +64,19 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## Eigen3 ##########
 ############################
-RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch 3.3.9 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
- && mkdir /Eigen3_build /Eigen3_install \
- && cd /Eigen3_build \
- && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
- && make -j${NCPU} \
- && make install \
- && cd / \
- && rm -rf /Eigen3_build
+# RUN source /setup_Dockerfile.sh \
+#  && git clone --depth 1 --branch 3.3.9 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
+#  && mkdir /Eigen3_build /Eigen3_install \
+#  && cd /Eigen3_build \
+#  && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+#  && make -j${NCPU} \
+#  && make install \
+#  && cd / \
+#  && rm -rf /Eigen3_build
+RUN yum install -y libeigen3-dev \
+ && yum clean all \
+ && rm -rf /var/cache/yum \
+ && rm -rf /var/lib/apt/lists/*
 
 
 
