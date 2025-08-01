@@ -89,5 +89,5 @@ RUN dnf -y update \
 RUN source /setup_Dockerfile.sh \
  && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal \
  && cd /VoxelTransversal \
- && python setup.py install \
+ && python3 setup.py install \
  && cd /
