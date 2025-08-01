@@ -64,22 +64,15 @@ RUN source /setup_Dockerfile.sh \
 ############################
 ########## Eigen3 ##########
 ############################
-# RUN source /setup_Dockerfile.sh \
-#  && git clone --depth 1 --branch 3.3.9 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
-#  && mkdir /Eigen3_build /Eigen3_install \
-#  && cd /Eigen3_build \
-#  && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
-#  && make -j${NCPU} \
-#  && make install \
-#  && cd / \
-#  && rm -rf /Eigen3_build
-RUN dnf -y update \
- && dnf install -y dnf-plugins-core \
- && dnf config-manager --set-enabled powertools \
- && dnf makecache \
- && dnf install -y eigen3-devel \
- && dnf clean all \
- && rm -rf /var/cache/dnf
+RUN source /setup_Dockerfile.sh \
+ && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
+ && mkdir /Eigen3_build /Eigen3_install \
+ && cd /Eigen3_build \
+ && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+ && make -j${NCPU} \
+ && make install \
+ && cd / \
+ && rm -rf /Eigen3_build
 
 
 
@@ -87,7 +80,12 @@ RUN dnf -y update \
 ########## Voxel-Transveral ##########
 ######################################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal \
- && cd /VoxelTransversal \
- && python3 setup.py install \
+ && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal_src \
+ && mkdir /VoxelTransversal_build /VoxelTransversal_install \
+ && cd /VoxelTransversal_build \
+ && cmake /VoxelTransversal_src \
+    -DCMAKE_INSTALL_PREFIX=/VoxelTransversal_install \
+    -DCMAKE_BUILD_TYPE=Release \
+ && make -j${NCPU} \
+ && make install \
  && cd /
