@@ -68,7 +68,9 @@ RUN source /setup_Dockerfile.sh \
  && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
  && mkdir /Eigen3_build /Eigen3_install \
  && cd /Eigen3_build \
- && cmake /Eigen3_src -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+ && cmake /Eigen3_src \
+    -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+    -DCMAKE_BUILD_TYPE=Debug \
  && make -j${NCPU} \
  && make install \
  && cd / \
@@ -92,5 +94,6 @@ RUN source /setup_Dockerfile.sh \
 RUN source /setup_Dockerfile.sh \
  && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal \
  && cd /VoxelTransversal \
+ && export CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug -DUSE_FEATURE=ON" \
  && pip install . \
  && cd /
