@@ -61,61 +61,40 @@ RUN source /setup_Dockerfile.sh \
 
 
 
-# ############################
-# ########## Eigen3 ##########
-# ############################
-# RUN source /setup_Dockerfile.sh \
-#  && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
-#  && mkdir /Eigen3_build /Eigen3_install \
-#  && cd /Eigen3_build \
-#  && cmake /Eigen3_src \
-#     -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
-#     -DCMAKE_BUILD_TYPE=Debug \
-#  && make -j${NCPU} \
-#  && make install \
-#  && cd / \
-#  && rm -rf /Eigen3_build
+############################
+########## Eigen3 ##########
+############################
+RUN source /setup_Dockerfile.sh \
+ && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
+ && mkdir /Eigen3_build /Eigen3_install \
+ && cd /Eigen3_build \
+ && cmake /Eigen3_src \
+    -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
+    -DCMAKE_BUILD_TYPE=Debug \
+ && make -j${NCPU} \
+ && make install \
+ && cd / \
+ && rm -rf /Eigen3_build
 
 
 
-# #######################################
-# ########## Voxel-Transversal ##########
-# #######################################
+#######################################
+########## Voxel-Transversal ##########
+#######################################
+RUN source /setup_Dockerfile.sh \
+ && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal_src \
+ && mkdir /VoxelTransversal_build /VoxelTransversal_install \
+ && cd /VoxelTransversal_build \
+ && cmake /VoxelTransversal_src \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/VoxelTransversal_install \
+    -DPYBIND11_PYTHON_VERSION=3.11 \
+ && make -j${NCPU} \
+ && make install \
+ && cd /
 # RUN source /setup_Dockerfile.sh \
 #  && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal \
 #  && cd /VoxelTransversal \
 #  && export CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug -DUSE_FEATURE=ON" \
 #  && pip install . \
 #  && cd /
-
-# ────────── Dev packages ────────
-RUN dnf -y install gcc gcc-c++ clang lldb llvm \
-                   gdb make ninja-build git cmake python3-devel python3-pip \
- && dnf clean all
-
-ENV CMAKE_BUILD_PARALLEL_LEVEL=8
-ENV NCPU=8
-ENV CXXFLAGS="-g -O0 -fno-omit-frame-pointer -fsanitize=address,undefined \
-              -DEIGEN_INITIALIZE_MATRICES_BY_NAN -DEIGEN_UNALIGNED_ARRAY_ASSERT"
-ENV LDFLAGS="-fsanitize=address,undefined"
-
-# ────────── Eigen (debug+ASan) ───
-RUN git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
- && cmake -S /Eigen3_src -B /Eigen3_build \
-      -G Ninja \
-      -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
-      -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-      -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" \
- && cmake --build /Eigen3_build --target install \
- && rm -rf /Eigen3_build
-
-ENV CMAKE_PREFIX_PATH=/Eigen3_install:${CMAKE_PREFIX_PATH}
-
-# ────────── voxel-traversal (debug+ASan) ───
-RUN git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTraversal \
- && cd /VoxelTraversal \
- && python3 -m pip install --no-build-isolation --config-settings=cmake.build-type=Debug .
-
-# keep container small
-RUN dnf -y autoremove && dnf clean all
