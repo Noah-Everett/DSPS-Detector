@@ -61,40 +61,11 @@ RUN source /setup_Dockerfile.sh \
 
 
 
-############################
-########## Eigen3 ##########
-############################
+#################################################
+########## Fast-Voxel-Traversal-Python ##########
+#################################################
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /Eigen3_src \
- && mkdir /Eigen3_build /Eigen3_install \
- && cd /Eigen3_build \
- && cmake /Eigen3_src \
-    -DCMAKE_INSTALL_PREFIX=/Eigen3_install \
-    -DCMAKE_BUILD_TYPE=Debug \
- && make -j${NCPU} \
- && make install \
- && cd / \
- && rm -rf /Eigen3_build
-
-
-
-#######################################
-########## Voxel-Transversal ##########
-#######################################
-# RUN source /setup_Dockerfile.sh \
-#  && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal_src \
-#  && mkdir /VoxelTransversal_build /VoxelTransversal_install \
-#  && cd /VoxelTransversal_build \
-#  && cmake /VoxelTransversal_src \
-#     -DCMAKE_BUILD_TYPE=Release \
-#     -DCMAKE_INSTALL_PREFIX=/VoxelTransversal_install \
-#     -DPYBIND11_PYTHON_VERSION=3.11 \
-#  && make -j${NCPU} \
-#  && make install \
-#  && cd /
-RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/Noah-Everett/voxel-traversal /VoxelTransversal \
- && cd /VoxelTransversal \
- && export CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Debug -DUSE_FEATURE=ON" \
+ && git clone --depth 1 https://github.com/Noah-Everett/Fast-Voxel-Traversal-Python /Fast_Voxel_Traversal_Python \
+ && cd /Fast_Voxel_Traversal_Python \
  && pip install . \
  && cd /
