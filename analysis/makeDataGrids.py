@@ -61,6 +61,7 @@ def configure_logging(verbosity: str):
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     logging.getLogger("fsspec.local").setLevel(logging.WARNING)
+    logging.getLogger("numba.core.byteflow").setLevel(logging.WARNING)
 
 
 def r_to_theta(r):
