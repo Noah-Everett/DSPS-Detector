@@ -367,13 +367,12 @@ def main():
         gs = tuple(args.gridSize)
         bh_n = os.path.join(args.output_dir, 'grid_hits')
         bp_n = os.path.join(args.output_dir, 'grid_primary')
-        bh5 = os.path.join(args.output_dir, 'grid_h5')
         npy_h = [f"{bh_n}_{i}.npy" for i in range(len(dfh_paths))]
         npy_p = [f"{bp_n}_{i}.npy" for i in range(len(dfp_paths))]
-        h5s = []
         if args.saveAsNumbersOnly_H5:
-            h5s = [f"{i}.h5" for i in range(len(dfh_paths))]
+            h5s = [os.path.join(args.output_dir, f"{i}.h5") for i in range(len(dfh_paths))]
         else:
+            bh5 = os.path.join(args.output_dir, 'grid_h5')
             h5s = [f"{bh5}_{i}.h5" for i in range(len(dfh_paths))]
 
         if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
