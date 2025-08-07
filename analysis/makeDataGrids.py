@@ -62,6 +62,8 @@ def configure_logging(verbosity: str):
     )
     logging.getLogger("fsspec.local").setLevel(logging.WARNING)
     logging.getLogger("numba.core.byteflow").setLevel(logging.WARNING)
+    logging.getLogger("numba.core.ssa").setLevel(logging.WARNING)
+    logging.getLogger("numba.core.interpreter").setLevel(logging.WARNING)
 
 
 def r_to_theta(r):
