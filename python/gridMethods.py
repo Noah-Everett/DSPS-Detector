@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.distance import cdist
 from constants import *
-import pytraversal as pt
+import fast_voxel_traversal as fvt
 from collections import defaultdict
 
 def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape, 
@@ -27,13 +27,27 @@ def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape,
     print('grid_minBound:', grid_minBound)
     print('grid_maxBound:', grid_maxBound)
     print('grid_shape:', grid_shape)
-    PTgrid = pt.Grid3D(grid_minBound, grid_maxBound, grid_shape)
-    print('PTgrid:', PTgrid)
+    
+    # Calculate voxel size from bounds and shape
+    voxel_size = (np.array(grid_maxBound) - np.array(grid_minBound)) / np.array(grid_shape)
+    
+    # Create FVT grid
+    FVTgrid = fvt.Grid(grid_shape=grid_shape, voxel_size=voxel_size, grid_origin=grid_minBound)
+    print('FVTgrid:', FVTgrid)
     grid = np.zeros(grid_shape, dtype=float)
 
     for i in range(len(vector_starts)):
-        traversedVoxels = PTgrid.traverse(vector_starts[i], vector_ends[i])
-        grid[traversedVoxels[:, 0], traversedVoxels[:, 1], traversedVoxels[:, 2]] += vector_weights[i]
+        # Calculate direction vector from start to end
+        direction = vector_ends[i] - vector_starts[i]
+        
+        # Traverse the voxels and collect indices
+        traversed_indices = []
+        for ix, iy, iz, t_enter, t_exit in FVTgrid.traverse(vector_starts[i], direction):
+            traversed_indices.append([ix, iy, iz])
+        
+        if traversed_indices:
+            traversed_indices = np.array(traversed_indices)
+            grid[traversed_indices[:, 0], traversed_indices[:, 1], traversed_indices[:, 2]] += vector_weights[i]
 
     return grid
 
