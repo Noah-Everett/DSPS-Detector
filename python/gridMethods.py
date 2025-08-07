@@ -37,8 +37,12 @@ def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape,
         
         # Traverse the voxels and collect indices
         traversed_indices = []
+        nTraversed_indices = 0
         for ix, iy, iz, t_enter, t_exit in FVTgrid.traverse(vector_starts[i], direction):
+            nTraversed_indices += 1
             traversed_indices.append([ix, iy, iz])
+        if nTraversed_indices == 0:
+            print(f"Warning: No voxels traversed for: {vector_starts[i]} to {vector_ends[i]} with direction {direction}")
         
         if traversed_indices:
             traversed_indices = np.array(traversed_indices)
