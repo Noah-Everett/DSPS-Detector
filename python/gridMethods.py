@@ -24,16 +24,11 @@ def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape,
     assert len(vector_starts) == len(vector_ends) == len(vector_weights)
     assert len(grid_minBound) == len(grid_maxBound) == len(grid_shape) == 3
 
-    print('grid_minBound:', grid_minBound)
-    print('grid_maxBound:', grid_maxBound)
-    print('grid_shape:', grid_shape)
-    
     # Calculate voxel size from bounds and shape
     voxel_size = (np.array(grid_maxBound) - np.array(grid_minBound)) / np.array(grid_shape)
     
     # Create FVT grid
     FVTgrid = fvt.Grid(grid_shape=grid_shape, voxel_size=voxel_size, grid_origin=grid_minBound)
-    print('FVTgrid:', FVTgrid)
     grid = np.zeros(grid_shape, dtype=float)
 
     for i in range(len(vector_starts)):
