@@ -321,6 +321,7 @@ def main():
     parser.add_argument('--nTest', type=int, default=20)
     parser.add_argument('--nVal', type=int, default=10)
     parser.add_argument('--noSplit', action='store_true')
+    parser.add_argument('--saveAsNumbersOnly-H5', action='store_true')
     parser.add_argument('-v','--verbosity', choices=['debug','info','warning','error','critical'],
                         default='info')
     args = parser.parse_args()
@@ -369,7 +370,10 @@ def main():
         bh5 = os.path.join(args.output_dir, 'grid_h5')
         npy_h = [f"{bh_n}_{i}.npy" for i in range(len(dfh_paths))]
         npy_p = [f"{bp_n}_{i}.npy" for i in range(len(dfp_paths))]
-        h5s = [f"{bh5}_{i}.h5" for i in range(len(dfh_paths))]
+        if args.saveAsNumbersOnly_H5:
+            h5s = [f"{i}.h5" for i in range(len(dfh_paths))]
+        else:
+            h5s = [f"{bh5}_{i}.h5" for i in range(len(dfh_paths))]
 
         if args.saveGridNpyHits or args.saveGridNpyPrimary or args.saveGridH5:
             create_grids(dfh_paths, dfp_paths,
