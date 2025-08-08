@@ -100,4 +100,3 @@ RUN source /setup_Dockerfile.sh \
 ################################
 SHELL ["/bin/bash", "-lc"]
 ENTRYPOINT ["bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && source /setup_Dockerfile.sh && conda activate dsps && exec \"$@\"", "--"]
-CMD ["python"]
