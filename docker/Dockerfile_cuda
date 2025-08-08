@@ -42,6 +42,7 @@ RUN yum install -y wget bzip2 \
 ENV PATH="/opt/conda/bin:$PATH"
 
 # 3. Create a dedicated conda environment
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
 RUN conda create -y -n dsps python=3.11 pip \
  && conda clean -afy
 
