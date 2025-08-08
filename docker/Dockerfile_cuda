@@ -55,12 +55,14 @@ RUN conda install -y -n dsps -c conda-forge mamba \
 ########## pytorch-3dunet ##########
 ####################################
 RUN mamba install -y -n dsps \
-    -c pytorch -c nvidia -c conda-forge \
+    -c local \
+    -c pytorch \
+    -c nvidia \
+    -c conda-forge \
+    pytorch-3dunet \
     pytorch \
     pytorch-cuda=12.1 \
-    --use-local pytorch-3dunet \
  && mamba clean -afy
-
 
 
 ##########################
