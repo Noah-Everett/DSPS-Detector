@@ -4,3 +4,6 @@
 [submodule "Analytical-Meridional-Non-Paraxial-Ray-Propagation"]
 	path = Analytical-Meridional-Non-Paraxial-Ray-Propagation
 	url = https://github.com/Noah-Everett/Analytical-Meridional-Non-Paraxial-Ray-Propagation
+[submodule "pytorch-3dunet"]
+	path = pytorch-3dunet
+	url = https://github.com/Noah-Everett/pytorch-3dunet
