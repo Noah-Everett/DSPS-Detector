@@ -28,6 +28,28 @@ USER root
 
 
 
+################################
+# Install Miniconda & Create Env
+################################
+# 1. Install prerequisites and download Miniconda
+RUN yum install -y wget bzip2 \
+ && wget -qO /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+ && bash /tmp/miniconda.sh -b -p /opt/conda \
+ && rm -f /tmp/miniconda.sh \
+ && /opt/conda/bin/conda clean -afy
+
+# 2. Expose conda
+ENV PATH="/opt/conda/bin:$PATH"
+
+# 3. Create a dedicated conda environment
+RUN conda create -y -n dsps python=3.11 pip \
+ && conda clean -afy
+
+# 4. Use the `dsps` environment for all subsequent RUN steps
+SHELL ["conda", "run", "-n", "dsps", "/bin/bash", "-lc"]
+
+
+
 #############################
 ########## G4-DSPS ##########
 #############################
@@ -57,7 +79,7 @@ RUN source /setup_Dockerfile.sh \
 ########## Python ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && pip3 install -r /DSPS/requirements.txt
+ && pip install --no-cache-dir -r /DSPS/requirements.txt
 
 
 
@@ -69,3 +91,8 @@ RUN source /setup_Dockerfile.sh \
  && cd /Fast_Voxel_Traversal_Python \
  && pip install . \
  && cd /
+
+
+
+# Restore default shell (optional)
+SHELL ["/bin/bash", "-lc"]
