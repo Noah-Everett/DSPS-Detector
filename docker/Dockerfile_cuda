@@ -44,6 +44,9 @@ RUN wget -qO /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-la
     && rm /tmp/miniconda.sh \
     && /opt/conda/bin/conda clean -afy
 
+# Accept conda TOS
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
+
 ENV PATH="/opt/conda/bin:$PATH"
 # Enable conda in bash
 RUN conda init bash
