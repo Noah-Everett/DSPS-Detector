@@ -92,8 +92,3 @@ RUN source /setup_Dockerfile.sh \
  && cd /Fast_Voxel_Traversal_Python \
  && pip install . \
  && cd /
-
-
-
-# Restore default shell (optional)
-SHELL ["/bin/bash", "-lc"]
