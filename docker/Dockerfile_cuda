@@ -51,20 +51,6 @@ RUN conda install -y -n dsps -c conda-forge mamba \
 
 
 
-####################################
-########## pytorch-3dunet ##########
-####################################
-RUN mamba install -y -n dsps \
-    -c local \
-    -c pytorch \
-    -c nvidia \
-    -c conda-forge \
-    pytorch-3dunet \
-    pytorch \
-    pytorch-cuda=12.1 \
- && mamba clean -afy
-
-
 ##########################
 ########## DSPS ##########
 ##########################
@@ -82,7 +68,12 @@ RUN source /setup_Dockerfile.sh \
 #####################################
 ########## Python Packages ##########
 #####################################
-RUN pip install --no-cache-dir -r /DSPS/requirements.txt
+RUN mamba install -y -n dsps \
+    -c pytorch -c nvidia -c conda-forge \
+    pytorch \
+    pytorch-cuda=12.1 \
+ && mamba clean -afy \
+ && pip install --no-cache-dir -r /DSPS/requirements.txt
 
 
 
