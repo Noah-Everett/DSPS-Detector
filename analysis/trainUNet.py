@@ -29,10 +29,12 @@ Usage Examples:
                               --max-number 50 \
                               --num-workers 8 \
                               --device cpu \
-                              --batch-size 2
+                              --batch-size 2 \
+                              --verbosity debug
 """
 
 import argparse
+import logging
 import os
 import sys
 import re
@@ -43,6 +45,21 @@ from pytorch3dunet.train import main as train_main
 
 sys.path.append('../python/')
 from UNetMethods import get_config_train, save_config
+
+def configure_logging(verbosity: str):
+    """
+    Configure root logger formatting and level.
+    """
+    level = getattr(logging, verbosity.upper(), None)
+    if not isinstance(level, int):
+        raise ValueError(f"Invalid verbosity level: {verbosity}")
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(name)s - %(filename)s::%(funcName)s(%(lineno)d) - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    # Set UNetTrainer logger verbosity
+    logging.getLogger("UNetTrainer").setLevel(level)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Train a 3D U-Net model.")
@@ -66,6 +83,11 @@ def parse_arguments():
                         help='Device to use for training (e.g., "cuda" or "cpu").')
     parser.add_argument('--batch-size', type=int, default=1,
                         help='Batch size for training.')
+    
+    # Logging parameters
+    parser.add_argument('--verbosity', '-v', type=str, default='info',
+                        choices=['debug', 'info', 'warning', 'error', 'critical'],
+                        help='Set the logging verbosity level.')
 
     return parser.parse_args()
 
@@ -157,6 +179,10 @@ def check_file_existence(file_paths):
 
 def main():
     args = parse_arguments()
+    
+    # Configure logging
+    configure_logging(args.verbosity)
+    logger = logging.getLogger(__name__)
 
     # Create output directories if they don't exist
     os.makedirs(args.output_dir, exist_ok=True)
@@ -168,22 +194,22 @@ def main():
     try:
         file_numbers = prepare_file_numbers(args.data_dir, args.min_number, args.max_number)
     except (FileNotFoundError, ValueError) as e:
-        print(f"Error in preparing file numbers: {e}")
+        logger.error(f"Error in preparing file numbers: {e}")
         return
 
-    print(f"Selected file numbers: {file_numbers}")
+    logger.info(f"Selected file numbers: {file_numbers}")
 
     # Prepare file paths
     grid_paths = prepare_file_paths(args.data_dir, file_numbers)
-    print(f"Total grid files found: {len(grid_paths)}")
+    logger.info(f"Total grid files found: {len(grid_paths)}")
 
     # Verify that all grid files exist
     missing_files = check_file_existence(grid_paths)
     if missing_files:
-        print("Warning: The following grid files are missing:")
+        logger.warning("The following grid files are missing:")
         for path in missing_files:
-            print(f" - {path}")
-        print("Please ensure all specified grid files exist.")
+            logger.warning(f" - {path}")
+        logger.warning("Please ensure all specified grid files exist.")
         # Exit to prevent training with missing data
         return
 
@@ -191,12 +217,12 @@ def main():
     try:
         paths_train, paths_val, paths_test = split_dataset(grid_paths)
     except ValueError as e:
-        print(f"Error in dataset splitting: {e}")
+        logger.error(f"Error in dataset splitting: {e}")
         return
 
-    print(f"Training samples: {len(paths_train)}")
-    print(f"Validation samples: {len(paths_val)}")
-    print(f"Test samples: {len(paths_test)}")
+    logger.info(f"Training samples: {len(paths_train)}")
+    logger.info(f"Validation samples: {len(paths_val)}")
+    logger.info(f"Test samples: {len(paths_test)}")
 
     # Configure training
     config = get_config_train(
@@ -210,9 +236,10 @@ def main():
 
     # Save configuration
     save_config(config, config_path)
-    print(f"Configuration saved to {config_path}")
+    logger.info(f"Configuration saved to {config_path}")
 
     # Start training
+    logger.info("Starting training...")
     train_main(['--config', config_path])
 
 if __name__ == '__main__':
