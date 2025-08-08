@@ -58,10 +58,12 @@ def configure_logging(verbosity: str):
         format='%(asctime)s - %(name)s - %(filename)s::%(funcName)s(%(lineno)d) - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-    # Set UNetTrainer logger verbosity and prevent duplicate logging
-    unet_logger = logging.getLogger("UNetTrainer")
-    unet_logger.setLevel(level)
-    unet_logger.propagate = False
+    # Set logger verbosity and prevent duplicate logging
+    loggers_to_configure = ["UNetTrainer", "HDF5Dataset", "Dataset"]
+    for logger_name in loggers_to_configure:
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(level)
+        logger.propagate = False
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Train a 3D U-Net model.")
