@@ -80,7 +80,6 @@ RUN source /setup_Dockerfile.sh \
 #####################################
 ########## Python Packages ##########
 #####################################
-COPY requirements.txt /DSPS/requirements.txt
 RUN pip install --no-cache-dir -r /DSPS/requirements.txt
 
 
