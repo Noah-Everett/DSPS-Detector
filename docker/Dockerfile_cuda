@@ -15,7 +15,7 @@
 ##############################
 ########## Set FROM ##########
 ##############################
-FROM noaheverett/physicsbase:1.0.1-x86-Cuda
+FROM noaheverett/physicsbase:1.0.2-x86-Cuda
 
 
 
@@ -35,31 +35,31 @@ RUN yum install -y \
 
 
 
-# ######################################
-# ########## Miniconda & Mamba ##########
-# ######################################
-# # Install Miniconda
-# RUN wget -qO /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-#     && bash /tmp/miniconda.sh -b -p /opt/conda \
-#     && rm /tmp/miniconda.sh \
-#     && /opt/conda/bin/conda clean -afy
+######################################
+########## Miniconda & Mamba ##########
+######################################
+# Install Miniconda
+RUN wget -qO /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/conda \
+    && rm /tmp/miniconda.sh \
+    && /opt/conda/bin/conda clean -afy
 
-# # Accept conda TOS
-# ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
+# Accept conda TOS
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
 
-# ENV PATH="/opt/conda/bin:$PATH"
-# # Enable conda in bash
-# RUN conda init bash
+ENV PATH="/opt/conda/bin:$PATH"
+# Enable conda in bash
+RUN conda init bash
 
-# # Use bash+conda for subsequent RUN steps
-# SHELL ["/bin/bash", "-lc"]
+# Use bash+conda for subsequent RUN steps
+SHELL ["/bin/bash", "-lc"]
 
-# # Create and activate dsps environment
-# RUN conda create -y -n dsps python=3.11 pip \
-#     && conda clean -afy
-# ENV CONDA_DEFAULT_ENV=dsps
-# ENV CONDA_PREFIX=/opt/conda/envs/dsps
-# ENV PATH="$CONDA_PREFIX/bin:$PATH"
+# Create and activate dsps environment
+RUN conda create -y -n dsps python=3.11 pip \
+    && conda clean -afy
+ENV CONDA_DEFAULT_ENV=dsps
+ENV CONDA_PREFIX=/opt/conda/envs/dsps
+ENV PATH="$CONDA_PREFIX/bin:$PATH"
 
 
 
@@ -77,12 +77,12 @@ RUN git clone --recurse-submodules --depth 1 https://github.com/Noah-Everett/DSP
     && cmake .. \
     && make -j$(nproc)
 
-# # Install Python requirements inside dsps env
-# RUN pip install --no-cache-dir -r /DSPS/requirements.txt \
-#  && conda install -y -c conda-forge mamba \
-#  && mamba install -y -c pytorch -c nvidia -c conda-forge \
-#     pytorch pytorch-cuda \
-#  && mamba clean -afy
+# Install Python requirements inside dsps env
+RUN pip install --no-cache-dir -r /DSPS/requirements.txt \
+ && conda install -y -c conda-forge mamba \
+ && mamba install -y -c pytorch -c nvidia -c conda-forge \
+    pytorch pytorch-cuda \
+ && mamba clean -afy
 
 
 ##########################################
@@ -97,5 +97,5 @@ RUN git clone --depth 1 https://github.com/Noah-Everett/Fast-Voxel-Traversal-Pyt
 ################################
 ########## Entrypoint ##########
 ################################
-# ENTRYPOINT ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate dsps && exec \"$@\"", "--"]
-# CMD ["bash"]
+ENTRYPOINT ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate dsps && exec \"$@\"", "--"]
+CMD ["bash"]
