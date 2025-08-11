@@ -26,76 +26,26 @@ USER root
 
 
 
-#######################################
-########## System Dependencies ########
-#######################################
-RUN yum install -y \
-        wget bzip2 git cmake make gcc gcc-c++ \
-    && yum clean all
-
-
-
-#######################################
-########## Miniconda & Mamba ##########
-#######################################
-# Install Miniconda
-RUN wget -qO /tmp/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash /tmp/miniconda.sh -b -p /opt/conda \
-    && rm /tmp/miniconda.sh \
-    && /opt/conda/bin/conda clean -afy
-
-# Accept conda TOS
-ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
-
-ENV PATH="/opt/conda/bin:$PATH"
-# Enable conda in bash
-RUN conda init bash
-
-# Use bash+conda for subsequent RUN steps
-SHELL ["/bin/bash", "-lc"]
-
-# Create and activate dsps environment
-RUN conda create -y -n dsps python=3.11 pip \
-    && conda clean -afy
-ENV CONDA_DEFAULT_ENV=dsps
-ENV CONDA_PREFIX=/opt/conda/envs/dsps
-ENV PATH="$CONDA_PREFIX/bin:$PATH"
-
-
-
-
 #########################################
 ########## DSPS-Detector Build ##########
 #########################################
 # Clone, configure, and build DSPS
 RUN git clone --recurse-submodules --depth 1 https://github.com/Noah-Everett/DSPS-Detector /DSPS \
-    && cp /DSPS/docker/setup_Dockerfile.sh /setup_Dockerfile.sh \
-    && chmod +x /setup_Dockerfile.sh \
-    && source /setup_Dockerfile.sh \
-    && mkdir -p /DSPS/build \
-    && cd /DSPS/build \
-    && cmake .. \
-    && make -j$(nproc)
+ && cp /DSPS/docker/setup_Dockerfile.sh /setup_Dockerfile.sh \
+ && chmod +x /setup_Dockerfile.sh \
+ && source /setup_Dockerfile.sh \
+ && mkdir -p /DSPS/build \
+ && cd /DSPS/build \
+ && cmake .. \
+ && make -j$(nproc)
 
 # Install Python requirements inside dsps env
-RUN pip install --no-cache-dir -r /DSPS/requirements.txt \
- && conda install -y -c conda-forge mamba \
- && mamba install -y -c pytorch -c nvidia -c conda-forge \
-    pytorch pytorch-cuda \
- && mamba clean -afy
+RUN pip install --no-cache-dir -r /DSPS/requirements.txt
+
 
 
 ##########################################
 ########## Fast Voxel Traversal ##########
 ##########################################
-# Clone and install Fast-Voxel-Traversal-Python
 RUN git clone --depth 1 https://github.com/Noah-Everett/Fast-Voxel-Traversal-Python /Fast_Voxel_Traversal_Python \
-    && pip install /Fast_Voxel_Traversal_Python
-
-
-
-################################
-########## Entrypoint ##########
-################################
-ENTRYPOINT ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate dsps && exec \"$@\"", "--"]
-CMD ["bash"]
+ && pip install /Fast_Voxel_Traversal_Python
