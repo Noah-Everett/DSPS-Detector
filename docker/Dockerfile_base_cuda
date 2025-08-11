@@ -54,6 +54,8 @@ RUN yum install -y gcc \
  && pip3.11 install --upgrade pip \
  && pip3.11 install numpy \
  && pip cache purge \
+ && which python \
+ && echo "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH" \
  && wget https://raw.githubusercontent.com/Noah-Everett/DSPS-Detector/main/docker/setup_Dockerfile.sh
 
 
