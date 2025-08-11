@@ -97,5 +97,5 @@ RUN git clone --depth 1 https://github.com/Noah-Everett/Fast-Voxel-Traversal-Pyt
 ################################
 ########## Entrypoint ##########
 ################################
-ENTRYPOINT ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate dsps && exec \"$@\"", "--"]
-CMD ["bash"]
+# ENTRYPOINT ["/bin/bash", "-lc", "source /opt/conda/etc/profile.d/conda.sh && conda activate dsps && exec \"$@\"", "--"]
+# CMD ["bash"]
