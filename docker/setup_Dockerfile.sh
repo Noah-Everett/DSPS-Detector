@@ -21,6 +21,7 @@ export PYTHIA6_DIR="/Pythia6/v6_424/"
 export PYTHIA6_INCLUDE_DIR="/Pythia6/v6_424/inc/"
 export PYTHIA6_LIBRARY="/Pythia6/v6_424/lib/"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/Pythia6/v6_424/lib"
+export FCFLAGS="-O -fcommon -fPIC -fno-second-underscore"
 
 # Xerces-C
 export XERCESCROOT="/Xerces-C_install"
