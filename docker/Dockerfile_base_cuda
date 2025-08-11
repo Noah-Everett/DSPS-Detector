@@ -170,7 +170,6 @@ RUN source /setup_Dockerfile.sh \
 ########## LHAPDF ##########
 ############################
 RUN source /setup_Dockerfile.sh \
- && ln -s $(which python3) /usr/bin/python \
  && wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-6.5.4.tar.gz -O /LHAPDF.tar.gz \
  && tar xf /LHAPDF.tar.gz \
  && mv /LHAPDF-6.5.4 /LHAPDF \
