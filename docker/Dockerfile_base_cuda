@@ -17,7 +17,7 @@
 ##############################
 ########## Set FROM ##########
 ##############################
-FROM nvidia/cuda:13.0.0-cudnn-devel-rockylinux9
+FROM nvidia/cuda:13.0.0-cudnn-devel-rockylinux8
 
 
 
@@ -75,9 +75,8 @@ RUN source /setup_Dockerfile.sh \
 #############################
 ########## Pythia6 ##########
 #############################
-# git clone --depth 1 https://github.com/Noah-Everett/Pythia6Support /Pythia6 \
 RUN source /setup_Dockerfile.sh \
- && git clone --depth 1 https://github.com/GENIE-MC-Community/Pythia6Support /Pythia6 \
+ && git clone --depth 1 https://github.com/Noah-Everett/Pythia6Support /Pythia6 \
  && cd /Pythia6 \
  && ./build_pythia6.sh --dummies=remove \
  && cd /
