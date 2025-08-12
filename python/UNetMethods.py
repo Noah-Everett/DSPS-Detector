@@ -4,8 +4,8 @@ def get_config_train(paths_train, paths_val,
                      checkpoint_dir,
                      label_input='x', label_output='y', 
                      num_workers=0,
-                     patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
-                     device='cpu',
+                     patch_shape=[80, 80, 80], stride_shape=[40, 40, 40],
+                     device='cuda',
                      batchSize=1,
                      resume=None):
     config = {
