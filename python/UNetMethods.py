@@ -121,6 +121,7 @@ def get_config_train(paths_train, paths_val,
                      iters_max=150000,
                      iters_log=100,
                      epochs_max=1000,
+                     lr=0.0002,
     ):
     config = {
         "device": device,
@@ -131,7 +132,7 @@ def get_config_train(paths_train, paths_val,
             "skip_last_target": True
         },
         "optimizer": {
-            "learning_rate": 0.0002,
+            "learning_rate": lr,
             "weight_decay": 0.00001
         },
         "eval_metric": {
@@ -144,7 +145,7 @@ def get_config_train(paths_train, paths_val,
             "name": "ReduceLROnPlateau",
             "mode": "min",
             "factor": 0.5,
-            "patience": 30
+            "patience": 3
         },
         "trainer": {
             "eval_score_higher_is_better": False,

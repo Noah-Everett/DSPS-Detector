@@ -97,6 +97,8 @@ def parse_arguments():
                         help='Number of iterations between logging.')
     parser.add_argument('--epochs-max', type=int, default=1000,
                         help='Maximum number of epochs.')
+    parser.add_argument('--learning-rate', '-lr', type=float, default=0.0002,
+                        help='Learning rate for the optimizer.')
 
     # Logging parameters
     parser.add_argument('--verbosity', '-v', type=str, default='info',
