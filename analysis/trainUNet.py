@@ -246,10 +246,10 @@ def main():
     logger.info(f"Configuration saved to {config_path}")
 
     import torch
-    torch.backends.cudnn.benchmark = True             # better conv autotuning (variable image sizes ok)
-    torch.backends.cuda.matmul.allow_tf32 = True      # Ampere/Hopper: big win for matmuls
-    torch.set_float32_matmul_precision("high")        # PyTorch 2.x: enable faster kernels
-
+    torch.backends.cudnn.benchmark = True
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+    torch.set_float32_matmul_precision("high")
 
     # Start training
     logger.info("Starting training...")
