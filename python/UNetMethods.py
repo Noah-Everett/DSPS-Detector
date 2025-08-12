@@ -136,19 +136,19 @@ def get_config_train(paths_train, paths_val,
             "weight_decay": 0.00001
         },
         "eval_metric": {
-            "name": "BoundaryAdaptedRandError",
-            "threshold": 0.4,
+            "name": "DiceCoefficient",
+            "threshold": 0.9,
             "use_last_target": True,
             "use_first_input": True
         },
         "lr_scheduler": {
             "name": "ReduceLROnPlateau",
-            "mode": "min",
+            "mode": "max",
             "factor": 0.5,
             "patience": 3
         },
         "trainer": {
-            "eval_score_higher_is_better": False,
+            "eval_score_higher_is_better": True,
             "checkpoint_dir": checkpoint_dir,
             "resume": resume,
             "pre_trained": None,
