@@ -87,7 +87,9 @@ def parse_arguments():
                         help='Device to use for training (e.g., "cuda" or "cpu").')
     parser.add_argument('--batch-size', type=int, default=1,
                         help='Batch size for training.')
-    
+    parser.add_argument('--resume-path', type=str, default=None,
+                        help='Path to a checkpoint file to resume training from.')
+
     # Logging parameters
     parser.add_argument('--verbosity', '-v', type=str, default='info',
                         choices=['debug', 'info', 'warning', 'error', 'critical'],
@@ -235,7 +237,8 @@ def main():
         checkpoint_dir=checkpoints_dir,
         num_workers=args.num_workers,
         device=args.device,
-        batchSize=args.batch_size
+        batchSize=args.batch_size,
+        resume=args.resume_path,
     )
 
     # Save configuration

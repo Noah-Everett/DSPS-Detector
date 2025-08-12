@@ -6,7 +6,8 @@ def get_config_train(paths_train, paths_val,
                      num_workers=0,
                      patch_shape=[40, 40, 40], stride_shape=[40, 40, 40],
                      device='cpu',
-                     batchSize=1):
+                     batchSize=1,
+                     resume=None):
     config = {
         "device": device,
         "model": {
@@ -42,7 +43,7 @@ def get_config_train(paths_train, paths_val,
         "trainer": {
             "eval_score_higher_is_better": False,
             "checkpoint_dir": checkpoint_dir,
-            "resume": None,
+            "resume": resume,
             "pre_trained": None,
             "validate_after_iters": 1000,
             "log_after_iters": 500,
