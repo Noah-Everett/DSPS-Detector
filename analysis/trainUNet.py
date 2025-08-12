@@ -89,6 +89,14 @@ def parse_arguments():
                         help='Batch size for training.')
     parser.add_argument('--resume-path', type=str, default=None,
                         help='Path to a checkpoint file to resume training from.')
+    parser.add_argument('--iters-val', type=int, default=-1,
+                        help='Number of iterations for validation.')
+    parser.add_argument('--iters-max', type=int, default=100000,
+                        help='Maximum number of iterations.')
+    parser.add_argument('--iters-log', type=int, default=-1,
+                        help='Number of iterations between logging.')
+    parser.add_argument('--epochs-max', type=int, default=1000,
+                        help='Maximum number of epochs.')
 
     # Logging parameters
     parser.add_argument('--verbosity', '-v', type=str, default='info',
@@ -229,6 +237,14 @@ def main():
     logger.info(f"Training samples: {len(paths_train)}")
     logger.info(f"Validation samples: {len(paths_val)}")
     logger.info(f"Test samples: {len(paths_test)}")
+
+    # Adjust iteration parameters if not set
+    # Set default values based on training set size
+    # Because each file is one iteration
+    if args.iters_val < 0:
+        args.iters_val = len(paths_train)
+    if args.iters_log < 0:
+        args.iters_log = len(paths_train)
 
     # Configure training
     config = get_config_train(
