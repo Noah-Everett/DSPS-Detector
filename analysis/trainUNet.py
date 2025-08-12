@@ -257,6 +257,11 @@ def main():
         device=args.device,
         batchSize=args.batch_size,
         resume=args.resume_path,
+        iters_val=args.iters_val,
+        iters_max=args.iters_max,
+        iters_log=args.iters_log,
+        epochs_max=args.epochs_max,
+        lr=args.learning_rate,
     )
 
     # Save configuration
