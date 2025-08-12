@@ -81,7 +81,7 @@ def parse_arguments():
                         help='Maximum file number (inclusive). Default is -1 (auto-detect).')
 
     # Training parameters
-    parser.add_argument('--num-workers', type=int, default=10,
+    parser.add_argument('--num-workers', type=int, default=1,
                         help='Number of worker threads for data loading.')
     parser.add_argument('--device', type=str, default='cuda',
                         help='Device to use for training (e.g., "cuda" or "cpu").')
