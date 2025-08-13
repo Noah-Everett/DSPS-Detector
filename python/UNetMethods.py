@@ -52,7 +52,7 @@ def get_config_loaders(
                 "label": [
                     {"name": "RandomFlip"},
                     {"name": "RandomRotate90"},
-                    {"name": "ToTensor", "expand_dims": False},
+                    {"name": "ToTensor", "expand_dims": True},
                 ],
             }
         },
