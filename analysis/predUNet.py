@@ -110,6 +110,9 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--verbosity', '-v', type=str, default='info',
                         choices=['debug', 'info', 'warning', 'error', 'critical'],
                         help='Logging verbosity.')
+    parser.add_argument('--device', type=str, default='cuda',
+                        choices=['cuda', 'cpu'],
+                        help='Device to use for inference.')
 
     return parser.parse_args()
 
