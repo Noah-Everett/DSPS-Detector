@@ -111,7 +111,7 @@ def get_config_train(paths_train, paths_val,
         "loss": {
             "name": "BCEDiceLoss",
             "ignore_index": None,
-            "skip_last_target": True
+            "skip_last_target": False,
         },
         "optimizer": {
             "learning_rate": lr,
