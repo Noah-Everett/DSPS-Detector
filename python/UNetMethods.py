@@ -43,34 +43,17 @@ def get_config_loaders(
             },
             "transformer": {
                 "raw": [
-                    {"name": "Standardize"},
                     {"name": "RandomFlip"},
                     {"name": "RandomRotate90"},
-                    {
-                        "name": "RandomRotate",
-                        "axes": [[2, 1]],
-                        "angle_spectrum": 45,
-                        "mode": "reflect"
-                    },
-                    {"name": "ElasticDeformation", "spline_order": 3},
-                    {"name": "GaussianBlur3D", "execution_probability": 0.5},
-                    {"name": "AdditiveGaussianNoise", "execution_probability": 0.2},
-                    {"name": "AdditivePoissonNoise", "execution_probability": 0.2},
+                    # {"name": "AdditiveGaussianNoise", "execution_probability": 0.2},
+                    # {"name": "AdditivePoissonNoise", "execution_probability": 0.2},
                     {"name": "ToTensor", "expand_dims": True}
                 ],
                 "label": [
                     {"name": "RandomFlip"},
                     {"name": "RandomRotate90"},
-                    {
-                        "name": "RandomRotate",
-                        "axes": [[2, 1]],
-                        "angle_spectrum": 45,
-                        "mode": "reflect"
-                    },
-                    {"name": "ElasticDeformation", "spline_order": 0},
-                    {"name": "StandardLabelToBoundary", "append_label": True},
-                    {"name": "ToTensor", "expand_dims": False}
-                ]
+                    {"name": "ToTensor", "expand_dims": True}
+                ],
             }
         },
         "val": {
@@ -104,7 +87,6 @@ def get_config_testValTransformer():
             {"name": "ToTensor", "expand_dims": True},
         ],
         "label": [
-            # {"name": "StandardLabelToBoundary", "append_label": True},
             {"name": "ToTensor", "expand_dims": False},
         ]
     }
