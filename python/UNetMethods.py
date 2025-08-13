@@ -47,12 +47,12 @@ def get_config_loaders(
                     {"name": "RandomRotate90"},
                     # {"name": "AdditiveGaussianNoise", "execution_probability": 0.2},
                     # {"name": "AdditivePoissonNoise", "execution_probability": 0.2},
-                    {"name": "ToTensor", "expand_dims": True}
+                    {"name": "ToTensor", "expand_dims": True},
                 ],
                 "label": [
                     {"name": "RandomFlip"},
                     {"name": "RandomRotate90"},
-                    {"name": "ToTensor", "expand_dims": True}
+                    {"name": "ToTensor", "expand_dims": False},
                 ],
             }
         },
