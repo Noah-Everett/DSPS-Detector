@@ -103,10 +103,10 @@ def get_config_testValTransformer():
             {"name": "Standardize"},
             {"name": "ToTensor", "expand_dims": True},
         ],
-        # "label": [
-        #     {"name": "StandardLabelToBoundary", "append_label": True},
-        #     {"name": "ToTensor", "expand_dims": False},
-        # ]
+        "label": [
+            # {"name": "StandardLabelToBoundary", "append_label": True},
+            {"name": "ToTensor", "expand_dims": False},
+        ]
     }
 
 def get_config_train(paths_train, paths_val, 
