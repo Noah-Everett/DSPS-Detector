@@ -91,7 +91,7 @@ def parse_arguments():
                         help='Path to a checkpoint file to resume training from.')
     parser.add_argument('--iters-val', type=int, default=-1,
                         help='Number of iterations for validation.')
-    parser.add_argument('--iters-max', type=int, default=100000,
+    parser.add_argument('--iters-max', type=int, default=-1,
                         help='Maximum number of iterations.')
     parser.add_argument('--iters-log', type=int, default=-1,
                         help='Number of iterations between logging.')
@@ -247,6 +247,8 @@ def main():
         args.iters_val = len(paths_train)
     if args.iters_log < 0:
         args.iters_log = len(paths_train)
+    if args.iters_max < 0:
+        args.iters_max = len(paths_train) * args.epochs_max
 
     # Configure training
     config = get_config_train(
