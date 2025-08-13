@@ -31,6 +31,11 @@ Usage Examples:
                               --device cpu \
                               --batch-size 2 \
                               --verbosity debug
+
+    5. Overriding with a user YAML:
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output \
+                              --config /path/to/overrides.yml
 """
 
 import argparse
@@ -38,7 +43,9 @@ import logging
 import os
 import sys
 import re
+import copy
 import numpy as np
+import yaml
 
 sys.path.append('../pytorch-3dunet/')
 from pytorch3dunet.train import main as train_main
@@ -104,6 +111,10 @@ def parse_arguments():
     parser.add_argument('--verbosity', '-v', type=str, default='info',
                         choices=['debug', 'info', 'warning', 'error', 'critical'],
                         help='Set the logging verbosity level.')
+
+    # user-provided YAML that overrides generated config
+    parser.add_argument('--config', type=str, default=None,
+                        help='Path to a YAML file whose values will overwrite the generated config.')
 
     return parser.parse_args()
 
@@ -193,6 +204,35 @@ def check_file_existence(file_paths):
     missing = [path for path in file_paths if not os.path.isfile(path)]
     return missing
 
+def load_yaml_file(path: str):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f) or {}
+
+def deep_merge(base: dict, override: dict, path_prefix=""):
+    """
+    Recursively merge `override` into `base` (in place), replacing scalars/lists and
+    recursing into dicts. Returns a list of dotted paths that changed.
+    """
+    changes = []
+
+    for k, v in override.items():
+        dotted = f"{path_prefix}.{k}" if path_prefix else k
+        if isinstance(v, dict) and isinstance(base.get(k), dict):
+            changes.extend(deep_merge(base[k], v, dotted))
+        else:
+            before = base.get(k, "<MISSING>")
+            base[k] = copy.deepcopy(v)
+            changes.append((dotted, before, v))
+    return changes
+
+def log_changes(logger, changes):
+    if not changes:
+        logger.info("No overrides applied from YAML (keys matched nothing or YAML was empty).")
+        return
+    logger.info("Applied YAML overrides:")
+    for key, before, after in changes:
+        logger.info(f"  - {key}: {before} -> {after}")
+
 def main():
     args = parse_arguments()
     
@@ -250,7 +290,7 @@ def main():
     if args.iters_max < 0:
         args.iters_max = len(paths_train) * args.epochs_max
 
-    # Configure training
+    # Configure training (generated defaults)
     config = get_config_train(
         paths_train=paths_train,
         paths_val=paths_val,
@@ -266,7 +306,27 @@ def main():
         lr=args.learning_rate,
     )
 
-    # Save configuration
+    # Merge user YAML over the generated config
+    if args.config is not None:
+        user_cfg_path = os.path.abspath(args.config)
+        if not os.path.isfile(user_cfg_path):
+            logger.error(f"--config file not found: {user_cfg_path}")
+            return
+        try:
+            user_cfg = load_yaml_file(user_cfg_path)
+        except Exception as e:
+            logger.error(f"Failed to parse YAML at {user_cfg_path}: {e}")
+            return
+
+        if not isinstance(user_cfg, dict):
+            logger.error(f"Top-level YAML must be a mapping/dict, got {type(user_cfg).__name__}.")
+            return
+
+        # Apply overrides and log them
+        changes = deep_merge(config, user_cfg)
+        log_changes(logger, changes)
+
+    # Save configuration (merged if YAML provided)
     save_config(config, config_path)
     logger.info(f"Configuration saved to {config_path}")
 
