@@ -83,7 +83,6 @@ def get_config_loaders(
 def get_config_testValTransformer():
     return {
         "raw": [
-            {"name": "Standardize"},
             {"name": "ToTensor", "expand_dims": True},
         ],
         "label": [
