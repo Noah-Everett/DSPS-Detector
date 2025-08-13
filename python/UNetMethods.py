@@ -87,7 +87,7 @@ def get_config_testValTransformer():
             {"name": "ToTensor", "expand_dims": True},
         ],
         "label": [
-            {"name": "ToTensor", "expand_dims": False},
+            {"name": "ToTensor", "expand_dims": True},
         ]
     }
 
