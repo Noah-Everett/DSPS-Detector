@@ -234,7 +234,7 @@ def main() -> None:
 
     # Build config via your helper
     try:
-        config = get_config_predict(data_paths, args.model_path, args.output_dir)
+        config = get_config_predict(data_paths, args.model_path, args.output_dir, device=args.device)
     except Exception as e:
         logger.error("Error constructing prediction config: %s", e)
         sys.exit(1)
@@ -253,7 +253,7 @@ def main() -> None:
         return
 
     # Run prediction
-    logger.info("Starting prediction with pytorch3dunet...")
+    logger.info("Starting prediction with the following config: %s", config)
     try:
         # pytorch3dunet expects CLI-like argv
         predict_main(['--config', config_path])
