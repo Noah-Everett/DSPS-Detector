@@ -127,7 +127,7 @@ def get_config_train(paths_train, paths_val,
             "name": "ReduceLROnPlateau",
             "mode": "max",
             "factor": 0.5,
-            "patience": 3
+            "patience": 20
         },
         "trainer": {
             "eval_score_higher_is_better": True,
