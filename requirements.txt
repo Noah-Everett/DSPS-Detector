@@ -10,3 +10,4 @@ pyyaml
 tensorboard
 scikit-image
 pyarrow
+segmentation-models-pytorch
