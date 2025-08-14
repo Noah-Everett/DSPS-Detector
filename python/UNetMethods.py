@@ -31,6 +31,7 @@ def get_config_loaders(
         "output_dir": output_dir,
         "raw_internal_path": "/"+label_input,
         "label_internal_path": "/"+label_output,
+        "global_normalization": False,
         "train": {
             "file_paths": paths_train,
             "slice_builder": {
