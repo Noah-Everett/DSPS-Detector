@@ -32,10 +32,16 @@ Usage Examples:
                               --batch-size 2 \
                               --verbosity debug
 
-    5. Overriding with a user YAML:
+    5. Overriding with one or more user YAMLs (later wins on conflicts):
+        # multiple flags
         python train_model.py --data-dir /path/to/data \
                               --output-dir /path/to/output \
-                              --config /path/to/overrides.yml
+                              --config base.yml --config exp1.yml
+
+        # or comma-separated
+        python train_model.py --data-dir /path/to/data \
+                              --output-dir /path/to/output \
+                              --config base.yml,exp1.yml,local.yml
 """
 
 import argparse
@@ -47,10 +53,10 @@ import copy
 import numpy as np
 import yaml
 
-sys.path.append('../pytorch-3dunet/')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'pytorch-3dunet')))
 from pytorch3dunet.train import main as train_main
 
-sys.path.append('../python/')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from UNetMethods import get_config_train, save_config
 
 def configure_logging(verbosity: str):
@@ -112,9 +118,11 @@ def parse_arguments():
                         choices=['debug', 'info', 'warning', 'error', 'critical'],
                         help='Set the logging verbosity level.')
 
-    # user-provided YAML that overrides generated config
-    parser.add_argument('--config', type=str, default=None,
-                        help='Path to a YAML file whose values will overwrite the generated config.')
+    # One or more user-provided YAMLs that override generated config.
+    # Accepts repeated flags (--config a.yml --config b.yml) or comma-separated (--config a.yml,b.yml).
+    parser.add_argument('--config', action='append', default=None,
+                        help='Path(s) to YAML file(s) whose values overwrite the generated config. '
+                             'Repeat the flag or use comma-separated values. Later files take precedence.')
 
     return parser.parse_args()
 
@@ -225,13 +233,29 @@ def deep_merge(base: dict, override: dict, path_prefix=""):
             changes.append((dotted, before, v))
     return changes
 
-def log_changes(logger, changes):
+def log_changes(logger, changes, source_label=None):
     if not changes:
-        logger.info("No overrides applied from YAML (keys matched nothing or YAML was empty).")
+        logger.info(f"No overrides applied from YAML{f' [{source_label}]' if source_label else ''} (keys matched nothing or YAML was empty).")
         return
-    logger.info("Applied YAML overrides:")
+    header = f"Applied YAML overrides{f' from {source_label}' if source_label else ''}:"
+    logger.info(header)
     for key, before, after in changes:
         logger.info(f"  - {key}: {before} -> {after}")
+
+def _normalize_config_args(config_args):
+    """
+    Normalize argparse --config input to a flat, ordered list of paths.
+    Accepts repeated flags and/or comma-separated values.
+    """
+    if not config_args:
+        return []
+    paths = []
+    for entry in config_args:
+        # argparse with action='append' gives us each flag occurrence as a string
+        parts = [p.strip() for p in str(entry).split(',') if p.strip()]
+        paths.extend(parts)
+    # keep order; no dedup to preserve intended layering
+    return paths
 
 def main():
     args = parse_arguments()
@@ -306,27 +330,30 @@ def main():
         lr=args.learning_rate,
     )
 
-    # Merge user YAML over the generated config
-    if args.config is not None:
-        user_cfg_path = os.path.abspath(args.config)
-        if not os.path.isfile(user_cfg_path):
-            logger.error(f"--config file not found: {user_cfg_path}")
-            return
-        try:
-            user_cfg = load_yaml_file(user_cfg_path)
-        except Exception as e:
-            logger.error(f"Failed to parse YAML at {user_cfg_path}: {e}")
-            return
+    # Merge user YAML(s) over the generated config
+    config_paths = _normalize_config_args(args.config)
+    if config_paths:
+        logger.info(f"Applying {len(config_paths)} config override file(s) in order (later wins): {config_paths}")
+        for cfg_idx, cfg_path in enumerate(config_paths, start=1):
+            user_cfg_path = os.path.abspath(cfg_path)
+            if not os.path.isfile(user_cfg_path):
+                logger.error(f"--config file not found: {user_cfg_path}")
+                return
+            try:
+                user_cfg = load_yaml_file(user_cfg_path)
+            except Exception as e:
+                logger.error(f"Failed to parse YAML at {user_cfg_path}: {e}")
+                return
 
-        if not isinstance(user_cfg, dict):
-            logger.error(f"Top-level YAML must be a mapping/dict, got {type(user_cfg).__name__}.")
-            return
+            if not isinstance(user_cfg, dict):
+                logger.error(f"Top-level YAML must be a mapping/dict in {user_cfg_path}, got {type(user_cfg).__name__}.")
+                return
 
-        # Apply overrides and log them
-        changes = deep_merge(config, user_cfg)
-        log_changes(logger, changes)
+            changes = deep_merge(config, user_cfg)
+            label = f"{os.path.basename(user_cfg_path)} (#{cfg_idx})"
+            log_changes(logger, changes, source_label=label)
 
-    # Save configuration (merged if YAML provided)
+    # Save configuration (merged if YAMLs provided)
     save_config(config, config_path)
     logger.info(f"Configuration saved to {config_path}")
 
