@@ -31,6 +31,7 @@ def get_config_loaders(
         "output_dir": output_dir,
         "raw_internal_path": "/"+label_input,
         "label_internal_path": "/"+label_output,
+        "dataset": "StandardHDF5Dataset",
         "global_normalization": False,
         "train": {
             "file_paths": paths_train,
@@ -38,6 +39,7 @@ def get_config_loaders(
                 "name": "SliceBuilder", #"FilterSliceBuilder",
                 "patch_shape": patch_shape,
                 "stride_shape": stride_shape,
+                "halo_shape": [0, 0, 0],
                 "skip_shape_check": True,
                 "threshold": 0.6,
                 "slack_acceptance": 0.01
@@ -63,6 +65,7 @@ def get_config_loaders(
                 "name": "SliceBuilder", #"FilterSliceBuilder",
                 "patch_shape": patch_shape,
                 "stride_shape": stride_shape,
+                "halo_shape": [0, 0, 0],
                 "skip_shape_check": True,
                 "threshold": 0.6,
                 "slack_acceptance": 0.01
@@ -75,6 +78,7 @@ def get_config_loaders(
                 "name": "SliceBuilder",
                 "patch_shape": patch_shape,
                 "stride_shape": stride_shape,
+                "halo_shape": [0, 0, 0],
                 "skip_shape_check": True,
             },
             "transformer": get_config_testValTransformer()
