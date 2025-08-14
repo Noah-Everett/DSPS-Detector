@@ -256,7 +256,10 @@ def main() -> None:
     logger.info("Starting prediction with the following config: %s", config)
     try:
         # pytorch3dunet expects CLI-like argv
-        predict_main(['--config', config_path])
+        old_args = sys.argv.copy()
+        sys.argv = ['predict.py', '--config', config_path]
+        predict_main()
+        sys.argv = old_args
     except SystemExit as e:
         # Some entrypoints call sys.exit(); surface as info if zero else error
         code = int(getattr(e, 'code', 1))

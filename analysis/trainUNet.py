@@ -338,7 +338,20 @@ def main():
 
     # Start training
     logger.info("Starting training...")
-    train_main(['--config', config_path])
+    try:
+        # pytorch3dunet expects CLI-like argv
+        old_args = sys.argv.copy()
+        sys.argv = ['train.py', '--config', config_path]
+        train_main()
+        sys.argv = old_args
+    except SystemExit as e:
+        # Some entrypoints call sys.exit(); surface as info if zero else error
+        code = int(getattr(e, 'code', 1))
+        if code == 0:
+            logger.info("Training completed successfully.")
+        else:
+            logger.error(f"Training failed with exit code {code}.")
+            return
 
 if __name__ == '__main__':
     main()
