@@ -1,0 +1,7 @@
+"loss": {
+  "name": "TverskyLoss",
+  "alpha": 0.3,
+  "beta": 0.7,
+  "smooth": 0,
+  "gamma": 1
+}

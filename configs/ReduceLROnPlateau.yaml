@@ -1,0 +1,5 @@
+lr_scheduler:
+  factor: 0.5
+  mode: max
+  name: ReduceLROnPlateau
+  patience: 20
