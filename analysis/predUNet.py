@@ -5,7 +5,8 @@ Run predictions with a 3D U-Net model (PyTorch 3D U-Net).
 This script:
   • Collects .h5 volumes from a data directory (by numeric filename like 0.h5, 1.h5, ...),
   • Builds a prediction config using your UNetMethods.get_config_predict,
-  • Saves the config to the output directory,
+  • Optionally applies one or more user YAMLs that override the generated config (later wins),
+  • Saves the (possibly merged) config to the output directory,
   • Invokes pytorch3dunet.predict.main with that config.
 
 Examples
@@ -33,11 +34,24 @@ Examples
                        --model-path /path/to/checkpoints/last_checkpoint.pytorch \
                        --config-only
 
+5) Override with one or more user YAMLs (later wins on conflicts):
+    # multiple flags
+    python predUNet.py --data-dir /path/to/data \
+                       --output-dir /path/to/output \
+                       --model-path /path/to/checkpoints/last_checkpoint.pytorch \
+                       --config base.yml --config exp1.yml
+
+    # or comma-separated
+    python predUNet.py --data-dir /path/to/data \
+                       --output-dir /path/to/output \
+                       --model-path /path/to/checkpoints/last_checkpoint.pytorch \
+                       --config base.yml,exp1.yml,local.yml
+
 Notes
 -----
 • Files must be named as {number}.h5 (e.g., 0.h5, 1.h5, ...).
 • Missing files are warned about and skipped.
-• The generated config is saved as <output-dir>/config.yml.
+• The generated/merged config is saved as <output-dir>/config.yml.
 """
 
 import argparse
@@ -45,6 +59,8 @@ import logging
 import os
 import re
 import sys
+import copy
+import yaml
 from typing import List, Sequence
 
 # --- Local imports ------------------------------------------------------------
@@ -82,6 +98,51 @@ def configure_logging(verbosity: str) -> None:
             logging.getLogger(noisy).setLevel(logging.WARNING)
 
 
+# --- YAML helpers (mirrors train script behavior) -----------------------------
+def load_yaml_file(path: str):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f) or {}
+
+def deep_merge(base: dict, override: dict, path_prefix: str = ""):
+    """
+    Recursively merge `override` into `base` (in place), replacing scalars/lists and
+    recursing into dicts. Returns a list of dotted paths that changed.
+    """
+    changes = []
+    for k, v in override.items():
+        dotted = f"{path_prefix}.{k}" if path_prefix else k
+        if isinstance(v, dict) and isinstance(base.get(k), dict):
+            changes.extend(deep_merge(base[k], v, dotted))
+        else:
+            before = base.get(k, "<MISSING>")
+            base[k] = copy.deepcopy(v)
+            changes.append((dotted, before, v))
+    return changes
+
+def log_changes(logger: logging.Logger, changes, source_label: str | None = None):
+    if not changes:
+        logger.info(f"No overrides applied from YAML{f' [{source_label}]' if source_label else ''} (keys matched nothing or YAML was empty).")
+        return
+    header = f"Applied YAML overrides{f' from {source_label}' if source_label else ''}:"
+    logger.info(header)
+    for key, before, after in changes:
+        logger.info(f"  - {key}: {before} -> {after}")
+
+def _normalize_config_args(config_args):
+    """
+    Normalize argparse --config input to a flat, ordered list of paths.
+    Accepts repeated flags and/or comma-separated values.
+    """
+    if not config_args:
+        return []
+    paths = []
+    for entry in config_args:
+        parts = [p.strip() for p in str(entry).split(',') if p.strip()]
+        paths.extend(parts)
+    # keep order; no dedup to preserve intended layering
+    return paths
+
+
 # --- Argument parsing ---------------------------------------------------------
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Predict with a 3D U-Net model.")
@@ -113,6 +174,11 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--device', type=str, default='cuda',
                         choices=['cuda', 'cpu'],
                         help='Device to use for inference.')
+
+    # Accepts repeated flags (--config a.yml --config b.yml) or comma-separated (--config a.yml,b.yml).
+    parser.add_argument('--config', action='append', default=None,
+                        help='Path(s) to YAML file(s) whose values overwrite the generated config. '
+                             'Repeat the flag or use comma-separated values. Later files take precedence.')
 
     return parser.parse_args()
 
@@ -239,7 +305,30 @@ def main() -> None:
         logger.error("Error constructing prediction config: %s", e)
         sys.exit(1)
 
-    # Save config
+    # Merge user YAML(s) over the generated config (later files win)
+    config_paths = _normalize_config_args(args.config)
+    if config_paths:
+        logger.info(f"Applying {len(config_paths)} config override file(s) in order (later wins): {config_paths}")
+        for cfg_idx, cfg_path in enumerate(config_paths, start=1):
+            user_cfg_path = os.path.abspath(cfg_path)
+            if not os.path.isfile(user_cfg_path):
+                logger.error(f"--config file not found: {user_cfg_path}")
+                sys.exit(1)
+            try:
+                user_cfg = load_yaml_file(user_cfg_path)
+            except Exception as e:
+                logger.error(f"Failed to parse YAML at {user_cfg_path}: {e}")
+                sys.exit(1)
+
+            if not isinstance(user_cfg, dict):
+                logger.error(f"Top-level YAML must be a mapping/dict in {user_cfg_path}, got {type(user_cfg).__name__}.")
+                sys.exit(1)
+
+            changes = deep_merge(config, user_cfg)
+            label = f"{os.path.basename(user_cfg_path)} (#{cfg_idx})"
+            log_changes(logger, changes, source_label=label)
+
+    # Save config (merged if YAMLs provided)
     try:
         save_config(config, config_path)
         logger.info("Config written to %s", config_path)
