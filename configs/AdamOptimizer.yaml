@@ -1,4 +1,4 @@
 "optimizer":
   "name": "Adam"
-  "learning_rate": 0.001
+  "learning_rate": 0.002
   "weight_decay": 0.00001
