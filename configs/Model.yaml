@@ -1,0 +1,8 @@
+model:
+  name: UNet3D
+  in_channels: 6
+  out_channels: 1
+  layer_order: clg        # Conv3d -> LeakyReLU -> GroupNorm
+  f_maps: [32, 64, 128, 256, 320]
+  num_groups: 8
+  final_sigmoid: true

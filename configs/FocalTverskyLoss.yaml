@@ -1,7 +1,6 @@
-"loss": {
-  "name": "FocalTverskyLoss",
-  "alpha": 0.3,
-  "beta": 0.7,
-  "lam": 1,
-  "normalization": "sigmoid",
-}
+loss:
+  name: FocalTverskyLoss
+  alpha: 0.3
+  beta: 0.7
+  lam: 1
+  normalization: sigmoid
