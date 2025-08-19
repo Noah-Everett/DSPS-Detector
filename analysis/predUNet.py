@@ -179,6 +179,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument('--config', action='append', default=None,
                         help='Path(s) to YAML file(s) whose values overwrite the generated config. '
                              'Repeat the flag or use comma-separated values. Later files take precedence.')
+    parser.add_argument('--model-config', type=str, default=None,
+                        help='Path to the model config file.')
 
     return parser.parse_args()
 
@@ -304,6 +306,22 @@ def main() -> None:
     except Exception as e:
         logger.error("Error constructing prediction config: %s", e)
         sys.exit(1)
+
+    # Merge model config
+    if args.model_config:
+        if not os.path.isfile(args.model_config):
+            logger.error("Model config file not found: %s", args.model_config)
+            sys.exit(1)
+        try:
+            model_config = load_yaml_file(args.model_config)
+            if not isinstance(model_config, dict):
+                raise ValueError(f"Model config must be a mapping/dict, got {type(model_config).__name__}.")
+            changes = deep_merge(config, model_config['model'])
+            log_changes(logger, changes)
+            config = changes
+        except Exception as e:
+            logger.error("Failed to load or parse model config: %s", e)
+            sys.exit(1)
 
     # Merge user YAML(s) over the generated config (later files win)
     config_paths = _normalize_config_args(args.config)
