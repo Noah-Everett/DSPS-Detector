@@ -316,9 +316,8 @@ def main() -> None:
             model_config = load_yaml_file(args.model_config)
             if not isinstance(model_config, dict):
                 raise ValueError(f"Model config must be a mapping/dict, got {type(model_config).__name__}.")
-            changes = deep_merge(config['model'], model_config['model'])
+            changes = deep_merge(config['model'], model_config['model'], path_prefix='model')
             log_changes(logger, changes)
-            config['model'] = changes
         except Exception as e:
             logger.error("Failed to load or parse model config: %s", e)
             sys.exit(1)
