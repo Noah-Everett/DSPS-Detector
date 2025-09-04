@@ -287,7 +287,7 @@ def get_photosensor_hits_position_relative_bins(fileName, treeName, histDirector
         return np.array([np.array(position_relative_x_bins), np.array(position_relative_y_bins)]).T.tolist()
 
 def get_photosensor_hits_position_relative_binned(fileName, treeName='photoSensor_hits;1', histDirectoryName='/photoSensor_hits_histograms', x=None, y=None, nBins_x=None, nBins_y=None, verbose=True):
-    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y, nBins_x, nBins_y, verbose)
+    position_relative_x_bins, position_relative_y_bins = get_photosensor_hits_position_relative_bins(fileName, treeName, histDirectoryName, x, y, nBins_x, nBins_y)
 
     position_relative_x_binned = position_relative_x_bins.apply(lambda x: (x.right + x.left) / 2)
     position_relative_y_binned = position_relative_y_bins.apply(lambda x: (x.right + x.left) / 2)
