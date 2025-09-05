@@ -4,3 +4,6 @@
 [submodule "pytorch-3dunet"]
 	path = pytorch-3dunet
 	url = https://github.com/Noah-Everett/pytorch-3dunet
+[submodule "Fast-Voxel-Traversal-Python"]
+	path = Fast-Voxel-Traversal-Python
+	url = https://github.com/Noah-Everett/Fast-Voxel-Traversal-Python
