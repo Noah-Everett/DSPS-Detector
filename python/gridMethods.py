@@ -10,6 +10,7 @@ def get_voxelGrid_hitVector(
     vector_starts, vector_ends, vector_weights=None,
     use_distance: bool = False,
     return_individual: bool = False,
+    return_distances: bool = False,
 ):
     """
     Compute the voxel grid from the hit vectors.
@@ -32,15 +33,23 @@ def get_voxelGrid_hitVector(
         If True, accumulate by distance traveled in each voxel
         (scaled by weight). If False, just increment by weight once per voxel hit.
     return_individual : bool, default=False
-        If True, also return an array of per-photon grids
+        If True, also return an array of per-hit grids
         (shape (N, *grid_shape)).
+    return_distances : bool, default=False
+        If True, additionally return distance-only grids:
+        - cumulative distance per voxel,
+        - and per-hit distance grids if return_individual is True.
 
     Returns
     -------
     grid : ndarray
-        The cumulative voxel grid.
+        The cumulative voxel grid (weighted; uses distance if use_distance=True).
     grids_individual : ndarray, optional
-        Only if return_individual=True. Per-photon voxel grids.
+        Only if return_individual=True. Per-hit voxel grids (weighted).
+    grid_distance : ndarray, optional
+        Only if return_distances=True. Cumulative unweighted distances per voxel.
+    grids_distance_individual : ndarray, optional
+        Only if return_distances and return_individual. Per-hit unweighted distances.
     """
     if vector_weights is None:
         vector_weights = np.ones(len(vector_starts), dtype=float)
@@ -56,23 +65,31 @@ def get_voxelGrid_hitVector(
     if return_individual:
         grids_individual = np.zeros((len(vector_starts),) + tuple(grid_shape), dtype=float)
 
+    grid_distance = None
+    grids_distance_individual = None
+    if return_distances:
+        grid_distance = np.zeros(grid_shape, dtype=float)
+        if return_individual:
+            grids_distance_individual = np.zeros((len(vector_starts),) + tuple(grid_shape), dtype=float)
+
     for i in range(len(vector_starts)):
         direction = vector_ends[i] - vector_starts[i]
         dir_len = float(np.linalg.norm(direction))
         if dir_len == 0.0:
             continue
 
-        any_hit = False
         for ix, iy, iz, t_enter, t_exit in FVTgrid.traverse(vector_starts[i], direction):
-            # Clamp to finite segment
+            # Clamp to finite segment [0,1]
             t0 = max(t_enter, 0.0)
             t1 = min(t_exit, 1.0)
             if t1 <= t0:
                 continue
 
-            any_hit = True
+            # Geometric distance the ray spends in this voxel (unweighted)
+            ds = (t1 - t0) * dir_len
+
+            # Weighted accumulation (old behavior preserved)
             if use_distance:
-                ds = (t1 - t0) * dir_len
                 w = vector_weights[i] * ds
             else:
                 w = vector_weights[i]
@@ -81,10 +98,17 @@ def get_voxelGrid_hitVector(
             if return_individual:
                 grids_individual[i, ix, iy, iz] += w
 
-        # optional: warn if no hit
-        # if not any_hit:
-        #     pass
+            # Distance grids
+            if return_distances:
+                grid_distance[ix, iy, iz] += ds
+                if return_individual:
+                    grids_distance_individual[i, ix, iy, iz] += ds
 
+    # Build return tuple conditionally (backwards compatible by default)
+    if return_distances and return_individual:
+        return grid, grids_individual, grid_distance, grids_distance_individual
+    if return_distances:
+        return grid, grid_distance
     if return_individual:
         return grid, grids_individual
     return grid
@@ -315,37 +339,57 @@ def get_voxelGrid(grid_shape: np.ndarray,
                   walls: bool = False,
                   walls_combine: bool = False,
                   walls_combine_method: callable = None,
-                  vector_combine: bool = False) -> np.ndarray:
+                  vector_combine: bool = False,
+                  use_distance: bool = False,
+                  return_individual: bool = False,
+                  return_distances: bool = False):
     """
     Computes the voxel grid based on sensor positions and reconstructed directions.
 
-    Parameters:
-    - grid_shape: Array of shape (3,), shape of the voxel grid.
-    - grid_dimensions: Array of shape (3,), dimensions of the voxel grid.
-    - vector_starts: Array of shape (N, 3), starting points of the vectors.
-    - vector_directions: Array of shape (N, 3), directions of the vectors.
-    - vector_weights: Array of shape (N,), weights for each vector.
-    - vector_start_walls: Array of strings of shape (N,), wall names for each vector (e.g. '+x', '-y', etc.).
-    - walls: Boolean, whether to use walls.
-    - walls_combine: Boolean, whether to combine walls.
-    - walls_combine_method: String, method to combine walls.
-    - vector_combine: Boolean, whether to combine all vectors with the same end points.
+    Parameters
+    ----------
+    (same as before) ...
+    use_distance : bool, default=False
+        If True, weight contributions by distance traveled within each voxel.
+    return_individual : bool, default=False
+        If True, also return per-hit voxel grids (weighted).
+    return_distances : bool, default=False
+        If True, also return distance-only grids (cumulative and, if requested,
+        per-hit).
 
-    Returns:
-    - grid: Array of shape grid_shape, voxel grid.
+    Returns
+    -------
+    Without walls (walls=False):
+        grid
+        [+ grids_individual]                 if return_individual
+        [+ grid_distance]                    if return_distances
+        [+ grids_distance_individual]        if return_distances and return_individual
+
+    With walls (walls=True, walls_combine=True):
+        grid (combined)
+        [+ grids_individual_combined]        if return_individual (sum over walls per hit)
+        [+ grid_distance_combined]           if return_distances (sum over walls)
+        [+ grids_distance_individual_combined] if return_distances and return_individual
+
+    With walls (walls=True, walls_combine=False):
+        grid_stacked of shape (*grid_shape, 6)
+        [+ grids_individual_walls]           dict {wall_int: per-hit weighted grids}
+        [+ grid_distance_walls]              dict {wall_int: cumulative distance}
+        [+ grids_distance_individual_walls]  dict {wall_int: per-hit distances}
     """
 
     if vector_weights is None:
         vector_weights = np.ones(len(vector_starts), dtype=float)
 
-    assert len(grid_shape) == 3 and all(isinstance(i, int) or isinstance(i, np.int64) for i in grid_shape)
+    assert len(grid_shape) == 3 and all(isinstance(i, (int, np.integer)) for i in grid_shape)
     assert len(grid_dimensions) == 3 and all(isinstance(i, float) for i in grid_dimensions)
     assert len(vector_starts) == len(vector_directions) == len(vector_weights) and vector_starts.shape[1] == 3 and len(vector_starts.shape) == 2
     assert not walls or vector_start_walls is not None
     assert not walls or not walls_combine or walls_combine_method is not None
 
     walls_intOptions = wallStringToInt(np.array(['+x', '-x', '+y', '-y', '+z', '-z']))
-    assert np.min(vector_start_walls) >= 0
+    if walls:
+        assert np.min(vector_start_walls) >= 0
 
     grid_bounds_min = grid_dimensions / -2
     grid_bounds_max = grid_dimensions / 2
@@ -355,44 +399,126 @@ def get_voxelGrid(grid_shape: np.ndarray,
     if vector_combine:
         vector_starts_ind = get_indexFromPosition(vector_starts, grid_bounds_min, grid_bounds_max, grid_shape)
         vector_ends_ind   = get_indexFromPosition(vector_ends  , grid_bounds_min, grid_bounds_max, grid_shape)
-        lenInit = len(vector_starts_ind)
 
         vector_starts_ind, vector_ends_ind, vector_weights, inds = get_combinedVectors(vector_starts_ind, vector_ends_ind, vector_weights)
-        lenFinal = len(vector_starts_ind)
-        # print(f"Combined vectors: {lenInit} -> {lenFinal} ({100 * lenFinal / lenInit:.2f}%)")
 
         vector_starts = get_positionFromIndex(vector_starts_ind, grid_bounds_min, grid_bounds_max, grid_shape)
         vector_ends   = get_positionFromIndex(vector_ends_ind  , grid_bounds_min, grid_bounds_max, grid_shape)
 
-        vector_start_walls = vector_start_walls[inds]
+        if walls:
+            vector_start_walls = vector_start_walls[inds]
 
-    grid = None
-    grid_walls = {}
-
+    # ---- No walls: just call through and forward returns
     if not walls:
-        grid = get_voxelGrid_hitVector(grid_bounds_min, grid_bounds_max, grid_shape, vector_starts, vector_ends, vector_weights)
-        assert grid.shape == tuple(grid_shape)
-    else:
-        wall_indices = {wall: np.flatnonzero(vector_start_walls == wall) for wall in walls_intOptions}
+        result = get_voxelGrid_hitVector(
+            grid_bounds_min, grid_bounds_max, grid_shape,
+            vector_starts, vector_ends, vector_weights,
+            use_distance=use_distance,
+            return_individual=return_individual,
+            return_distances=return_distances,
+        )
+        # Keep the same return structure as get_voxelGrid_hitVector
+        return result
 
-        for wall in walls_intOptions:
-            if len(wall_indices[wall]) == 0:
-                continue
+    # ---- With walls
+    wall_indices = {wall: np.flatnonzero(vector_start_walls == wall) for wall in walls_intOptions}
 
-            wall_starts = vector_starts[wall_indices[wall]]
-            wall_ends = vector_ends[wall_indices[wall]]
-            wall_weights = vector_weights[wall_indices[wall]]
+    # Holders
+    grid_walls = {}
+    grids_individual_walls = {} if return_individual else None
+    grid_distance_walls = {} if return_distances else None
+    grids_distance_individual_walls = {} if (return_individual and return_distances) else None
 
-            grid_walls[wall] = get_voxelGrid_hitVector(grid_bounds_min, grid_bounds_max, grid_shape, wall_starts, wall_ends, wall_weights)
+    for wall in walls_intOptions:
+        if len(wall_indices[wall]) == 0:
+            continue
 
-        if walls_combine:
-            grid = walls_combine_method(list(grid_walls.values()))
+        wall_starts  = vector_starts [wall_indices[wall]]
+        wall_ends    = vector_ends   [wall_indices[wall]]
+        wall_weights = vector_weights[wall_indices[wall]]
+
+        wall_result = get_voxelGrid_hitVector(
+            grid_bounds_min, grid_bounds_max, grid_shape,
+            wall_starts, wall_ends, wall_weights,
+            use_distance=use_distance,
+            return_individual=return_individual,
+            return_distances=return_distances,
+        )
+
+        # Unpack by arity
+        if return_distances and return_individual:
+            g, gi, gd, gdi = wall_result
+            grid_walls[wall] = g
+            grids_individual_walls[wall] = gi
+            grid_distance_walls[wall] = gd
+            grids_distance_individual_walls[wall] = gdi
+        elif return_distances:
+            g, gd = wall_result
+            grid_walls[wall] = g
+            grid_distance_walls[wall] = gd
+        elif return_individual:
+            g, gi = wall_result
+            grid_walls[wall] = g
+            grids_individual_walls[wall] = gi
         else:
-            grid = np.zeros([*grid_shape, 6], dtype=float)
-            for wall in walls_intOptions:
-                grid[:, :, :, wall] = grid_walls[wall]
+            g = wall_result
+            grid_walls[wall] = g
 
-    return grid
+    # Combine or stack walls as before for the primary cumulative grid
+    if walls_combine:
+        # Combine cumulative weighted grids
+        grid_combined = walls_combine_method(list(grid_walls.values()))
+
+        returns = [grid_combined]
+
+        if return_individual:
+            # Sum per-hit weighted grids across walls (align by hit order within each wall)
+            # For different counts per wall, we pad missing hits with zeros and sum.
+            # Build per-hit list, then stack.
+            max_hits = max((arr.shape[0] for arr in grids_individual_walls.values()), default=0)
+            gi_sum = np.zeros((max_hits,) + tuple(grid_shape), dtype=float)
+            for gi in grids_individual_walls.values():
+                # pad to max_hits
+                if gi.shape[0] < max_hits:
+                    pad = np.zeros((max_hits - gi.shape[0],) + gi.shape[1:], dtype=gi.dtype)
+                    gi = np.concatenate([gi, pad], axis=0)
+                gi_sum += gi
+            returns.append(gi_sum)
+
+        if return_distances:
+            # Combine distance cumulative grids
+            gd_sum = np.zeros(tuple(grid_shape), dtype=float)
+            for gd in grid_distance_walls.values():
+                gd_sum += gd
+            returns.append(gd_sum)
+
+            if return_individual:
+                max_hits = max((arr.shape[0] for arr in grids_distance_individual_walls.values()), default=0)
+                gdi_sum = np.zeros((max_hits,) + tuple(grid_shape), dtype=float)
+                for gdi in grids_distance_individual_walls.values():
+                    if gdi.shape[0] < max_hits:
+                        pad = np.zeros((max_hits - gdi.shape[0],) + gdi.shape[1:], dtype=gdi.dtype)
+                        gdi = np.concatenate([gdi, pad], axis=0)
+                    gdi_sum += gdi
+                returns.append(gdi_sum)
+
+        return tuple(returns) if len(returns) > 1 else returns[0]
+
+    # walls_combine == False: return stacked cumulative grid plus optional per-wall extras
+    grid_stacked = np.zeros([*grid_shape, 6], dtype=float)
+    for wall in walls_intOptions:
+        if wall in grid_walls:
+            grid_stacked[:, :, :, wall] = grid_walls[wall]
+
+    returns = [grid_stacked]
+    if return_individual:
+        returns.append(grids_individual_walls)
+    if return_distances:
+        returns.append(grid_distance_walls)
+        if return_individual:
+            returns.append(grids_distance_individual_walls)
+
+    return tuple(returns) if len(returns) > 1 else returns[0]
 
 def expNWalls(wallGrids, walls, nWalls=6, returnWalls=False):
     grid_sum = np.sum(wallGrids, axis=0)

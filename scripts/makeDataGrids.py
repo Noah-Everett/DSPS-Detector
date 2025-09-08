@@ -5,20 +5,14 @@ makeDataGrids.py
 End-to-end pipeline to:
 - Process ROOT files into hits/primary DataFrames
 - (Optionally) create dense voxel grids (x/y) and write to .npy/.h5
-- (Optionally) create sparse per-photon voxel paths DataFrames
+- (Optionally) create sparse per-photon voxel paths DataFrames using gridMethods.get_voxelGrid
 - Split dataset into train/val/test deterministically
 - Emit a manifest mapping input files to outputs for auditability
 
-All major steps are parallelized with joblib and are resume/force aware.
-
-Changes vs earlier versions:
-- Stable hashing-based splits (override with --pTest/--pVal)
-- Manifest JSON
-- Parquet defaults: pyarrow + zstd + row groups (with safe fallback)
-- Voxel-paths (sparse) with optional distance per voxel
-- file_id on voxel-paths; optional event_id passthrough if found
-- Geometry validation & safer file checks
-- --force / --resume orchestration
+Key points:
+- Voxel paths are derived by calling get_voxelGrid(..., return_individual=True [, return_distances=True])
+  and converting per-hit grids into a sparse coordinate list.
+- No custom traversal: we reuse your fast voxel traversal through gridMethods.
 """
 
 from __future__ import annotations
@@ -62,7 +56,14 @@ from hitAccuracyMethods import (
     make_reconstructedVector_direction, make_relativeVector
 )
 from filterMethods import filter_r
-from gridMethods import get_voxelGrid, make_voxelGrid_truth, expNWalls, wallStringToInt
+
+# IMPORTANT: import exactly what we need from the file you provided
+from gridMethods import (
+    get_voxelGrid,
+    make_voxelGrid_truth,
+    expNWalls,
+    wallStringToInt,
+)
 
 # -----------------------
 # Parquet configuration
@@ -77,7 +78,7 @@ except Exception:
     try:
         import fastparquet  # noqa: F401
         PARQUET_ENGINE = "fastparquet"
-        PARQUET_COMPRESSION = "zstd"  # fastparquet supports zstd if lib is present; else will fallback internally
+        PARQUET_COMPRESSION = "zstd"
     except Exception:
         PARQUET_ENGINE = None
         PARQUET_COMPRESSION = None  # let pandas/engine decide
@@ -94,7 +95,7 @@ def _parquet_kwargs():
 
 def save_parquet(df: pd.DataFrame, path: str, metadata: Optional[Dict[str, str]] = None):
     """
-    Robust parquet writer.
+    Robust parquet writer with optional metadata.
     - Uses pyarrow with row groups and metadata if available.
     - Otherwise falls back to pandas.to_parquet with best-effort compression.
     """
@@ -103,13 +104,11 @@ def save_parquet(df: pd.DataFrame, path: str, metadata: Optional[Dict[str, str]]
         import pyarrow.parquet as pq
         table = pa.Table.from_pandas(df, preserve_index=False)
         if metadata:
-            # must be bytes in pyarrow
             meta_bytes = {str(k): str(v).encode("utf-8") for k, v in metadata.items()}
             existing = table.schema.metadata or {}
             table = table.replace_schema_metadata({**existing, **meta_bytes})
         pq.write_table(table, path, compression=PARQUET_COMPRESSION, row_group_size=ROW_GROUP_SIZE)
     else:
-        # Fallback: no custom metadata or row group size
         df.to_parquet(path, **_parquet_kwargs())
 
 
@@ -166,11 +165,12 @@ def _stable_hash(s: str, seed: int = 42) -> int:
 def split_data_stable(paths: List[str], p_test: float = 0.2, p_val: float = 0.1, seed: int = 42):
     """
     Deterministically assign each path to train/test/val by hashing the basename.
-    Returns (train, test, val) lists preserving relative proportions approximately.
+    Returns (train, test, val) lists.
     """
     test, val, train = [], [], []
+    denom = float(2**160)
     for p in paths:
-        h = _stable_hash(os.path.basename(p), seed) / 2**160  # uniform in [0,1)
+        h = _stable_hash(os.path.basename(p), seed) / denom  # uniform in [0,1)
         if h < p_test:
             test.append(p)
         elif h < p_test + p_val:
@@ -181,12 +181,6 @@ def split_data_stable(paths: List[str], p_test: float = 0.2, p_val: float = 0.1,
 
 
 def _should_write(path: str, force: bool, resume: bool) -> bool:
-    """
-    Decide whether to write an output file.
-    - force: ignore existence and overwrite
-    - resume: only (re)compute missing
-    - default: write if missing
-    """
     exists = os.path.exists(path)
     if force:
         return True
@@ -203,10 +197,7 @@ def safe_get(lst: List[str], i: int) -> Optional[str]:
 # ROOT file checks & cuts
 # -----------------------
 def check_files(paths: List[str], hist_dir: str, num_workers: int) -> List[str]:
-    """
-    Verify that each ROOT file contains histograms of the same shape,
-    using the first file for the expected shape. Parallelized across files.
-    """
+    """Verify that each ROOT file contains histograms of the same shape."""
     if not paths:
         return []
     def _shape(path):
@@ -247,9 +238,7 @@ def check_files(paths: List[str], hist_dir: str, num_workers: int) -> List[str]:
 
 def apply_cuts(paths: List[str], min_hits: int, min_primary_steps: int,
                hist_dir: str, primary_tree: str, num_workers: int) -> List[str]:
-    """
-    Filter files by total hit count and number of primary steps, in parallel.
-    """
+    """Filter files by total hit count and number of primary steps."""
     def _cut(path):
         try:
             n_hits = get_histogram_nHits_total(path, directoryName=hist_dir)
@@ -276,9 +265,7 @@ def apply_cuts(paths: List[str], min_hits: int, min_primary_steps: int,
 def process_hits_df(paths: List[str], hist_dir: str, output_base: str,
                     use_histograms: bool, num_workers: int,
                     force: bool, resume: bool) -> List[str]:
-    """
-    Parallel build & save hits DataFrames; returns list of parquet paths.
-    """
+    """Parallel build & save hits DataFrames; returns list of parquet paths."""
     LOGGER.info(f"Processing {len(paths)} hits DataFrames...")
 
     def _build(i, path):
@@ -333,9 +320,7 @@ def process_hits_df(paths: List[str], hist_dir: str, output_base: str,
 def process_primary_df(paths: List[str], primary_tree: str, output_base: str,
                        overwrite_persisted: bool, pdg_code: int, num_workers: int,
                        force: bool, resume: bool) -> List[str]:
-    """
-    Parallel build & save primary DataFrames; returns list of parquet paths.
-    """
+    """Parallel build & save primary DataFrames; returns list of parquet paths."""
     LOGGER.info(f"Processing {len(paths)} primary DataFrames...")
 
     def _build(i, path):
@@ -366,7 +351,7 @@ def process_primary_df(paths: List[str], primary_tree: str, output_base: str,
 
 
 # -----------------------
-# Dense voxel grids (existing)
+# Dense voxel grids (reuse gridMethods.get_voxelGrid)
 # -----------------------
 def create_grids(df_hits: List[str], df_pri: List[str],
                  npy_hits: List[str], npy_pri: List[str], h5_paths: List[str],
@@ -374,9 +359,7 @@ def create_grids(df_hits: List[str], df_pri: List[str],
                  grid_shape: Tuple[int, int, int], combine_errors: bool, combine_walls: bool,
                  walls_combine: bool, walls_method, combine_vectors: bool,
                  num_workers: int, force: bool, resume: bool):
-    """
-    Parallel create voxel grids and save as .npy/.h5.
-    """
+    """Parallel create voxel grids and save as .npy/.h5."""
     LOGGER.info("Creating voxel grids...")
     jobs = list(zip(df_hits, df_pri, npy_hits, npy_pri, h5_paths))
 
@@ -395,7 +378,7 @@ def create_grids(df_hits: List[str], df_pri: List[str],
             dirs = -np.vstack(dfh['reconstructedVector_direction'].tolist())
             x = get_voxelGrid(
                 grid_shape=np.array(grid_shape),
-                grid_dimensions=np.array(DETECTOR_SIZE_MM),
+                grid_dimensions=np.array(DETECTOR_SIZE_MM, dtype=float),
                 vector_starts=starts,
                 vector_directions=dirs,
                 vector_weights=None,
@@ -403,7 +386,10 @@ def create_grids(df_hits: List[str], df_pri: List[str],
                 walls=combine_walls,
                 walls_combine=walls_combine,
                 walls_combine_method=walls_method,
-                vector_combine=combine_vectors
+                vector_combine=combine_vectors,
+                use_distance=False,
+                return_individual=False,
+                return_distances=False,
             )
             del dfh, starts, dirs
             gc.collect()
@@ -420,8 +406,7 @@ def create_grids(df_hits: List[str], df_pri: List[str],
         if do_h5:
             with h5py.File(h5p, 'w') as f:
                 if x is not None:
-                    # channel-first
-                    f.create_dataset('x', data=np.moveaxis(x, -1, 0))
+                    f.create_dataset('x', data=np.moveaxis(x, -1, 0))  # channel-first
                 if y is not None:
                     f.create_dataset('y', data=y)
             LOGGER.debug(f"Saved H5: {h5p}")
@@ -439,127 +424,46 @@ def create_grids(df_hits: List[str], df_pri: List[str],
 
 
 # -----------------------
-# Sparse voxel paths (new)
+# Sparse voxel paths via gridMethods.get_voxelGrid (batched)
 # -----------------------
-def _ray_box_intersect(origin: np.ndarray, direction: np.ndarray,
-                       box_min: np.ndarray, box_max: np.ndarray):
+def _paths_from_individual_grids(gi: np.ndarray,
+                                 gdi: Optional[np.ndarray],
+                                 start_hit_idx: int,
+                                 include_distance: bool) -> List[tuple]:
     """
-    Ray-box intersection for parametric ray p = origin + t*direction.
-    Returns (tmin, tmax) if intersects, else (None, None).
+    Convert per-hit grids (and optional per-hit distance grids) into sparse rows.
+    Returns a list of tuples:
+      (photon_idx, ix, iy, iz[, dist_mm])
     """
-    dir_safe = np.where(direction == 0.0, 1e-12, direction)
-    t1 = (box_min - origin) / dir_safe
-    t2 = (box_max - origin) / dir_safe
-    tmin = np.maximum.reduce(np.minimum(t1, t2))
-    tmax = np.minimum.reduce(np.maximum(t1, t2))
-    if tmax < max(tmin, 0.0):
-        return None, None
-    # clamp to forward ray
-    return max(tmin, 0.0), tmax
-
-
-def _trace_voxel_path(origin: np.ndarray, direction: np.ndarray,
-                      grid_min: np.ndarray, grid_max: np.ndarray, grid_shape: np.ndarray,
-                      include_distance: bool = False):
-    """
-    Amanatides & Woo style traversal from 'origin' along 'direction', clamped
-    to the detector bounds [grid_min, grid_max]. Returns a list of
-    (ix, iy, iz, t_enter_u, t_exit_u, [dist_mm]).
-    """
-    t0, t1 = _ray_box_intersect(origin, direction, grid_min, grid_max)
-    if t0 is None or t1 is None or t1 <= t0:
-        return []
-
-    p = origin + t0 * direction
-    voxel_size = (grid_max - grid_min) / grid_shape
-
-    # initial voxel indices
-    ijk = np.floor((p - grid_min) / voxel_size).astype(int)
-    ijk = np.clip(ijk, 0, grid_shape - 1)
-
-    # step per axis
-    step = np.sign(direction).astype(int)
-    step[step == 0] = 1  # zero dir -> step forward
-
-    dir_safe = np.where(direction == 0.0, 1e-12, direction)
-
-    # parametric t at next boundary per axis
-    next_boundary = grid_min + (ijk + (step > 0)) * voxel_size
-    tMax = (next_boundary - p) / dir_safe
-
-    # delta t to cross a voxel per axis
-    tDelta = np.abs(voxel_size / dir_safe)
-
-    hits = []
-    t_curr = t0
-    # DDA loop
-    while True:
-        axis = int(np.argmin(tMax))
-        t_next = tMax[axis]
-        if t_next > t1 + 1e-12:
-            t_next = t1
-
-        if include_distance:
-            seg_len = float(np.linalg.norm((t_next - t_curr) * direction))
-            hits.append((int(ijk[0]), int(ijk[1]), int(ijk[2]), float(t_curr), float(t_next), seg_len))
-        else:
-            hits.append((int(ijk[0]), int(ijk[1]), int(ijk[2]), float(t_curr), float(t_next)))
-
-        if t_next >= t1 - 1e-12:
-            break
-
-        ijk[axis] += step[axis]
-        if ijk[axis] < 0 or ijk[axis] >= grid_shape[axis]:
-            break
-        t_curr = t_next
-        tMax[axis] += tDelta[axis]
-
-    return hits
-
-
-def compute_voxel_paths_for_photons(starts: np.ndarray, directions: np.ndarray,
-                                    grid_shape: Tuple[int, int, int],
-                                    detector_dims_mm: Tuple[float, float, float],
-                                    include_distance: bool = False) -> pd.DataFrame:
-    """
-    For arrays of vector starts/directions, returns a long-form DataFrame with:
-    photon_idx, ix, iy, iz, t_enter_u, t_exit_u, [dist_mm]
-    """
-    half = 0.5 * np.asarray(detector_dims_mm, dtype=float)
-    grid_min = -half
-    grid_max = half
-    shape = np.asarray(grid_shape, dtype=int)
-
     rows = []
-    for i in range(starts.shape[0]):
-        o = np.asarray(starts[i], dtype=float)
-        d = np.asarray(directions[i], dtype=float)
-        if not np.isfinite(d).all() or np.allclose(d, 0.0):
+    n_hits = gi.shape[0]
+    # Iterate per-hit; use .nonzero to get traversed voxels.
+    for local_i in range(n_hits):
+        nz = np.nonzero(gi[local_i])
+        ix, iy, iz = nz[0], nz[1], nz[2]
+        if ix.size == 0:
             continue
-        hits = _trace_voxel_path(o, d, grid_min, grid_max, shape, include_distance=include_distance)
-        if not hits:
-            continue
-        if include_distance:
-            for (ix, iy, iz, t0, t1, dist_mm) in hits:
-                rows.append((i, ix, iy, iz, t0, t1, dist_mm))
+        photon_idx = start_hit_idx + local_i
+        if include_distance and gdi is not None:
+            ds = gdi[local_i, ix, iy, iz]
+            rows.extend((photon_idx, int(ix[k]), int(iy[k]), int(iz[k]), float(ds[k])) for k in range(ix.size))
         else:
-            for (ix, iy, iz, t0, t1) in hits:
-                rows.append((i, ix, iy, iz, t0, t1))
-
-    if include_distance:
-        return pd.DataFrame(rows, columns=['photon_idx', 'ix', 'iy', 'iz', 't_enter_u', 't_exit_u', 'dist_mm'])
-    else:
-        return pd.DataFrame(rows, columns=['photon_idx', 'ix', 'iy', 'iz', 't_enter_u', 't_exit_u'])
+            rows.extend((photon_idx, int(ix[k]), int(iy[k]), int(iz[k])) for k in range(ix.size))
+    return rows
 
 
 def save_voxel_paths(df_hits_paths: List[str], output_parquet_paths: List[str],
                      grid_shape: Tuple[int, int, int], include_distance: bool,
-                     num_workers: int, force: bool, resume: bool):
+                     num_workers: int, force: bool, resume: bool,
+                     batch_size: int = 2000):
     """
-    Parallel: for each hits DF, compute voxel paths and save as parquet.
-    Includes file_id and optional event_id mapping.
+    For each hits DF:
+      - Build per-hit grids in batches using gridMethods.get_voxelGrid(return_individual=True)
+      - Convert to sparse (photon_idx, ix, iy, iz[, dist_mm]) rows
+      - Save as Parquet
+    We avoid custom traversal and reuse your grid backend for perfect parity.
     """
-    LOGGER.info("Computing per-photon voxel paths...")
+    LOGGER.info("Computing per-photon voxel paths using gridMethods.get_voxelGrid (batched)...")
     jobs = list(zip(df_hits_paths, output_parquet_paths))
 
     vx_size = (np.asarray(DETECTOR_SIZE_MM, float) / np.asarray(grid_shape, int))
@@ -573,7 +477,7 @@ def save_voxel_paths(df_hits_paths: List[str], output_parquet_paths: List[str],
         "detector_size_mm_x": float(DETECTOR_SIZE_MM[0]),
         "detector_size_mm_y": float(DETECTOR_SIZE_MM[1]),
         "detector_size_mm_z": float(DETECTOR_SIZE_MM[2]),
-        "params": "t_enter_u,t_exit_u are unitless ray parameters; dist_mm in millimeters if present",
+        "notes": "Derived from per-hit grids returned by gridMethods.get_voxelGrid",
     }
 
     def _one(i, dfh_path, out_path):
@@ -582,28 +486,88 @@ def save_voxel_paths(df_hits_paths: List[str], output_parquet_paths: List[str],
             return out_path
 
         dfh = pd.read_parquet(dfh_path)
-        starts = np.vstack(dfh['sensor_position'].tolist()) if len(dfh) else np.empty((0, 3))
-        dirs = -np.vstack(dfh['reconstructedVector_direction'].tolist()) if len(dfh) else np.empty((0, 3))
+        n_hits_total = len(dfh)
+        if n_hits_total == 0:
+            # Write empty schema
+            cols = ['photon_idx', 'ix', 'iy', 'iz'] + (['dist_mm'] if include_distance else [])
+            empty = pd.DataFrame(columns=cols)
+            save_parquet(empty, out_path, metadata=meta)
+            LOGGER.debug(f"Saved empty voxel paths DF: {out_path}")
+            return out_path
 
-        df_paths = compute_voxel_paths_for_photons(
-            starts, dirs,
-            grid_shape=grid_shape,
-            detector_dims_mm=DETECTOR_SIZE_MM,
-            include_distance=include_distance
-        )
+        starts_all = np.vstack(dfh['sensor_position'].tolist())
+        dirs_all = -np.vstack(dfh['reconstructedVector_direction'].tolist())
 
-        # Add stable file_id and optional event_id passthrough
-        file_id = os.path.splitext(os.path.basename(dfh_path))[0]
-        df_paths['file_id'] = file_id
-
-        # Optional event/track identifier if present in hits DF
+        # Optional event_id passthrough later
         event_col = None
         for candidate in ['event_id', 'event', 'track_id', 'track']:
             if candidate in dfh.columns:
                 event_col = candidate
                 break
-        if event_col is not None:
-            mapping = pd.Series(dfh[event_col].values).to_dict()  # index -> event_id-like
+
+        rows: List[tuple] = []
+        # Process in batches to keep memory bounded
+        for start in tqdm(range(0, n_hits_total, batch_size), desc=f"Voxel paths ({os.path.basename(dfh_path)})", leave=False):
+            end = min(start + batch_size, n_hits_total)
+            starts = starts_all[start:end]
+            dirs = dirs_all[start:end]
+
+            # Request per-hit grids (weighted=1 per voxel when use_distance=False)
+            # If include_distance, also return per-hit distance grids.
+            if include_distance:
+                # get_voxelGrid returns: grid, grids_individual, grid_distance, grids_distance_individual
+                _, gi, _, gdi = get_voxelGrid(
+                    grid_shape=np.array(grid_shape),
+                    grid_dimensions=np.array(DETECTOR_SIZE_MM, dtype=float),
+                    vector_starts=starts,
+                    vector_directions=dirs,
+                    vector_weights=None,
+                    vector_start_walls=None,
+                    walls=False,
+                    walls_combine=False,
+                    walls_combine_method=None,
+                    vector_combine=False,
+                    use_distance=False,              # keep weighted grids as 1-per-voxel; distances come from gdi
+                    return_individual=True,
+                    return_distances=True,
+                )
+            else:
+                # get_voxelGrid returns: grid, grids_individual
+                _, gi = get_voxelGrid(
+                    grid_shape=np.array(grid_shape),
+                    grid_dimensions=np.array(DETECTOR_SIZE_MM, dtype=float),
+                    vector_starts=starts,
+                    vector_directions=dirs,
+                    vector_weights=None,
+                    vector_start_walls=None,
+                    walls=False,
+                    walls_combine=False,
+                    walls_combine_method=None,
+                    vector_combine=False,
+                    use_distance=False,
+                    return_individual=True,
+                    return_distances=False,
+                )
+                gdi = None
+
+            # Convert batch per-hit grids -> sparse rows
+            rows.extend(_paths_from_individual_grids(gi, gdi, start_hit_idx=start, include_distance=include_distance))
+
+            # free batch memory
+            del gi, gdi
+            gc.collect()
+
+        # Build DataFrame
+        if include_distance:
+            df_paths = pd.DataFrame(rows, columns=['photon_idx', 'ix', 'iy', 'iz', 'dist_mm'])
+        else:
+            df_paths = pd.DataFrame(rows, columns=['photon_idx', 'ix', 'iy', 'iz'])
+
+        # Add stable file_id and optional event_id passthrough
+        file_id = os.path.splitext(os.path.basename(dfh_path))[0]
+        df_paths['file_id'] = file_id
+        if event_col is not None and len(df_paths):
+            mapping = pd.Series(dfh[event_col].values).to_dict()  # local row index -> event_id-like
             df_paths['event_id'] = df_paths['photon_idx'].map(mapping)
 
         # Reorder columns for readability
@@ -617,7 +581,7 @@ def save_voxel_paths(df_hits_paths: List[str], output_parquet_paths: List[str],
         save_parquet(df_paths, out_path, metadata=meta)
         LOGGER.debug(f"Saved voxel paths DF: {out_path}")
 
-        del dfh, starts, dirs, df_paths
+        del dfh, starts_all, dirs_all, df_paths, rows
         gc.collect()
         return out_path
 
@@ -630,10 +594,10 @@ def save_voxel_paths(df_hits_paths: List[str], output_parquet_paths: List[str],
 # Dense-from-sparse reconstructor (optional helper)
 # -----------------------
 def voxel_paths_to_dense(df_paths: pd.DataFrame, grid_shape: Tuple[int, int, int], use_distance: bool = False) -> np.ndarray:
-    """
-    Rebuild a dense grid from a voxel-paths DF for validation or analysis.
-    """
+    """Rebuild a dense grid from a voxel-paths DF for validation or analysis."""
     grid = np.zeros(grid_shape, dtype=float)
+    if len(df_paths) == 0:
+        return grid
     ix = df_paths['ix'].to_numpy(dtype=int)
     iy = df_paths['iy'].to_numpy(dtype=int)
     iz = df_paths['iz'].to_numpy(dtype=int)
@@ -672,20 +636,22 @@ def main():
     parser.add_argument('--saveGridNpyPrimary', action='store_true')
     parser.add_argument('--saveGridH5', action='store_true')
 
-    # New sparse voxel paths
+    # Sparse voxel paths (via gridMethods.get_voxelGrid)
     parser.add_argument('--saveVoxelPaths', action='store_true',
                         help='Save a per-photon DataFrame of voxel indices (and distances) traversed')
     parser.add_argument('--voxelPathsUseDistance', action='store_true',
                         help='If set, include distance traveled inside each voxel (mm)')
+    parser.add_argument('--voxelPathsBatch', type=int, default=2000,
+                        help='Batch size for building per-hit grids to derive voxel paths')
 
-    # Split settings: adopt stable hashing by default
+    # Split settings (stable hashing)
     parser.add_argument('--noSplit', action='store_true')
-    parser.add_argument('--pTest', type=float, default=0.20, help='Fraction for test split (stable hashing)')
-    parser.add_argument('--pVal', type=float, default=0.10, help='Fraction for validation split (stable hashing)')
+    parser.add_argument('--pTest', type=float, default=0.20, help='Fraction for test split')
+    parser.add_argument('--pVal', type=float, default=0.10, help='Fraction for validation split')
     parser.add_argument('--splitSeed', type=int, default=42, help='Seed for stable hashing split')
-    # Legacy options kept for compatibility; translated to fractions if provided
-    parser.add_argument('--nTest', type=int, default=None, help='(Legacy) Target size for test; will be converted to fraction')
-    parser.add_argument('--nVal', type=int, default=None, help='(Legacy) Target size for val; will be converted to fraction')
+    # Legacy counts (translated to fractions if provided)
+    parser.add_argument('--nTest', type=int, default=None, help='(Legacy) Target size for test; converted to fraction')
+    parser.add_argument('--nVal', type=int, default=None, help='(Legacy) Target size for val; converted to fraction')
 
     # Execution
     parser.add_argument('--numWorkers', type=int, default=1)
@@ -788,26 +754,24 @@ def main():
                              grid_shape=gs,
                              include_distance=args.voxelPathsUseDistance,
                              num_workers=args.numWorkers,
-                             force=args.force, resume=args.resume)
+                             force=args.force, resume=args.resume,
+                             batch_size=args.voxelPathsBatch)
 
-        # Train/test/val split (stable)
+        # Train/test/val split (stable) — only when we produced H5 grids
         if not args.noSplit and args.saveGridH5:
             p_test = float(args.pTest)
             p_val = float(args.pVal)
-            # If legacy counts provided, translate to fractions against total
             if args.nTest is not None and len(h5s) > 0:
                 p_test = max(0.0, min(1.0, args.nTest / float(len(h5s))))
                 LOGGER.info(f"Using legacy nTest={args.nTest} -> pTest≈{p_test:.3f}")
             if args.nVal is not None and len(h5s) > 0:
                 p_val = max(0.0, min(1.0, args.nVal / float(len(h5s))))
                 LOGGER.info(f"Using legacy nVal={args.nVal} -> pVal≈{p_val:.3f}")
-            # Ensure p_test + p_val < 1
             if p_test + p_val >= 1.0:
                 raise ValueError(f"pTest + pVal must be < 1.0 (got {p_test+p_val})")
             train, test, val = split_data_stable(h5s, p_test=p_test, p_val=p_val, seed=args.splitSeed)
             for name, lst in [('train', train), ('test', test), ('val', val)]:
                 of = os.path.join(args.output_dir, f"{name}_paths.txt")
-                # always overwrite lists to reflect current state
                 with open(of, 'w') as f:
                     f.write("\n".join(lst))
                 LOGGER.info(f"Wrote {name} paths: {of}")
