@@ -4,51 +4,73 @@ from constants import *
 import fast_voxel_traversal as fvt
 from collections import defaultdict
 
-def get_voxelGrid_hitVector(grid_minBound, grid_maxBound, grid_shape, 
-                            vector_starts, vector_ends  , vector_weights=None):
+
+def get_voxelGrid_hitVector(
+    grid_minBound, grid_maxBound, grid_shape, 
+    vector_starts, vector_ends, vector_weights=None,
+    use_distance: bool = False,
+):
     """
     Compute the voxel grid from the hit vectors.
 
-    Parameters:
-    - grid_minBound: Tuple or list of 3 floats, minimum bounds of the grid.
-    - grid_maxBound: Tuple or list of 3 floats, maximum bounds of the grid.
-    - grid_shape: Tuple or list of 3 integers, shape of the grid.
-    - vector_starts: Array of shape (N, 3), starting points of the vectors.
-    - vector_ends: Array of shape (N, 3), ending points of the vectors.
-    - vector_weights: Array of shape (N,), weights for each vector.
+    Parameters
+    ----------
+    grid_minBound : (3,) float
+        Minimum bounds of the grid.
+    grid_maxBound : (3,) float
+        Maximum bounds of the grid.
+    grid_shape : (3,) int
+        Shape of the voxel grid.
+    vector_starts : (N, 3) array
+        Starting points of the vectors.
+    vector_ends : (N, 3) array
+        Ending points of the vectors.
+    vector_weights : (N,) array, optional
+        Weights for each vector. Defaults to 1 for all.
+    use_distance : bool, default=False
+        If True, accumulate by distance traveled in each voxel
+        (scaled by weight). If False, just increment by weight once per voxel hit.
     """
-
     if vector_weights is None:
         vector_weights = np.ones(len(vector_starts), dtype=float)
 
     assert len(vector_starts) == len(vector_ends) == len(vector_weights)
     assert len(grid_minBound) == len(grid_maxBound) == len(grid_shape) == 3
 
-    # Calculate voxel size from bounds and shape
     voxel_size = (np.array(grid_maxBound) - np.array(grid_minBound)) / np.array(grid_shape)
-    
-    # Create FVT grid
     FVTgrid = fvt.Grid(grid_shape=grid_shape, voxel_size=voxel_size, grid_origin=grid_minBound)
     grid = np.zeros(grid_shape, dtype=float)
 
     for i in range(len(vector_starts)):
-        # Calculate direction vector from start to end
         direction = vector_ends[i] - vector_starts[i]
-        
-        # Traverse the voxels and collect indices
-        traversed_indices = []
-        nTraversed_indices = 0
+        dir_len = float(np.linalg.norm(direction))
+        if dir_len == 0.0:
+            continue
+
+        any_hit = False
         for ix, iy, iz, t_enter, t_exit in FVTgrid.traverse(vector_starts[i], direction):
-            nTraversed_indices += 1
-            traversed_indices.append([ix, iy, iz])
-        if nTraversed_indices == 0:
-            print(f"Warning: No voxels traversed for: {vector_starts[i]} to {vector_ends[i]} with direction {direction}")
-        
-        if traversed_indices:
-            traversed_indices = np.array(traversed_indices)
-            grid[traversed_indices[:, 0], traversed_indices[:, 1], traversed_indices[:, 2]] += vector_weights[i]
+            # Clamp to finite segment
+            t0 = max(t_enter, 0.0)
+            t1 = min(t_exit, 1.0)
+            if t1 <= t0:
+                continue
+
+            any_hit = True
+            if use_distance:
+                # accumulate by distance
+                ds = (t1 - t0) * dir_len
+                grid[ix, iy, iz] += vector_weights[i] * ds
+            else:
+                # accumulate by simple weight per voxel
+                grid[ix, iy, iz] += vector_weights[i]
+
+        if not any_hit:
+            # optional: warn if no hit
+            # print(f"Warning: No voxels traversed for segment {i}")
+            pass
 
     return grid
+
 
 def get_voxelGrid_errors(grid):
     grid_copy = grid.copy()
