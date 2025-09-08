@@ -9,6 +9,7 @@ def get_voxelGrid_hitVector(
     grid_minBound, grid_maxBound, grid_shape, 
     vector_starts, vector_ends, vector_weights=None,
     use_distance: bool = False,
+    return_individual: bool = False,
 ):
     """
     Compute the voxel grid from the hit vectors.
@@ -30,6 +31,16 @@ def get_voxelGrid_hitVector(
     use_distance : bool, default=False
         If True, accumulate by distance traveled in each voxel
         (scaled by weight). If False, just increment by weight once per voxel hit.
+    return_individual : bool, default=False
+        If True, also return an array of per-photon grids
+        (shape (N, *grid_shape)).
+
+    Returns
+    -------
+    grid : ndarray
+        The cumulative voxel grid.
+    grids_individual : ndarray, optional
+        Only if return_individual=True. Per-photon voxel grids.
     """
     if vector_weights is None:
         vector_weights = np.ones(len(vector_starts), dtype=float)
@@ -40,6 +51,10 @@ def get_voxelGrid_hitVector(
     voxel_size = (np.array(grid_maxBound) - np.array(grid_minBound)) / np.array(grid_shape)
     FVTgrid = fvt.Grid(grid_shape=grid_shape, voxel_size=voxel_size, grid_origin=grid_minBound)
     grid = np.zeros(grid_shape, dtype=float)
+
+    grids_individual = None
+    if return_individual:
+        grids_individual = np.zeros((len(vector_starts),) + tuple(grid_shape), dtype=float)
 
     for i in range(len(vector_starts)):
         direction = vector_ends[i] - vector_starts[i]
@@ -57,18 +72,21 @@ def get_voxelGrid_hitVector(
 
             any_hit = True
             if use_distance:
-                # accumulate by distance
                 ds = (t1 - t0) * dir_len
-                grid[ix, iy, iz] += vector_weights[i] * ds
+                w = vector_weights[i] * ds
             else:
-                # accumulate by simple weight per voxel
-                grid[ix, iy, iz] += vector_weights[i]
+                w = vector_weights[i]
 
-        if not any_hit:
-            # optional: warn if no hit
-            # print(f"Warning: No voxels traversed for segment {i}")
-            pass
+            grid[ix, iy, iz] += w
+            if return_individual:
+                grids_individual[i, ix, iy, iz] += w
 
+        # optional: warn if no hit
+        # if not any_hit:
+        #     pass
+
+    if return_individual:
+        return grid, grids_individual
     return grid
 
 
