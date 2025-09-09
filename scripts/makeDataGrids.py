@@ -35,8 +35,8 @@ import uproot
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
-# allow imports from parent python directory
-sys.path.append('../python/')
+# allow imports from parent python directory which is ../python
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'python')))
 from constants import CM_PER_RAD, MM_PER_CM, Y_LIM, DETECTOR_SIZE_MM
 from importMethods import (
     get_histogram_nHits_total,
